@@ -1,0 +1,138 @@
+/*
+
+	main.css
+	author:	P E Sartain
+	date:	20/10/2008
+
+*/
+
+a:link, a:visited
+{
+   color: #6495ED;
+   text-decoration: none;
+}
+a:hover
+{
+  color: white;
+  text-decoration: underline overline;
+}
+
+#maincontent {
+	background: green;
+}
+
+#calendar {
+	border: 1px solid purple;
+	border-collapse: collapse;
+	border-spacing: 0px;
+	margin: 0px auto;
+	}
+
+#calendar th {
+	background: silver;
+	border: 1px outset blue;}
+
+.weekinfo {
+	background: red; 
+	font-size: 0.9em;
+	}
+
+.cell {
+	background: #808080;
+	width: 100px; 
+	height: 120px; 
+	padding: 0px; 
+	border: 1px dashed black; 
+	margin: 0px;
+	vertical-align: top;
+	}
+
+.cell.today {
+	background: yellow;
+	}
+
+.datecell {
+	background: #606060;
+	width: 65%;
+	float: left;
+	margin: 3px;
+	padding: 3px;
+	}
+
+.admincell {
+	float: left;
+	width: 20%;
+	}
+
+.raidcell {
+	background: #606060;
+	}
+
+.availcell {}
+
+.weekscroller td {
+		text-align: center;
+	}
+
+div.over {
+	background: white;
+	font-size: 0.9em;
+	cursor: text;
+	}
+div.out {}
+
+#editWeekBoxweekinfo0 {
+	width: 450px;
+	}
+
+#editWeekBoxweekinfo7 {
+	width: 450px;
+	}
+
+#editWeekBoxweekinfo14 {
+	width: 450px;
+	}
+
+#editWeekBoxweekinfo21 {
+	width: 450px;
+	}
+
+#linkheader {
+	background-color: blue;
+	}
+
+div.black_overlay {
+	display: none; 
+	position: absolute; 
+	top: 0%; 
+	left: 0%; 
+	width: 100%; 
+	height: 100%; 
+	background-color: black; 
+	z-index: 1001; 
+	-moz-opacity: 0.8; 
+	opacity:.80; 
+	filter: alpha(opacity=80);
+	}
+
+div.white_content {
+	display: none; 
+	position: absolute; 
+	top: 10%; 
+	left: 17%; 
+	width: 65%; 
+	height: 70%; 
+	padding: 16px; 
+	border: 1px solid gray; 
+	background-color: white; 
+	z-index: 1002; 
+	overflow: auto;
+	color: black;
+	}
+
+input {
+	border: 0px;
+	padding: 0px;
+	background: #202020;
+	font-size: 0.9em;
+	}
