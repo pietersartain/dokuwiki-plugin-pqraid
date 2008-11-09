@@ -136,3 +136,13 @@ input {
 	background: #202020;
 	font-size: 0.9em;
 	}
+
+div.unsaved {
+	border: 1px solid red;
+	background: #FF9999;
+}
+
+div.saved {
+	border: 1px solid green;
+	background: #99FF99;
+}

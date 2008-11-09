@@ -10,19 +10,6 @@
 -- #  Character tables  #
 -- ######################
 
--- Player account list
-DROP TABLE IF EXISTS pqr_player;
-CREATE TABLE pqr_player (
-	player_id integer auto_increment primary key,
-	user varchar(128));
-
--- Character list
-DROP TABLE IF EXISTS pqr_character;
-CREATE TABLE pqr_character (
-	character_id integer auto_increment primary key,
-	player_id integer,
-	name varchar(128));
-
 -- Role list
 DROP TABLE IF EXISTS pqr_roles;
 CREATE TABLE pqr_roles (
@@ -33,8 +20,9 @@ CREATE TABLE pqr_roles (
 DROP TABLE IF EXISTS pqr_csc;
 CREATE TABLE pqr_csc (
 	csc_id integer auto_increment primary key,
-	character_id integer,
-	role_id integer);
+	character_name varchar(64),
+	role_id integer,
+	player_id varchar(32));
 
 -- ########################
 -- #  Achievement tables  #
@@ -77,7 +65,7 @@ CREATE TABLE pqr_raids (
 DROP TABLE IF EXISTS pqr_raidaccess;
 CREATE TABLE pqr_raidaccess (
 	achievement_id integer,
-	raid_id);
+	raid_id integer);
 
 -- Role numbers for a given raid: raid/role join table
 DROP TABLE IF EXISTS pqr_raidroles;
@@ -109,6 +97,12 @@ CREATE TABLE pqr_signups (
 	csc_id integer,
 	confirmed integer);
 
+-- Unavailable list
+DROP TABLE IF EXISTS pqr_unavail;
+CREATE TABLE pqr_unavail (
+	player_id varchar(32),
+	unavail datetime);
+
 -- Autopsy tables
 DROP TABLE IF EXISTS pqr_log;
 CREATE TABLE pqr_log (
@@ -116,12 +110,16 @@ CREATE TABLE pqr_log (
 	csc_id integer);
 
 -- Default data
-INSERT INTO pqr_player(user) VALUES('piete');
-INSERT INTO pqr_player(user) VALUES('pam');
-INSERT INTO pqr_player(user) VALUES('owan');
-INSERT INTO pqr_player(user) VALUES('jason');
-INSERT INTO pqr_player(user) VALUES('grace');
-
 INSERT INTO pqr_roles(name) VALUES('Healer');
 INSERT INTO pqr_roles(name) VALUES('DPS');
 INSERT INTO pqr_roles(name) VALUES('Tank');
+
+INSERT INTO pqr_achievements(short_name,long_name,icon) VALUES('lvl80','Achieve level 80','l80.jpg');
+INSERT INTO pqr_achievements(short_name,long_name,icon) VALUES('lvl80','Achieve level 80','l80.jpg');
+INSERT INTO pqr_achievements(short_name,long_name,icon) VALUES('lvl80','Achieve level 80','l80.jpg');
+INSERT INTO pqr_achievements(short_name,long_name,icon) VALUES('lvl80','Achieve level 80','l80.jpg');
+INSERT INTO pqr_achievements(short_name,long_name,icon) VALUES('lvl80','Achieve level 80','l80.jpg');
+INSERT INTO pqr_achievements(short_name,long_name,icon) VALUES('lvl80','Achieve level 80','l80.jpg');
+INSERT INTO pqr_achievements(short_name,long_name,icon) VALUES('lvl80','Achieve level 80','l80.jpg');
+INSERT INTO pqr_achievements(short_name,long_name,icon) VALUES('lvl80','Achieve level 80','l80.jpg');
+INSERT INTO pqr_achievements(short_name,long_name,icon) VALUES('lvl80','Achieve level 80','l80.jpg');

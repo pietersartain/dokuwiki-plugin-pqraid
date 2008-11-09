@@ -34,7 +34,7 @@ function saveWeekEditBox($week,$new_info,$day) {
 	} else {
 		$rslt = mysql_query("SELECT info FROM pqr_weeks WHERE week_num=".$week);
 		if (mysql_num_rows($rslt) > 0) {
-			$sql = "UPDATE pqr_weeks SET info=".$new_info." WHERE week_num=".$week;
+			$sql = "UPDATE pqr_weeks SET info='".$new_info."' WHERE week_num=".$week;
 		} else {
 			$sql = "INSERT INTO pqr_weeks(week_num,info) VALUES(".$week.",'".$new_info."')";			
 		}

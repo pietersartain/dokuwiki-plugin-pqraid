@@ -23,9 +23,15 @@ function add_querystring_var($url, $key, $value) {
 	}
 }
 
-function getCalendar($week,&$db) {
-
-$playerAuth = authPlayer('piete');
+function getCalendar($week,$permission,&$db) {
+	
+// Parse the authentication function passed to $permission.
+    
+	if($permission == 255){
+		$isadmin = true;	
+	} else {
+		$isadmin = false;	
+	}
 
 // Get week information:
 $week_info = getWeekInfo($week-1,$week+3,$db);
@@ -71,25 +77,39 @@ $fqn[3] = add_querystring_var(THISPAGE,"week","52");
 			$week_num = dateToWeek($loopday);
 			
 			// Week information
-			$calendar.='
-				<tr>
-					<td colspan="7">
-						<div 
-							id="weekinfo'.($days+7).'" 
-							class="weekinfo" 
-							onmouseover="mover(this,\'over\');" 
-							onmouseout="mover(this,\'weekinfo\');"
-							>
-					<div onclick="makeEditBox(\''.$week_num.'\', \''.$week_info[$week_num].'\',\'weekinfo'.($days+7).'\')">
-						Week '.$week_num.': '.$week_info[$week_num].'
-					</div>
+			if ($isadmin){
+				$calendar.='
+					<tr>
+						<td colspan="7">
+							<div 
+								id="weekinfo'.($days+7).'" 
+								class="weekinfo" 
+								onmouseover="mover(this,\'over\');" 
+								onmouseout="mover(this,\'weekinfo\');"
+								>
+						<div onclick="makeEditBox(\''.$week_num.'\', \''.$week_info[$week_num].'\',\'weekinfo'.($days+7).'\')">
+							Week '.$week_num.': '.$week_info[$week_num].'
 						</div>
-					</td>
-				</tr>';
+							</div>
+						</td>
+					</tr>';
 
+			} else {
+				$calendar.='
+					<tr>
+						<td colspan="7">
+							<div
+								id="weekinfo'.($days+7).'"
+								class="weekinfo"
+							>
+								Week '.$week_num.': '.$week_info[$week_num].'
+							</div>
+						</td>
+					</tr>';
+			}
+			
 			$calendar.='<tr>';
-		}
-
+	}
 		// Calendar days/cells
 		
 		// Cell header
