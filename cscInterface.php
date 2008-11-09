@@ -21,6 +21,45 @@ include_once "connect.php";
 eval($func.";");
 
 function saveCSC() {
+
+	print_r($_POST);
+	$username = $_POST['uname'];
+	$db = getDb();
+	
+	$achievements = getAchievementList($db);
+	
+
+	for($x=0; $x<3;$x++) {
+	
+		// First update pqr_csc table with changes to name/role
+		$cscid = $_POST['cscid'.$x];
+		$sql = 'UPDATE pqr_csc SET 
+				character_name = "'.$_POST['character_name'.$cscid].'", 
+				role_id = "'.$_POST['rolelist'.$cscid].'" 
+				WHERE csc_id='.$cscid.' 
+				AND player_id="'.$username.'"';
+
+		$rslt = mysql_query($sql);
+		if (!$rslt){
+			die("<br /><br />Error: ".mysql_error($db)." from sql: ".htmlspecialchars($sql));
+		}
+		
+		// Then update the achievement lists
+		
+		// Get the existing CSC access list
+		$accesslist = getCSCAccessTokens($cscinfo['csc_id'],$db);
+		
+		foreach($achievements as $token) {
+			$achievestr = $cscid.'achievement'.$token['achievement_id'];
+			if (isset($_POST[$achievestr]){
+			// This is a ticked achievement, compare it with the existing:
+				if ($_POST[$achievestr] != $accesslist[$token['achievement_id']]) {
+					// If they don't match, then something needs updating.
+				
+				}
+			}
+	}
+
 /*
 //	global $INFO;
 //	$username = $INFO['client'];

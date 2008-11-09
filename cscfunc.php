@@ -53,10 +53,10 @@ function getCSCAccessTokens($csc,&$db) {
 	$rslt = mysql_query('SELECT * FROM pqr_accesstokens WHERE csc_id ='.$csc);
 	if (!$rslt) die('csc access token error: '.mysql_error($db));
 	
-	$count = 0;
+//	$count = 0;
 	while ($row = mysql_fetch_array($rslt)){
-		$accesslist[$count] = $row;
-		$count++;
+		$accesslist[$row['achievement_id']] = 1;
+//		$count++;
 	}
 	
 	return $accesslist;
@@ -64,7 +64,7 @@ function getCSCAccessTokens($csc,&$db) {
 
 /* Get all access tokens (achievement list)
  */
-function getAchivementList(&$db) {
+function getAchievementList(&$db) {
 	$rslt = mysql_query('SELECT * FROM pqr_achievements');
 	if (!$rslt) die('access token error: '.mysql_error($db));
 	

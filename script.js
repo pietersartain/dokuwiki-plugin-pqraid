@@ -35,48 +35,66 @@ function updateDivText(id,txt,class){
 	tdiv.innerHTML=txt;
 }
 
+// Form validation/collection for use in ajax, from:
+// http://www.ajaxtutorial.net/index.php/2006/07/07/ajax-generic-form-parser/
+function getForm(fobj) {  
+	var str = "";  
+	var ft = "";  
+	var fv = "";  
+	var fn = "";  
+	var els = "";  
+	for(var i = 0;i < fobj.elements.length;i++) {  
+		els = fobj.elements[i];  
+		ft = els.title;  
+		fv = els.value;  
+		fn = els.name;  
+		switch(els.type) {  
+		case "text":  
+		case "hidden":  
+		case "password":  
+		case "textarea":  
+			// is it a required field?  
+			if(encodeURI(ft) == "required" && encodeURI(fv).length < 1) {  
+				alert('\''+fn+'\' is a required field, please complete.');  
+				els.focus();  
+				return false;  
+			}  
+			str += fn + "=" + encodeURI(fv) + "&";  
+		break;   
+
+		case "checkbox":  
+		case "radio":  
+			if(els.checked) str += fn + "=" + encodeURI(fv) + "&";  
+		break;      
+
+		case "select-one":  
+			str += fn + "=" +  
+			els.options[els.selectedIndex].value + "&";  
+		break;  
+		} // switch
+	} // for  
+	str = str.substr(0,(str.length - 1));  
+	return str;  
+}
+
 // Functions for the csceditor
 var timerID = 0;
-function updateCSC(){
+function updateCSC(fobj){
 	updateDivText('saveinfo','Unsaved ...','unsaved');
 	if (timerID != 0) {
 		clearTimeout(timerID);
 	}
-	timerID = setTimeout("saveCSC()",4000);		
+	timerID = setTimeout(function(){saveCSC(fobj);fobj=null},4000);		
 }
 
 function saveCSC(fobj){
 	updateDivText('saveinfo','Saving ...','unsaved');
 	
 	//Build a parameter list from the form elements
-	var str = "";	
-	var valueArr = null;
-	var val = "";
-	var cmd = "";
+	var params = getForm(fobj);
 	
-	for(var i = 0;i < fobj.elements.length;i++)	{
-		
-	str += fobj.elements[i].name +
-	
-	"=" + escape(fobj.elements[i].value) + "&";
-	
-	break;
-	
-	case "select-one":
-	
-	str += fobj.elements[i].name +
-	
-	"=" + fobj.elements[i].options[fobj.elements[i].selectedIndex].value + "&";
-	
-	break;
-	
-	}
-	
-	}
-	
-	str = str.substr(0,(str.length - 1)); 
-	
-	ajaxPost('cscInterface.php','saveCSC()',null,'updateDivText(\"saveinfo\",\"Saved.\",\"saved\")');
+	//ajaxPost('cscInterface.php?func=saveCSC()',params,null,'updateDivText(\"saveinfo\",\"Saved.\",\"saved\")');
+	ajaxPost('cscInterface.php?func=saveCSC()',params,'saveinfo',null);	
 	clearTimeout(timerID);
 }
 
@@ -134,7 +152,7 @@ function ajaxPost(file,params,id,posthook) {
 
 	xmlHttp.open('POST', url, true);
 	xmlHttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-	xmlHttp.setRequestHeader("Content-length", parameters.length);
+	xmlHttp.setRequestHeader("Content-length", params.length);
 	xmlHttp.setRequestHeader("Connection", "close");
 	xmlHttp.send(params);
 

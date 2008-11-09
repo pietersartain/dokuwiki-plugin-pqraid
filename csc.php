@@ -15,7 +15,7 @@ function mkRoleList($roles,$id,$selected) {
 	$rolelist = "<select name='rolelist".$id."' 
 					id='rolelist".$id."' 
 					class='rolelist' 
-					onchange='updateCSC()'
+					onchange='updateCSC(this.form)'
 					>";
 	
 	foreach($roles as $rinfo) {
@@ -39,7 +39,7 @@ function mkRoleList($roles,$id,$selected) {
 	return $rolelist;
 }
 
-function mkAccessTokenBoxes($cscid,$accesslist,$achievements,$id) {
+function mkAccessTokenBoxes($accesslist,$achievements,$id) {
 	
 	foreach ($achievements as $at) {
 		$tokenboxes .= '<input 
@@ -56,6 +56,8 @@ function mkAccessTokenBoxes($cscid,$accesslist,$achievements,$id) {
 function getCSCEditor(&$db) {
 	global $INFO;
 	$csceditor = "<form id='csceditor' method='POST' action='lib/plugins/pqraid/cscInterface.php?func=saveCSC()'>
+	<input type='hidden' name='uname' value='".$username."'></input>
+
 					<table class='table'>";
 	//Acquire the user's name.
 	$username = $INFO['client'];
@@ -78,30 +80,31 @@ function getCSCEditor(&$db) {
 	$roles = getRoleList($db);
 	
 	//Get the achievement list
-	$achievements = getAchivementList($db);
+	$achievements = getAchievementList($db);
 	
 	// List all the CSCs, with the appropriately selected boxes
 	$x=0;
 	if (count($csclist) > 0) {
 		foreach ($csclist as $cscinfo) {
+		$cscid = $cscinfo['csc_id'];
 
 		// Get the access tokens for a given CSC
 		$accesslist = getCSCAccessTokens($cscinfo['csc_id'],$db);
 			
 		$csceditor .= "
 	<tr><td>
-		<input type='hidden' name='cscid".$x."' value='".$cscinfo['csc_id']."'></input>
+		<input type='hidden' name='cscid".$x."' value='".$cscid."'></input>
 		<div id=''><input 
 			type='text' 
 			class='edit' 
 			value='".$cscinfo['character_name']."'
-			name='character_name".$x."' 
+			name='character_name".$cscid."' 
 			onchange='updateCSC()' 
-			id='character_name".$x."' ></input></div>
-		<div id=''>".mkRoleList($roles,$x,$cscinfo['role_id'])."</div>
+			id='character_name".$cscid."' ></input></div>
+		<div id=''>".mkRoleList($roles,$cscid,$cscinfo['role_id'])."</div>
 		</td>
 		<td width=300 height=100>
-			".mkAccessTokenBoxes($cscinfo['csc_id'],$accesslist,$achievements,$x)."
+			".mkAccessTokenBoxes($accesslist,$achievements,$cscid)."
 	</td></tr>
 	<tr><td colspan='2'><hr /></td></tr>";
 
@@ -109,26 +112,6 @@ function getCSCEditor(&$db) {
 		}
 	}
 
-	// Build up the remaining CSC boxes as empty ones.
-/*	for ($x=count($csclist);$x<3;++$x) {
-
-$csceditor .= "
-	<tr><td>
-		<input type='hidden' name='cscid".$x."' value='-1'></input>
-		<div id=''><input 
-			type='text' 
-			class='edit' 
-			value=''
-			name='character_name".$x."' 
-			id='character_name".$x."' ></input></div>
-		<div id=''>".mkRoleList($roles,$x,null)."</div>
-		</td>
-		<td width=300 height=100>
-			".mkAccessTokenBoxes(null,null,$achievements,$x)."
-	</td></tr>
-	<tr><td colspan='2'><hr /></td></tr>";
-	}
-*/
 	$csceditor .= "</table>
 	
 					<input type='submit' value='Save' class='button'>
