@@ -22,4 +22,12 @@ function getDb() {
 	return $db;
 }
 
+function runquery($sql,&$db) {
+	$rslt = mysql_query($sql);
+	if (!$rslt){
+		die("<br /><br />Error: '".mysql_error($db)."' from sql: ".htmlspecialchars($sql));
+	}
+	return $rslt;
+}
+
 ?>

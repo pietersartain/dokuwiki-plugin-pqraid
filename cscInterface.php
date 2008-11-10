@@ -14,6 +14,7 @@ if (isset($_GET['func'])) {
 }
 
 include_once "cscfunc.php";
+include_once "timeFunc.php";
 include_once "connect.php";
 
 // This means we can execute arbitrary PHP code through a querystring.
@@ -39,81 +40,46 @@ function saveCSC() {
 				WHERE csc_id='.$cscid.' 
 				AND player_id="'.$username.'"';
 
-		$rslt = mysql_query($sql);
-		if (!$rslt){
-			die("<br /><br />Error: ".mysql_error($db)." from sql: ".htmlspecialchars($sql));
-		}
-		
-		// Then update the achievement lists
-		
 		// Get the existing CSC access list
-		$accesslist = getCSCAccessTokens($cscinfo['csc_id'],$db);
-		
+		$accesslist = getCSCAccessTokens($cscid,$db);
+
+		// Then update the achievement lists	
 		foreach($achievements as $token) {
 			$achievestr = $cscid.'achievement'.$token['achievement_id'];
-			if (isset($_POST[$achievestr]){
-			// This is a ticked achievement, compare it with the existing:
-				if ($_POST[$achievestr] != $accesslist[$token['achievement_id']]) {
-					// If they don't match, then something needs updating.
-				
-				}
-			}
-	}
-
-/*
-//	global $INFO;
-//	$username = $INFO['client'];
-	$username = $_POST['uname'];
-	$db = getDb();
-	
-	$csclist = getCSCList($username,$db);
-	
-	if (count($csclist) > 3) {
-		die("More than 3 CSCs detected for ".$username.". This is a problem.");
-	} else {
-
-	$updated = 0;
-		for($x=0; $x<3;$x++) {
 			
-			// For each potential CSC,
-			// first check to see if it's one of the ones we grabbed earlier:
-			foreach($csclist as $cscinfo) {
-				if ($cscinfo['csc_id'] == $_POST['cscid'.$x]) {
-					// Match found, it's unlikely anyone's been really screwing with the
-					// signup system, so carry on like it's meant to be ...
-					$sql = 'UPDATE pqr_csc SET 
-							character_name="'.$_POST['character_name'.$x].'" 
-							role_id='.$_POST['rolelist'.$x].' 
-							WHERE csc_id="'.$csc['csc_id'].'" 
-							AND player_id="'.$username.'"';
-			$rslt = mysql_query($sql);
-			if (!$rslt){
-				die("<br /><br />Error: ".mysql_error($db)." from sql: ".htmlspecialchars($sql));
-			} else {
-				++$updated;
-			}
-				}// end match
-			}// end foreach
 			
-			if ($updated > $x) {
-				die("We seem to have updated more than we should ... ");
+			if (isset($_POST[$achievestr])) {
+				$newtoken = 1;
 			} else {
-				// If we've got this far, the CSC hasn't been initialised yet, so
-				// we insert instead of updating:
-				$sql = 'INSERT INTO pqr_csc(character_name,role_id,player_id) 
-					VALUES("'.$_POST['character_name'.$x].'","'.$_POST['rolelist'.$x].'","'.$username.'")';
-				$rslt = mysql_query($sql);
-				if (!$rslt){
-					die("<br /><br />Error: ".mysql_error($db)." from sql: ".htmlspecialchars($sql));
+				$newtoken = 0;
+			}
+			
+			if (isset($accesslist[$token['achievement_id']])) {
+				$oldtoken = 1;
+			} else {
+				$oldtoken = 0;
+			}
+			
+			if ($oldtoken != $newtoken){
+				if ($newtoken && !$oldtoken) {
+					$sql = 'INSERT INTO 
+						pqr_accesstokens(achievement_id,csc_id,set_by,set_when) 
+						VALUES(
+						'.$token['achievement_id'].',
+						'.$cscid.',
+						'.$username.',
+						FROM_UNIXTIME("'.gmnow().'"))';
 				} else {
-					++$updated;
+					$sql = "DELETE FROM pqr_accesstokens WHERE 
+						achievement_id='".$token['achievement_id'].
+						"' AND csc_id='".$cscid."'";
 				}
+				echo $sql."<br />";
+				//runquery($sql,$db);
 			}
-			
-		}// end csc for loop
-	}
-	header("Location:http://".$_SERVER['SERVER_NAME']."/pqdev/csc?purge=true"); */
-}
+		} // foreach
+	} // for
+} // function
 
 function saveCharacter($charid,$cscid) {
 	include_once "connect.php";
@@ -129,10 +95,7 @@ function saveCharacter($charid,$cscid) {
 		}
 	}
 	
-	$rslt = mysql_query($sql);
-	if (!$rslt){
-		die("<br /><br />Error: ".mysql_error($db)." from sql: ".htmlspecialchars($sql));
-	}
+	runquery($sql);
 }
 /*
 function makeWeekEditBox($week,$current_info,$day) {

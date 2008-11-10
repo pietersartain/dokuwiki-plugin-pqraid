@@ -123,3 +123,8 @@ INSERT INTO pqr_achievements(short_name,long_name,icon) VALUES('lvl80','Achieve 
 INSERT INTO pqr_achievements(short_name,long_name,icon) VALUES('lvl80','Achieve level 80','l80.jpg');
 INSERT INTO pqr_achievements(short_name,long_name,icon) VALUES('lvl80','Achieve level 80','l80.jpg');
 INSERT INTO pqr_achievements(short_name,long_name,icon) VALUES('lvl80','Achieve level 80','l80.jpg');
+
+INSERT INTO pqr_accesstokens(achievement_id,csc_id) VALUE(1,1);
+INSERT INTO pqr_accesstokens(achievement_id,csc_id) VALUE(3,1);
+INSERT INTO pqr_accesstokens(achievement_id,csc_id) VALUE(4,1);
+INSERT INTO pqr_accesstokens(achievement_id,csc_id) VALUE(1,3);

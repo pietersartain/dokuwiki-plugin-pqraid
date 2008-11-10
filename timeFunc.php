@@ -28,4 +28,8 @@
 		return mktime(0,0,0,gmdate("m"),gmdate("d"),gmdate("Y"));
 	}
 	
+	function gmnow() {
+		return mktime(gmdate("H"),gmdate("i"),gmdate("s"),gmdate("m"),gmdate("d"),gmdate("Y"));
+	}
+	
 ?>

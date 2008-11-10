@@ -42,11 +42,17 @@ function mkRoleList($roles,$id,$selected) {
 function mkAccessTokenBoxes($accesslist,$achievements,$id) {
 	
 	foreach ($achievements as $at) {
+		if (isset($accesslist[$at['achievement_id']])) {
+			$checked = 'checked';
+		} else {
+			$checked = '';
+		}
+		
 		$tokenboxes .= '<input 
 			type="checkbox" 
 			id="'.$id.'achievement'.$at['achievement_id'].'" 
 			name="'.$id.'achievement'.$at['achievement_id'].'" 
-			'.$lockout.'></input>'.
+			'.$checked.'></input>'.
 			$at['short_name'].$at['long_name'].$at['icon'].'<br />';
 	}
 
@@ -55,12 +61,14 @@ function mkAccessTokenBoxes($accesslist,$achievements,$id) {
 
 function getCSCEditor(&$db) {
 	global $INFO;
+
+	//Acquire the user's name.
+	$username = $INFO['client'];
+
 	$csceditor = "<form id='csceditor' method='POST' action='lib/plugins/pqraid/cscInterface.php?func=saveCSC()'>
 	<input type='hidden' name='uname' value='".$username."'></input>
 
 					<table class='table'>";
-	//Acquire the user's name.
-	$username = $INFO['client'];
 	
 	//Get the CSC list (if any)
 	$csclist = getCSCList($username, $db);

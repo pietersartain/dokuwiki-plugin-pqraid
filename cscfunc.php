@@ -54,8 +54,9 @@ function getCSCAccessTokens($csc,&$db) {
 	if (!$rslt) die('csc access token error: '.mysql_error($db));
 	
 //	$count = 0;
+	$accesslist = null;
 	while ($row = mysql_fetch_array($rslt)){
-		$accesslist[$row['achievement_id']] = 1;
+		$accesslist[$row['achievement_id']] = $row['csc_id'];
 //		$count++;
 	}
 	
