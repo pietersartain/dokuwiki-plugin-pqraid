@@ -205,6 +205,7 @@ $lastday = mktime(0, 0, 0, gmdate("m",getRaidEpoch()), gmdate("d",getRaidEpoch()
 				<input 
 				type="checkbox" 
 				id="'.$loopday.'" 
+				name="'.$loopday.'" 
 				class="calendarcheck" 
 				'.$checked.' 
 				onchange="updateUnavail(this.form);"></input>				
