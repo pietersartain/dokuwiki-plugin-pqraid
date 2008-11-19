@@ -13,6 +13,10 @@ if (isset($_GET['func'])) {
 	$func = null;
 }
 
+include_once "cscfunc.php";
+include_once "timeFunc.php";
+include_once "connect.php";
+
 // This means we can execute arbitrary PHP code through a querystring.
 // This is probably bad ...
 eval($func.";");
@@ -53,8 +57,13 @@ function saveWeekEditBox($week,$new_info,$day) {
 	echo $out;
 }
 
-function showString($string) {
-	echo $string;
+function saveUnavailable() {
+
+	$username = $_POST['uname'];
+	$db = getDb();
+	
+	print_r($_POST);
+
 }
 
 ?>

@@ -5,8 +5,70 @@
 	date:	21/10/2008
 */
 
-// We keeep a variable up here to save calling the function every request on the same page.
+// Some variables that we need to keep fresh and available.
 var xmlHttp;
+var timerID = 0;
+
+/****************
+ *  CSC Editor  *
+ ****************/
+function updateCSC(fobj){
+	updateDivText('saveinfo','Unsaved ...','unsaved');
+	if (timerID != 0) {
+		clearTimeout(timerID);
+	}
+	timerID = setTimeout(function(){saveCSC(fobj);fobj=null},4000);		
+}
+
+function saveCSC(fobj){
+	updateDivText('saveinfo','Saving ...','unsaved');
+	
+	//Build a parameter list from the form elements
+	var params = getForm(fobj);
+	
+	ajaxPost('cscInterface.php?func=saveCSC()',params,null,'updateDivText(\"saveinfo\",\"Saved.\",\"saved\")');
+	//ajaxPost('cscInterface.php?func=saveCSC()',params,'saveinfo',null);	
+	clearTimeout(timerID);
+}
+
+/**************
+ *  Calendar  *
+ **************/
+function updateUnavail(fobj){
+	updateDivText('saveinfo','Unsaved ...','unsaved');
+	if (timerID != 0) {
+		clearTimeout(timerID);
+	}
+	timerID = setTimeout(function(){saveUnavail(fobj);fobj=null},2000);		
+}
+
+function saveUnavail(fobj){
+	updateDivText('saveinfo','Saving ...','unsaved');
+	
+	//Build a parameter list from the form elements
+	var params = getForm(fobj);
+	var rstr = 'calendarInterface.php?func=saveUnavailable()';
+	//ajaxPost(rstr,params,null,'updateDivText(\"saveinfo\",\"Saved.\",\"saved\")');
+	ajaxPost(rstr,params,'saveinfo',null);	
+	clearTimeout(timerID);
+}	
+
+function makeEditBox(week_num,week_info,id) {
+	//ajax('calendarInterface.php','showString(\'Loading ...\')',id,null);
+	updateDivText(id,'Loading ...',null);
+	ajax('calendarInterface.php','makeWeekEditBox(\''+week_num+'\',\''+week_info+'\',\''+id+'\')',id,"document.getElementById('editWeekBox'+id).focus()");
+}
+
+function saveEditBox(week_num,id) {
+	var new_info = document.getElementById('editWeekBox'+id).value;
+	//ajax('calendarInterface.php','showString(\'Saving ...\')',id,null);
+	updateDivText(id,'Saving ...',null);
+	ajax('calendarInterface.php','saveWeekEditBox(\''+week_num+'\',\''+new_info+'\',\''+id+'\')',id,null);
+}
+
+/**********************
+ *  HELPER FUNCTIONS  *
+ **********************/
 
 // A mouse over function. Used for rollover classes
 function mover(tDiv,theclass) {
@@ -77,52 +139,9 @@ function getForm(fobj) {
 	return str;  
 }
 
-// Functions for the csceditor
-var timerID = 0;
-function updateCSC(fobj){
-	updateDivText('saveinfo','Unsaved ...','unsaved');
-	if (timerID != 0) {
-		clearTimeout(timerID);
-	}
-	timerID = setTimeout(function(){saveCSC(fobj);fobj=null},4000);		
-}
-
-function saveCSC(fobj){
-	updateDivText('saveinfo','Saving ...','unsaved');
-	
-	//Build a parameter list from the form elements
-	var params = getForm(fobj);
-	
-	//ajaxPost('cscInterface.php?func=saveCSC()',params,null,'updateDivText(\"saveinfo\",\"Saved.\",\"saved\")');
-	ajaxPost('cscInterface.php?func=saveCSC()',params,'saveinfo',null);	
-	clearTimeout(timerID);
-}
-
-function unlockAchievements(id){
-	var char_id = document.getElementById('charlist'+id).value;
-	var role_id = document.getElementById('rolelist'+id).value;
-	
-	if ((char_id == '-1') || (role_id == '-1')) {
-		// CSC is unset, lock the achievements
-	} else {
-		// Both character & role are set, thus a CSC exists
-	}
-}
-
-// Functions for the calendar interface
-function makeEditBox(week_num,week_info,id) {
-	//ajax('calendarInterface.php','showString(\'Loading ...\')',id,null);
-	updateDivText(id,'Loading ...',null);
-	ajax('calendarInterface.php','makeWeekEditBox(\''+week_num+'\',\''+week_info+'\',\''+id+'\')',id,"document.getElementById('editWeekBox'+id).focus()");
-}
-
-function saveEditBox(week_num,id) {
-	var new_info = document.getElementById('editWeekBox'+id).value;
-	//ajax('calendarInterface.php','showString(\'Saving ...\')',id,null);
-	updateDivText(id,'Saving ...',null);
-	ajax('calendarInterface.php','saveWeekEditBox(\''+week_num+'\',\''+new_info+'\',\''+id+'\')',id,null);
-}
-
+/****************
+ *  AJAX HOOKS  *
+ ****************/
 // The major ajax function, used to call files to change content dynamically.
 function ajax(file,func,id,posthook) { 
 	xmlHttp=GetXmlHttpObject();

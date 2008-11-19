@@ -38,4 +38,28 @@ function getWeekInfo($minWeek,$maxWeek,&$db) {
 	
 	return $week_info;
 }
+
+// Return the number of players with at least one valid CSC
+function getCSCNumber(&$db) {
+	$rslt = mysql_query("SELECT DISTINCT(player_id) FROM pqr_csc WHERE (role_id > 0 AND CHAR_LENGTH(character_name) > 0)");
+	if (!$rslt) die("csc distinct failure: ".mysql_error($db));
+	return mysql_num_rows($rslt);
+}
+
+// Return an array of unavailability information
+function getUnavailable(&$db,$start,$end) {
+
+	$sql = "SELECT * FROM pqr_unavail WHERE 
+		unavail > FROM_UNIXTIME(".weektoDate($start).") AND 
+		unavail < FROM_UNIXTIME(".weekToDate($end).") AND
+		player_id = '".$player."'";	
+
+	$rslt = mysql_query($sql);
+
+	if (!$rslt) die("unavail failure: ".mysql_error($db));
+	return mysql_num_rows($rslt);
+}
+
+
+
 ?>

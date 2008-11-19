@@ -68,7 +68,10 @@ a:hover
 	background: #606060;
 	}
 
-.availcell {}
+.availcell {
+	float: left;
+	width: 20%;
+}
 
 .weekscroller td {
 		text-align: center;
@@ -145,4 +148,15 @@ div.unsaved {
 div.saved {
 	border: 1px solid green;
 	background: #99FF99;
+}
+
+input.achievementcheck {
+	margin: 0px;
+	padding: 0px;
+	position: relative;
+	right: 17px;
+}
+
+img.achievementcheck {
+	position: relative;
 }

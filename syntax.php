@@ -72,7 +72,7 @@ class syntax_plugin_pqraid extends DokuWiki_Syntax_Plugin {
 						$week = $_GET['week'];
 					} else {
 						// Set it to the current week, relative to the raiding epoch
-						$week = dateToWeek(time());
+						$week = dateToWeek(getToday());
 					}
 					$renderer->doc .= getCalendar($week,$INFO['perm'],getDb());
 					break;

@@ -23,7 +23,7 @@ eval($func.";");
 
 function saveCSC() {
 
-	print_r($_POST);
+	//print_r($_POST);
 	$username = $_POST['uname'];
 	$db = getDb();
 	
@@ -39,6 +39,9 @@ function saveCSC() {
 				role_id = "'.$_POST['rolelist'.$cscid].'" 
 				WHERE csc_id='.$cscid.' 
 				AND player_id="'.$username.'"';
+
+		//echo $sql."<br />";
+		runquery($sql,$db);
 
 		// Get the existing CSC access list
 		$accesslist = getCSCAccessTokens($cscid,$db);
@@ -67,22 +70,23 @@ function saveCSC() {
 						VALUES(
 						'.$token['achievement_id'].',
 						'.$cscid.',
-						'.$username.',
+						"'.$username.'",
 						FROM_UNIXTIME("'.gmnow().'"))';
 				} else {
 					$sql = "DELETE FROM pqr_accesstokens WHERE 
 						achievement_id='".$token['achievement_id'].
 						"' AND csc_id='".$cscid."'";
 				}
-				echo $sql."<br />";
-				//runquery($sql,$db);
+				//echo $sql."<br />";
+				runquery($sql,$db);
 			}
 		} // foreach
 	} // for
 } // function
 
+// Pretty sure this has been deprecated. Commented out until something breaks.
+/*
 function saveCharacter($charid,$cscid) {
-	include_once "connect.php";
 	$db = getDb();
 
 	if ($cscid == 'null') {
@@ -97,45 +101,6 @@ function saveCharacter($charid,$cscid) {
 	
 	runquery($sql);
 }
-/*
-function makeWeekEditBox($week,$current_info,$day) {
-	echo '
-	<div>
-	Week '.$week.': <input type="text" value="'.$current_info.'" id="editWeekBox'.$day.'" onblur="saveEditBox(\''.$week.'\',\''.$day.'\')" />
-	</div>';
-}
-
-function saveWeekEditBox($week,$new_info,$day) {
-
-	include_once "connect.php";
-	$db = getDb();
-
-	if (strlen($new_info) == 0) {
-		$sql = "DELETE FROM pqr_weeks WHERE week_num=".$week;
-	} else {
-		$rslt = mysql_query("SELECT info FROM pqr_weeks WHERE week_num=".$week);
-		if (mysql_num_rows($rslt) > 0) {
-			$sql = "UPDATE pqr_weeks SET info='".$new_info."' WHERE week_num=".$week;
-		} else {
-			$sql = "INSERT INTO pqr_weeks(week_num,info) VALUES(".$week.",'".$new_info."')";			
-		}
-	}
-	
-	$rslt = mysql_query($sql);
-	if (!$rslt){
-		die("<br /><br />Error: ".mysql_error($db)." from sql: ".htmlspecialchars($sql));
-	}
-	
-	$out='
-	<div onclick="makeEditBox(\''.$week.'\', \''.$new_info.'\',\''.$day.'\')">
-	Week '.$week.': '.$new_info.'
-	</div>';
-	
-	echo $out;
-}
-
-function showString($string) {
-	echo $string;
-}
 */
+
 ?>

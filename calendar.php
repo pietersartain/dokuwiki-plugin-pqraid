@@ -24,6 +24,7 @@ function add_querystring_var($url, $key, $value) {
 }
 
 function getCalendar($week,$permission,&$db) {
+	global $INFO;
 	
 // Parse the authentication function passed to $permission.
     
@@ -32,6 +33,14 @@ function getCalendar($week,$permission,&$db) {
 	} else {
 		$isadmin = false;	
 	}
+	
+	if($permission > 2){
+		$islogged = true;
+	} else {
+		$islogged = false;
+	}
+
+	$username = $INFO['client'];
 
 // Get week information:
 $week_info = getWeekInfo($week-1,$week+3,$db);
@@ -41,9 +50,19 @@ $fqn[1] = add_querystring_var(THISPAGE,"week",($week-1));
 $fqn[2] = add_querystring_var(THISPAGE,"week",($week+1));
 $fqn[3] = add_querystring_var(THISPAGE,"week","52");
 
+// How many players do we have with at least one valid (name + role) CSC
+$totalplayers = getCSCNumber($db);
+// Return an array of unavailability information for the logged in player.
+// This will determine what checkboxes are unticked for their display.
+$unavailable = getUnavailable($db,$week-1,$week+3);
 
 	// Calendar header
-	$calendar='	
+	$calendar='
+		
+		<form id="calendarform" method="POST" 
+		action="lib/plugins/praid/calendarInterface.php?func=saveUnavailable()">
+		<input type="hidden" name="uname" value="'.$username.'"></input>
+
 		<table id="calendar">
 			<tr class="weekscroller">
 				<td><a href="'.$fqn[0].'">|&lt;</a></td>
@@ -61,6 +80,8 @@ $fqn[3] = add_querystring_var(THISPAGE,"week","52");
 				<th>Sa</th>
 				<th>Su</th>
 			';
+// Debug info
+//	echo "Const: ".$week." : ".getToday()." : ".getRaidEpoch()."<br>";
 
 	for ($days=-7;$days<21;$days++) {
 
@@ -70,11 +91,26 @@ $fqn[3] = add_querystring_var(THISPAGE,"week","52");
 		// -3			-- a constant to align the epoch to a Monday
 		$loopday = mktime(0, 0, 0, gmdate("m",getRaidEpoch()), gmdate("d",getRaidEpoch())+$days+($week*7)-3, gmdate("Y",getRaidEpoch()));
 
+
+// More debug info
+/*		$dbg = $loopday." | ".date("w",$loopday)." | ".($days+($week*7)-3)." : ".dateToWeek($loopday)."<br />";
+		if ($loopday == getToday()) {
+			echo "<b>".$dbg."</b>";
+		} else {
+			echo $dbg;
+		}
+*/
+
 		if (($days % 7) == 0) {
 			
 			$calendar.='</tr>';
 			
 			$week_num = dateToWeek($loopday);
+
+			// And yet more debug
+			/*
+			$dbg = $week_num." : ".date("m:d:Y",weekToDate($week_num))." : ".dateToWeek(weekToDate($week_num))."<br>";
+			echo $dbg; */
 			
 			// Week information
 			if ($isadmin){
@@ -124,17 +160,34 @@ $fqn[3] = add_querystring_var(THISPAGE,"week","52");
 		// date
 		$calendar.='<div class="datecell">'.date('M j',$loopday).'</div>';
 
-		if ($playerAuth[0]) {
+		if ($isadmin) {
 			// admin
 			$calendar.='
 			<div class="admincell">
-				<input type="checkbox" checked="checked" />
-			</div>
-			
-			<div class="availcell">
 				
-			</div>
-			';
+			</div>';
+		}
+		
+		if ($islogged) {
+			// User
+			
+			if (isset($unavailable[$loopday])) {
+				$checked = '';
+			} else {
+				$checked = 'checked';
+			}
+
+			$calendar.='
+			<div class="availcell">
+				<input 
+				type="checkbox" 
+				id="'.$loopday.'" 
+				name="'.$loopday.'" 
+				class="calendarcheck" 
+				'.$checked.' 
+				onchange="updateUnavail(this.form)"></input> '.
+				($totalplayers-$unavailable).'/'.$totalplayers.'
+			</div>';
 		}
 
 		// raids
@@ -151,7 +204,10 @@ $fqn[3] = add_querystring_var(THISPAGE,"week","52");
 	}
 	
 	// Calendar footer
-	$calendar.='</tr></table>';
+	$calendar.='</tr></table></form>
+	<br />
+	<div id="saveinfo" class="saved">Saved.</div>
+	';
 	
 	// Lightbox 
 	$calendar.='

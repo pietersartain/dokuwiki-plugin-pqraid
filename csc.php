@@ -39,8 +39,9 @@ function mkRoleList($roles,$id,$selected) {
 	return $rolelist;
 }
 
-function mkAccessTokenBoxes($accesslist,$achievements,$id) {
+function mkAccessTokenBoxes($accesslist,$achievements,$id,$width) {
 	
+	$count = 1;
 	foreach ($achievements as $at) {
 		if (isset($accesslist[$at['achievement_id']])) {
 			$checked = 'checked';
@@ -48,12 +49,25 @@ function mkAccessTokenBoxes($accesslist,$achievements,$id) {
 			$checked = '';
 		}
 		
-		$tokenboxes .= '<input 
+		$tokenboxes .= '
+		
+		<img src="lib/plugins/pqraid/images/'.$at['icon'].'" 
+			title="'.$at['long_name'].'" class="achievementcheck"></img>
+		
+			<input 
 			type="checkbox" 
 			id="'.$id.'achievement'.$at['achievement_id'].'" 
 			name="'.$id.'achievement'.$at['achievement_id'].'" 
-			'.$checked.'></input>'.
-			$at['short_name'].$at['long_name'].$at['icon'].'<br />';
+			class="achievementcheck"
+			'.$checked.' 
+			onchange="updateCSC(this.form)"></input>';
+
+		if($count==$width) { 
+			$tokenboxes .= '<br></br>'; 
+			$count = 0;
+		}
+		
+		$count++;
 	}
 
 	return $tokenboxes;
@@ -100,20 +114,24 @@ function getCSCEditor(&$db) {
 		$accesslist = getCSCAccessTokens($cscinfo['csc_id'],$db);
 			
 		$csceditor .= "
-	<tr><td>
+	<tr>
+		<td>
 		<input type='hidden' name='cscid".$x."' value='".$cscid."'></input>
 		<div id=''><input 
 			type='text' 
 			class='edit' 
 			value='".$cscinfo['character_name']."'
 			name='character_name".$cscid."' 
-			onchange='updateCSC()' 
-			id='character_name".$cscid."' ></input></div>
-		<div id=''>".mkRoleList($roles,$cscid,$cscinfo['role_id'])."</div>
+			onchange='updateCSC(this.form)' 
+			id='character_name".$cscid."' ></input>
+			".mkRoleList($roles,$cscid,$cscinfo['role_id'])."</div>
 		</td>
-		<td width=300 height=100>
-			".mkAccessTokenBoxes($accesslist,$achievements,$cscid)."
-	</td></tr>
+	</tr>
+	<tr>
+		<td>
+			".mkAccessTokenBoxes($accesslist,$achievements,$cscid,8)."
+		</td>
+	</tr>
 	<tr><td colspan='2'><hr /></td></tr>";
 
 			++$x;
@@ -122,7 +140,7 @@ function getCSCEditor(&$db) {
 
 	$csceditor .= "</table>
 	
-					<input type='submit' value='Save' class='button'>
+					<!--//<input type='submit' value='Save' class='button'>//-->
 					<div id='saveinfo' class='saved'>Saved.</div>
 					</form>";
 	return $csceditor;

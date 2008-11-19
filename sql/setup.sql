@@ -124,7 +124,15 @@ INSERT INTO pqr_achievements(short_name,long_name,icon) VALUES('lvl80','Achieve 
 INSERT INTO pqr_achievements(short_name,long_name,icon) VALUES('lvl80','Achieve level 80','l80.jpg');
 INSERT INTO pqr_achievements(short_name,long_name,icon) VALUES('lvl80','Achieve level 80','l80.jpg');
 
-INSERT INTO pqr_accesstokens(achievement_id,csc_id) VALUE(1,1);
-INSERT INTO pqr_accesstokens(achievement_id,csc_id) VALUE(3,1);
-INSERT INTO pqr_accesstokens(achievement_id,csc_id) VALUE(4,1);
-INSERT INTO pqr_accesstokens(achievement_id,csc_id) VALUE(1,3);
+INSERT INTO pqr_csc(player_id,character_name,role_id) VALUES('eritha','Eritha',2);
+INSERT INTO pqr_csc(player_id,character_name,role_id) VALUES('eritha','Phee',1);
+INSERT INTO pqr_csc(player_id,character_name,role_id) VALUES('eritha','',-1);
+INSERT INTO pqr_csc(player_id,character_name,role_id) VALUES('owan','Kilvanis',3);
+INSERT INTO pqr_csc(player_id,character_name,role_id) VALUES('owan','Tarathel',2);
+INSERT INTO pqr_csc(player_id,character_name,role_id) VALUES('owan','',-1);
+INSERT INTO pqr_csc(player_id,character_name,role_id) VALUES('jason','',2);
+INSERT INTO pqr_csc(player_id,character_name,role_id) VALUES('jason','Geoff',-1);
+INSERT INTO pqr_csc(player_id,character_name,role_id) VALUES('jason','',-1);
+INSERT INTO pqr_csc(player_id,character_name,role_id) VALUES('grace','Rashir',1);
+INSERT INTO pqr_csc(player_id,character_name,role_id) VALUES('grace','Kaethlin',2);
+INSERT INTO pqr_csc(player_id,character_name,role_id) VALUES('grace','LittleTimmy',3);
