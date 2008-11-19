@@ -187,14 +187,19 @@ $lastday = mktime(0, 0, 0, gmdate("m",getRaidEpoch()), gmdate("d",getRaidEpoch()
 			// Graphical display of the number of people who are unavailable
 			// As a percentage of 10:
 			$unav = floor(getDailyUnavail($db,$loopday)/10*100);
+			
+			$av = floor(($totalplayers-getDailyUnavail($db,$loopday))/10*100);
 
-			$unavT = floor(getDailyUnavail($db,$loopday)/$totalplayers*100);
+			//$unavT = floor(getDailyUnavail($db,$loopday)/$totalplayers*100);
 
 			$calendar.='
 			<div class="availcell">
 
 				<div class="totalplayers">
-					<div class="unavailplayers" style="height: '.$unav.'%;">&nbsp;</div>
+					<div class="availplayers" style="height: '.$av.'%;">
+					&nbsp;</div>
+					<div class="unavailplayers" style="height: '.$unav.'%;">
+					&nbsp;</div>
 				</div>
 
 				<input 

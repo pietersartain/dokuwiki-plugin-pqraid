@@ -96,13 +96,17 @@ div.over {
 div.out {}
 
 div.totalplayers {
-	background: green;
+	background: __background_alt__;
 	width: 13px;
 	height: 80px;
 	}
 
 div.unavailplayers {
-	background: __background_alt__;
+	background: red;
+	}
+
+div.availplayers {
+	background: green;
 	}
 
 #editWeekBoxweekinfo0 {
