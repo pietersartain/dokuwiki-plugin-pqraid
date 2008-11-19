@@ -48,10 +48,25 @@ function saveUnavail(fobj){
 	//Build a parameter list from the form elements
 	var params = getForm(fobj);
 	var rstr = 'calendarInterface.php?func=saveUnavailable()';
-	//ajaxPost(rstr,params,null,'updateDivText(\"saveinfo\",\"Saved.\",\"saved\")');
-	ajaxPost(rstr,params,'saveinfo',null);	
+	ajaxPost(rstr,params,null,'updateDivText(\"saveinfo\",\"Saved.\",\"saved\")');
+//	ajaxPost(rstr,params,'saveinfo',null);
 	clearTimeout(timerID);
-}	
+}
+
+// This was used to try and rewrite all the availability information after a
+// local ajax update. It didn't work well. Deprecated.
+/*
+function updateUnavailDisplay(start,end) {
+
+	var rstr = 'calendarInterface.php';
+
+	// 86400 = 1 day in seconds
+	for(var days=start;days<end; days=days+86400) {
+		fstr = 'updateUnavailDisplay(\''+days+'\')';
+		ajax(rstr,fstr,days+"box",null);
+	}
+}
+*/
 
 function makeEditBox(week_num,week_info,id) {
 	//ajax('calendarInterface.php','showString(\'Loading ...\')',id,null);

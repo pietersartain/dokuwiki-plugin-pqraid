@@ -22,37 +22,37 @@ a:hover
 }
 
 #calendar {
-	border: 1px solid purple;
+	border: 1px solid __border__;
 	border-collapse: collapse;
 	border-spacing: 0px;
 	margin: 0px auto;
 	}
 
 #calendar th {
-	background: silver;
-	border: 1px outset blue;}
+	background: __background_other__;
+	border: 0px;
+	}
 
 .weekinfo {
-	background: red; 
+	background: __background_alt__; 
 	font-size: 0.9em;
 	}
 
 .cell {
-	background: #808080;
+	background: __background__;
 	width: 100px; 
-	height: 120px; 
+	height: 100px; 
 	padding: 0px; 
-	border: 1px dashed black; 
+	border: 1px solid __border__; 
 	margin: 0px;
 	vertical-align: top;
 	}
 
 .cell.today {
-	background: yellow;
+	background: __highlight__;
 	}
 
 .datecell {
-	background: #606060;
 	width: 65%;
 	float: left;
 	margin: 3px;
@@ -60,21 +60,31 @@ a:hover
 	}
 
 .admincell {
-	float: left;
+	float: none;
 	width: 20%;
 	}
 
 .raidcell {
-	background: #606060;
+	float: none;
 	}
 
 .availcell {
-	float: left;
-	width: 20%;
-}
+	float: right;
+	width: 13px;
+	margin: 2px 2px 1px 0px;
+	}
+
+.calendarcheck {
+	border: 1px solid black;
+	}
 
 .weekscroller td {
 		text-align: center;
+	}
+
+#calendar input {
+	border: 1px solid __text_alt__;
+	font-size: 0.9em;
 	}
 
 div.over {
@@ -82,7 +92,18 @@ div.over {
 	font-size: 0.9em;
 	cursor: text;
 	}
+
 div.out {}
+
+div.totalplayers {
+	background: green;
+	width: 13px;
+	height: 80px;
+	}
+
+div.unavailplayers {
+	background: __background_alt__;
+	}
 
 #editWeekBoxweekinfo0 {
 	width: 450px;

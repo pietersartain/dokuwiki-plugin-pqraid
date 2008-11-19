@@ -54,7 +54,12 @@ $fqn[3] = add_querystring_var(THISPAGE,"week","52");
 $totalplayers = getCSCNumber($db);
 // Return an array of unavailability information for the logged in player.
 // This will determine what checkboxes are unticked for their display.
-$unavailable = getUnavailable($db,$week-1,$week+3);
+$unavailable = getUnavailable($db,$week-1,$week+3,$username);
+
+// Start and end dates, used for ajax display updates:
+$firstday = mktime(0, 0, 0, gmdate("m",getRaidEpoch()), gmdate("d",getRaidEpoch())-7+($week*7)-3, gmdate("Y",getRaidEpoch()));
+
+$lastday = mktime(0, 0, 0, gmdate("m",getRaidEpoch()), gmdate("d",getRaidEpoch())+21+($week*7)-3, gmdate("Y",getRaidEpoch()));
 
 	// Calendar header
 	$calendar='
@@ -62,6 +67,8 @@ $unavailable = getUnavailable($db,$week-1,$week+3);
 		<form id="calendarform" method="POST" 
 		action="lib/plugins/praid/calendarInterface.php?func=saveUnavailable()">
 		<input type="hidden" name="uname" value="'.$username.'"></input>
+		<input type="hidden" name="start" value="'.($week-1).'"></input>
+		<input type="hidden" name="end" value="'.($week+3).'"></input>
 
 		<table id="calendar">
 			<tr class="weekscroller">
@@ -176,18 +183,29 @@ $unavailable = getUnavailable($db,$week-1,$week+3);
 			} else {
 				$checked = 'checked';
 			}
+			
+			// Graphical display of the number of people who are unavailable
+			// As a percentage of 10:
+			$unav = floor(getDailyUnavail($db,$loopday)/10*100);
+
+			$unavT = floor(getDailyUnavail($db,$loopday)/$totalplayers*100);
 
 			$calendar.='
 			<div class="availcell">
+
+				<div class="totalplayers">
+					<div class="unavailplayers" style="height: '.$unav.'%;">&nbsp;</div>
+				</div>
+
 				<input 
 				type="checkbox" 
 				id="'.$loopday.'" 
-				name="'.$loopday.'" 
 				class="calendarcheck" 
 				'.$checked.' 
-				onchange="updateUnavail(this.form)"></input> '.
-				($totalplayers-$unavailable).'/'.$totalplayers.'
-			</div>';
+				onchange="updateUnavail(this.form);"></input>				
+				
+			</div>
+			';
 		}
 
 		// raids

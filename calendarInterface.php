@@ -13,7 +13,7 @@ if (isset($_GET['func'])) {
 	$func = null;
 }
 
-include_once "cscfunc.php";
+include_once "calendarFunc.php";
 include_once "timeFunc.php";
 include_once "connect.php";
 
@@ -61,9 +61,68 @@ function saveUnavailable() {
 
 	$username = $_POST['uname'];
 	$db = getDb();
-	
-	print_r($_POST);
 
+	print_r($_POST);
+	
+	// Get the players existing information
+	$unavail = getUnavailable($db,$_POST['start'],$_POST['end'],$username);
+	
+	// The current week, for sanity we'll use the same var as calendar.
+	$week = (int)$_POST['start'] +1;
+	
+	for ($days=-7;$days<21;$days++) {
+		// The loopday is all relative to the raiding epoch
+		//	+$days		-- iterates through 28 cells only
+		// +($week*7)	-- allows viewing to cycle by week, not day
+		// -3			-- a constant to align the epoch to a Monday
+		$loopday = mktime(0, 0, 0, gmdate("m",getRaidEpoch()), gmdate("d",getRaidEpoch())+$days+($week*7)-3, gmdate("Y",getRaidEpoch()));
+		
+		// Convert both the form and unavail information into easier
+		// variables, for comparison later on.
+		
+		// Form information is backwards, because we care about what's NOT set.
+		if (isset($_POST[$loopday])) {
+			// Available, make no database entries (delete)
+			$newtoken = 0;
+		} else {
+			// Unavailable
+			$newtoken = 1;
+		}
+		
+		// Database information contains when people are NOT available
+		if (isset($unavail[$loopday])) {
+			// Unavailable
+			$oldtoken = 1;
+		} else {
+			$oldtoken = 0;
+		}
+		
+		if ($oldtoken != $newtoken){
+			// If the tokens are not the same, some change has been elicited
+			if ($newtoken && !$oldtoken) {
+				$sql = "INSERT INTO
+					pqr_unavail(player_id,unavail) 
+					VALUES('".$username."',FROM_UNIXTIME(".$loopday."))";
+			} else {
+				$sql = "DELETE FROM pqr_unavail WHERE
+					unavail=FROM_UNIXTIME(".$loopday.") AND 
+					player_id='".$username."'";
+			}
+//			echo $sql."<br>";
+			runquery($sql,$db);
+		}
+
+	} // for
+} // function
+
+
+// This was used to try and rewrite all the availability information after a
+// local ajax update. It didn't work well. Deprecated.
+/*
+function updateUnavailDisplay($day) {
+	$db = getDb();
+	echo getDailyUnavail($db,$day);
 }
+*/
 
 ?>
