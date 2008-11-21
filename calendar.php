@@ -166,15 +166,15 @@ $lastday = mktime(0, 0, 0, gmdate("m",getRaidEpoch()), gmdate("d",getRaidEpoch()
 		
 		// date
 		$calendar.='<div class="datecell">'.date('M j',$loopday).'</div>';
-
+		
 		if ($isadmin) {
 			// admin
 			$calendar.='
 			<div class="admincell">
-				
+				<a href="">[+]</a>
 			</div>';
 		}
-		
+
 		if ($islogged) {
 			// User
 			
@@ -215,8 +215,32 @@ $lastday = mktime(0, 0, 0, gmdate("m",getRaidEpoch()), gmdate("d",getRaidEpoch()
 		}
 
 		// raids
-		$calendar.='<div class="raidcell" onclick="boxit(\'in\')">Raids</div>';
+		$raid_info = getRaids($db,$loopday);
+		if (count($raid_info) > 0) {
+		
+			$calendar.='<div class="raidcell">';
 
+			foreach($raid_info as $raid) {
+			
+				$calendar.='<div class="tooltip" id="tip'.$raid['raid_id'].'">
+				'.$raid['name'].'<br>
+				'.$raid['info'].'<br>
+				</div>';
+			
+				$calendar.='
+				<img 
+					src="lib/plugins/pqraid/images/'.$raid['icon'].'" 
+					onmouseover="showtip(\'tip'.$raid['raid_id'].'\');" 
+					onmouseout="hidetip(\'tip'.$raid['raid_id'].'\');"
+					onclick="showRaid(\''.$raid['raid_id'].'\')" 
+					alt="'.$raid['name'].'" 
+					title="'.$raid['name'].'" 
+				></img>';
+			}
+
+			$calendar.='</div>';
+			
+		}
 
 		// Cell footer
 		$calendar.='</td>';

@@ -69,6 +69,7 @@ function getUnavailable(&$db,$start,$end,$player) {
 	return $unavail;
 }
 
+// Return the number of unavailable, but eligible-to-raid (valid CSC), players.
 function getDailyUnavail(&$db,$day) {
 	$sql = "SELECT DISTINCT(pqr_unavail.player_id) FROM pqr_unavail 
 		JOIN pqr_csc ON pqr_csc.player_id = pqr_unavail.player_id 
@@ -77,6 +78,23 @@ function getDailyUnavail(&$db,$day) {
 	$rslt = mysql_query($sql);
 	if (!$rslt) die("daily unavail failure: ".mysql_error($db));
 	return mysql_num_rows($rslt);
+}
+
+// Return an array of raids for a given day
+function getRaids(&$db,$day) {
+
+	$sql = "SELECT raid_id,info,name,icon,raid_oclock FROM pqr_raids WHERE DATE(raid_oclock) = '".date("Y-m-d",$day)."'";
+
+	$rslt = mysql_query($sql);
+	if (!$rslt) die("get raids failure: ".mysql_error($db));
+	
+	if (mysql_num_rows($rslt) > 0) {	
+		while ($row = mysql_fetch_array($rslt)) {
+			$raid_info[$row['raid_id']] = $row;
+		}
+	}
+	
+	return $raid_info;
 }	
 
 ?>

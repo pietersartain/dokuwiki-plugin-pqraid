@@ -48,9 +48,14 @@ function saveUnavail(fobj){
 	//Build a parameter list from the form elements
 	var params = getForm(fobj);
 	var rstr = 'calendarInterface.php?func=saveUnavailable()';
-	ajaxPost(rstr,params,null,'updateDivText(\"saveinfo\",\"Saved.\",\"saved\")');
+	ajaxPost(rstr,params,null,'updateDivText(\"saveinfo\",\"Saved. Refresh the page to update the availability information.\",\"saved\")');
 //	ajaxPost(rstr,params,'saveinfo',null);
 	clearTimeout(timerID);
+}
+
+function showRaid(raid_id){
+	boxit('in');
+	ajax('calendarInterface.php','showRaid(\''+raid_id+'\')','light',null);
 }
 
 // This was used to try and rewrite all the availability information after a
@@ -85,6 +90,39 @@ function saveEditBox(week_num,id) {
  *  HELPER FUNCTIONS  *
  **********************/
 
+// Mouseover tooltip code, largely ripped from tooltip.js:
+// http://www.gerd-tentler.de/tools/
+function showtip(thisid) {
+	getMouseXY;
+	var obj = document.getElementById(thisid);
+//	obj.style.left = mouseX;
+//	obj.style.top = mouseY;
+	obj.style.left = (mouseX+5)+'px';
+	obj.style.top = (mouseY+5)+'px';
+	obj.style.visibility = 'visible';
+}
+
+function hidetip(thisid) {
+	var obj = document.getElementById(thisid);
+	obj.style.visibility = 'hidden';
+}
+
+function getMouseXY(e) {
+	if(e && e.pageX != null) {
+		mouseX = e.pageX;
+		mouseY = e.pageY;
+	}
+	else if(event && event.clientX != null) {
+		mouseX = event.clientX + getScrX();
+		mouseY = event.clientY + getScrY();
+	}
+		if(mouseX < 0) mouseX = 0;
+		if(mouseY < 0) mouseY = 0;
+}
+
+var mouseX = mouseY = 0;
+document.onmousemove = getMouseXY;
+
 // A mouse over function. Used for rollover classes
 function mover(tDiv,theclass) {
 	//var theDiv = document.getElementById(tDiv);
@@ -98,8 +136,8 @@ function boxit(btype) {
 		document.getElementById('fade').style.display='block';
 	} else {
 		document.getElementById('light').style.display='none';
-		document.getElementById("light").innerHTML='Loading ... ';
 		document.getElementById('fade').style.display='none';
+		document.getElementById("light").innerHTML='Loading ... ';
 	}
 }
 

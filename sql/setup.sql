@@ -58,8 +58,7 @@ CREATE TABLE pqr_raids (
 	icon varchar(64),
 	raid_oclock datetime,
 	slots integer,
-	poster integer,
-	freeze integer);
+	poster integer);
 
 -- Raid restrictions list: raid/achievement join table
 DROP TABLE IF EXISTS pqr_raidaccess;
@@ -136,3 +135,6 @@ INSERT INTO pqr_csc(player_id,character_name,role_id) VALUES('jason','',-1);
 INSERT INTO pqr_csc(player_id,character_name,role_id) VALUES('grace','Rashir',1);
 INSERT INTO pqr_csc(player_id,character_name,role_id) VALUES('grace','Kaethlin',2);
 INSERT INTO pqr_csc(player_id,character_name,role_id) VALUES('grace','LittleTimmy',3);
+
+INSERT INTO pqr_raids(name,info,icon,raid_oclock,slots,poster)
+VALUES('Kara','Some info here','mystery.png',DATE('2008-11-20 18:00:00'),10,'eritha');

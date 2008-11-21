@@ -59,10 +59,7 @@ class syntax_plugin_pqraid extends DokuWiki_Syntax_Plugin {
 		global $INFO;
 	
 		include_once "connect.php";
-		include_once "timeFunc.php";
-		include_once "borderFunc.php";
-		include_once "calendar.php";
-		include_once "csc.php";
+//		include_once "borderFunc.php";
 
 		if($mode == 'xhtml'){
 			switch ($data) {
@@ -72,13 +69,20 @@ class syntax_plugin_pqraid extends DokuWiki_Syntax_Plugin {
 						$week = $_GET['week'];
 					} else {
 						// Set it to the current week, relative to the raiding epoch
+						include_once "timeFunc.php";
 						$week = dateToWeek(getToday());
 					}
+					include_once "calendar.php";
 					$renderer->doc .= getCalendar($week,$INFO['perm'],getDb());
 					break;
 				case "csceditor":
+					include_once "csc.php";
 					$renderer->doc .= getCSCEditor(getDb());
-				break;
+					break;
+				case "achievements":
+					include_once "achievements.php";
+					$renderer->doc .= getAchievements(getDb());
+					break;
 			}
 			return true;
 		}

@@ -53,19 +53,24 @@ a:hover
 	}
 
 .datecell {
-	width: 65%;
+	width: 50px;
 	float: left;
-	margin: 3px;
-	padding: 3px;
+	margin: 2px 0px 0px 3px;
+	padding: 0px;
 	}
 
 .admincell {
-	float: none;
-	width: 20%;
+	float: left;
+	width: 15px;
 	}
 
 .raidcell {
 	float: none;
+	margin: 5px 0px 0px 3px;
+	}
+
+.raidcell img {
+	cursor: pointer;
 	}
 
 .availcell {
@@ -79,7 +84,7 @@ a:hover
 	}
 
 .weekscroller td {
-		text-align: center;
+	text-align: center;
 	}
 
 #calendar input {
@@ -127,6 +132,15 @@ div.availplayers {
 
 #linkheader {
 	background-color: blue;
+	}
+
+div.tooltip {
+	position: absolute;
+	visibility: hidden;
+	color: red;
+	background-color: black;
+	padding: 10px;
+	border: 1px solid purple;
 	}
 
 div.black_overlay {

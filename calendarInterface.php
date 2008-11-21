@@ -62,7 +62,7 @@ function saveUnavailable() {
 	$username = $_POST['uname'];
 	$db = getDb();
 
-	print_r($_POST);
+//	print_r($_POST);
 	
 	// Get the players existing information
 	$unavail = getUnavailable($db,$_POST['start'],$_POST['end'],$username);
@@ -115,6 +115,27 @@ function saveUnavailable() {
 	} // for
 } // function
 
+// Write the raid information into a window for ajax display on the calendar
+function showRaid($raid_id) {
+	$db = getDb();
+	$sql = "SELECT * FROM pqr_raids WHERE raid_id = ".$raid_id;
+	$rslt = mysql_query($sql);
+	if ((mysql_num_rows($rslt) > 0) && (mysql_num_rows($rslt) <= 1)) {
+		$row = mysql_fetch_array($rslt);
+	
+		$raid_oclock = strtotime($row['raid_oclock']);
+	
+		$str ='<img src="lib/plugins/pqraid/images/'.$row['icon'].'"></img>';
+		$str.='<a href="" onclick="boxit()">X</a>';
+		$str.='<h1>'.$row['name'].'</h1>';
+		$str.='<h2>'.date("d/m/Y H:i",$raid_oclock).'</h2>';
+		$str.=$row['info'];
+	
+		echo $str;	
+	} else {
+		echo "Fudged.";
+	}
+}
 
 // This was used to try and rewrite all the availability information after a
 // local ajax update. It didn't work well. Deprecated.
