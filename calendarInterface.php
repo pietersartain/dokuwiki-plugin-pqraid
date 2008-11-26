@@ -23,7 +23,7 @@ eval($func.";");
 
 function makeWeekEditBox($week,$current_info,$day) {
 	echo '
-	<div>
+	<div class="textbox">
 	Week '.$week.': <input type="text" value="'.$current_info.'" id="editWeekBox'.$day.'" onblur="saveEditBox(\''.$week.'\',\''.$day.'\')" />
 	</div>';
 }

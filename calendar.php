@@ -7,7 +7,7 @@
 */
 
 include_once "timeFunc.php";
-include_once "authFunc.php";
+//include_once "authFunc.php"; // deprecated.
 include_once "calendarFunc.php";
 
 define("THISPAGE","http://".$_SERVER['SERVER_NAME'].$_SERVER['REQUEST_URI']);

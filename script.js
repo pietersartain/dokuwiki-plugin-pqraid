@@ -8,15 +8,71 @@
 // Some variables that we need to keep fresh and available.
 var xmlHttp;
 var timerID = 0;
+var iTimeID = 0;
+var iTimeCount = 0;
+
+/************************
+ *  Achievement editor  *
+ ************************/
+function updateAchievements(id,fobj){
+	var imgsrc = document.getElementById('img'+id).src;
+	var icosrc = document.getElementById('icon'+id).value;
+	if(imgsrc != icosrc) {
+		document.getElementById('img'+id).src = "lib/plugins/pqraid/images/"+document.getElementById('icon'+id).value;
+	}
+
+	iTimeCount = 8;
+	if (timerID != 0) {
+		clearTimeout(timerID);
+	}
+	if (iTimeID != 0) {
+		clearInterval(iTimeID);
+	}
+	iTimeID = setInterval(function(){updateDivText('saveinfo','Unsaved. Saving in '+(iTimeCount--),'unsaved')},800);
+	timerID = setTimeout(function(){saveAchievements(fobj);fobj=null},8000);			
+}
+
+function saveAchievements(fobj){
+
+	updateDivText('saveinfo','Saving ...','unsaved');
+	
+	//Build a parameter list from the form elements
+	var params = getForm(fobj);
+	
+		ajaxPost('achieveInterface.php?func=saveAchievements()',params,'achievements','updateDivText(\"saveinfo\",\"Saved.\",\"saved\")');
+	//ajaxPost('achieveInterface.php?func=saveAchievements()',params,'saveinfo',null);	
+	clearTimeout(timerID);
+	clearInterval(iTimeID);
+}
+
+function unsavedAchieve(id){
+	var imgsrc = document.getElementById('newimg'+id).src;
+	var icosrc = document.getElementById('newicon'+id).value;
+	if(imgsrc != icosrc) {
+		document.getElementById('newimg'+id).src = "lib/plugins/pqraid/images/"+document.getElementById('newicon'+id).value;
+	}
+	updateDivText('saveinfo','Unsaved. Push [+] to add the new achievement.','unsaved');
+}
+
+function addAchievement(fobj){
+
+	updateDivText('saveinfo','Saving ...','unsaved');
+	var params = getForm(fobj);
+	ajaxPost('achieveInterface.php?func=addAchievement()',params,'achievements','updateDivText(\"saveinfo\",\"Saved.\",\"saved\")');
+}
 
 /****************
  *  CSC Editor  *
  ****************/
 function updateCSC(fobj){
-	updateDivText('saveinfo','Unsaved ...','unsaved');
+	iTimeCount = 4;
 	if (timerID != 0) {
 		clearTimeout(timerID);
 	}
+	if (iTimeID != 0) {
+		clearInterval(iTimeID);
+	}
+	iTimeID = setInterval(function(){updateDivText('saveinfo','Unsaved. Saving in '+(iTimeCount--),'unsaved')},800);
 	timerID = setTimeout(function(){saveCSC(fobj);fobj=null},4000);		
 }
 
@@ -29,17 +85,22 @@ function saveCSC(fobj){
 	ajaxPost('cscInterface.php?func=saveCSC()',params,null,'updateDivText(\"saveinfo\",\"Saved.\",\"saved\")');
 	//ajaxPost('cscInterface.php?func=saveCSC()',params,'saveinfo',null);	
 	clearTimeout(timerID);
+	clearInterval(iTimeID);
 }
 
 /**************
  *  Calendar  *
  **************/
 function updateUnavail(fobj){
-	updateDivText('saveinfo','Unsaved ...','unsaved');
+	iTimeCount = 2;
 	if (timerID != 0) {
 		clearTimeout(timerID);
 	}
-	timerID = setTimeout(function(){saveUnavail(fobj);fobj=null},2000);		
+	if (iTimeID != 0) {
+		clearInterval(iTimeID);
+	}
+	iTimeID = setInterval(function(){updateDivText('saveinfo','Unsaved. Saving in '+(iTimeCount--),'unsaved')},800);
+	timerID = setTimeout(function(){saveUnavail(fobj);fobj=null},2000);
 }
 
 function saveUnavail(fobj){
@@ -51,6 +112,7 @@ function saveUnavail(fobj){
 	ajaxPost(rstr,params,null,'updateDivText(\"saveinfo\",\"Saved. Refresh the page to update the availability information.\",\"saved\")');
 //	ajaxPost(rstr,params,'saveinfo',null);
 	clearTimeout(timerID);
+	clearInterval(iTimeID);
 }
 
 function showRaid(raid_id){

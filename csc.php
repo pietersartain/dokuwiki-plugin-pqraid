@@ -51,8 +51,15 @@ function mkAccessTokenBoxes($accesslist,$achievements,$id,$width) {
 		
 		$tokenboxes .= '
 		
+		<div id="tip'.$at['achievement_id'].'" class="tooltip">
+		'.$at['long_name'].'
+		</div>
+		
 		<img src="lib/plugins/pqraid/images/'.$at['icon'].'" 
-			title="'.$at['long_name'].'" class="achievementcheck"></img>
+			title="'.$at['long_name'].'" class="achievementcheck"
+			onmouseover="showtip(\'tip'.$at['achievement_id'].'\')" 
+			onmouseout="hidetip(\'tip'.$at['achievement_id'].'\')"
+			></img>
 		
 			<input 
 			type="checkbox" 

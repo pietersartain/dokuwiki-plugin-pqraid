@@ -21,7 +21,7 @@ a:hover
 	background: green;
 }
 
-#calendar {
+#calendar,#aeditor {
 	border: 1px solid __border__;
 	border-collapse: collapse;
 	border-spacing: 0px;
@@ -31,6 +31,12 @@ a:hover
 #calendar th {
 	background: __background_other__;
 	border: 0px;
+	}
+
+#aeditor th {
+	background: __background_other__;
+	border: 1px solid __border__;
+	padding: 3px;
 	}
 
 .weekinfo {
@@ -92,6 +98,24 @@ a:hover
 	font-size: 0.9em;
 	}
 
+#aeditor input {
+	border: 0px solid __text_alt__;
+ 	}
+
+#aeditor td {
+	padding: 2px;
+	border: 1px solid __border__;
+	}
+
+#aeditor img {
+	width: 30px;
+	height: 30px;
+	}
+
+td.img {
+	text-align: center;
+	}
+
 div.over {
 	background: white;
 	font-size: 0.9em;
@@ -137,10 +161,11 @@ div.availplayers {
 div.tooltip {
 	position: absolute;
 	visibility: hidden;
-	color: red;
+	color: silver;
 	background-color: black;
-	padding: 10px;
-	border: 1px solid purple;
+	padding: 6px;
+	border: 1px outset purple;
+	z-index: 100000001;
 	}
 
 div.black_overlay {
@@ -170,13 +195,6 @@ div.white_content {
 	z-index: 1002; 
 	overflow: auto;
 	color: black;
-	}
-
-input {
-	border: 0px;
-	padding: 0px;
-	background: #202020;
-	font-size: 0.9em;
 	}
 
 div.unsaved {

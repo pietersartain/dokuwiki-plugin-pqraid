@@ -79,7 +79,12 @@ class syntax_plugin_pqraid extends DokuWiki_Syntax_Plugin {
 					include_once "csc.php";
 					$renderer->doc .= getCSCEditor(getDb());
 					break;
-				case "achievements":
+				case "achievementeditor":
+/*					if (isset($_GET['addnew'])) {
+						$addnew = $_GET['addnew'];
+					} else {
+						$addnew = 0;
+					} */
 					include_once "achievements.php";
 					$renderer->doc .= getAchievements(getDb());
 					break;
