@@ -44,6 +44,17 @@ a:hover
 	font-size: 0.9em;
 	}
 
+div.textbox input {
+	background: __background__ url(images/inputshadow.png) repeat-x; 
+	font-size: 0.9em;
+	margin: 2px;
+	border: 1px solid __text_alt__;
+	}
+
+div.textbox {
+	background: __background__;
+	}
+
 .cell {
 	background: __background__;
 	width: 100px; 
@@ -93,9 +104,23 @@ a:hover
 	text-align: center;
 	}
 
-#calendar input {
-	border: 1px solid __text_alt__;
-	font-size: 0.9em;
+div#closeX {
+	width: 25px;
+	float: right;
+	font-size: 1.2em;
+	font-weight: bold;
+	}
+
+div#lefthead {
+	font-size: 1.5em;
+	font-weight: bold;
+	border-bottom: 1px solid __border__;
+	margin-bottom: 5px;
+	}
+
+#lefthead img {
+	position: relative;
+	top: 3px;
 	}
 
 #aeditor input {
@@ -217,3 +242,21 @@ input.achievementcheck {
 img.achievementcheck {
 	position: relative;
 }
+
+div.white_content input,select,textarea {
+	border: 1px solid __border__;
+	background: __background__ url(images/inputshadow.png) repeat-x;
+	}
+
+div#cscorderlist {
+	float: left;
+	width: 25%;
+	height: 80%;
+	overflow: auto;
+	}
+
+div#addnewraid {
+	float: left;
+	width: 50%;
+	margin-right: 15px;
+	}

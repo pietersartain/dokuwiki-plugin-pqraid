@@ -6,6 +6,7 @@
 	date:	05/11/2008
 */
 
+include_once "achievementsfunc.php";
 
 /* Get all character names for a given user
  */
@@ -47,6 +48,43 @@ function getCSCList($username, &$db) {
 	return $csclist;	
 }
 
+/* Get the cscorder list
+*/
+function getCSCOrderList(&$db) {
+	$rslt = mysql_query('SELECT pqr_cscorder.*,pqr_csc.*,pqr_roles.*  
+		FROM pqr_cscorder 
+		LEFT JOIN pqr_csc ON pqr_csc.csc_id = pqr_cscorder.csc_id 
+		LEFT JOIN pqr_roles ON pqr_roles.role_id = pqr_csc.role_id 
+		ORDER BY cscorder ASC');
+	if (!$rslt) die('csc order list error: '.mysql_error($db));
+	
+	$cscolist = null;
+	while ($row = mysql_fetch_array($rslt)){
+		$cscolist[$row['order_id']] = $row;
+	}
+	
+	return $cscolist;
+	
+}
+
+/* Get the cscorder list for a given player
+*/
+function getCSCOrderListByPlayer($player,&$db) {
+	$rslt = mysql_query('SELECT * 
+		FROM pqr_cscorder 
+		WHERE player_id = "'.$player.'" 
+		ORDER BY cscorder ASC');
+	if (!$rslt) die('csc order list error: '.mysql_error($db));
+	
+	$cscolist = null;
+	while ($row = mysql_fetch_array($rslt)){
+		$cscolist[$row['order_id']] = $row;
+	}
+	
+	return $cscolist;
+	
+}
+
 /* Get the access tokens for a given CSC
  */
 function getCSCAccessTokens($csc,&$db) {
@@ -62,21 +100,6 @@ function getCSCAccessTokens($csc,&$db) {
 	
 	return $accesslist;
 }
-
-/* Get all access tokens (achievement list)
- */
-function getAchievementList(&$db) {
-	$rslt = mysql_query('SELECT * FROM pqr_achievements');
-	if (!$rslt) die('access token error: '.mysql_error($db));
-	
-	$count = 0;
-	while ($row = mysql_fetch_array($rslt)){
-		$accesslist[$count] = $row;
-		$count++;
-	}
-	
-	return $accesslist;
-}	
 
 /* Get roles
  */

@@ -69,6 +69,39 @@ function getUnavailable(&$db,$start,$end,$player) {
 	return $unavail;
 }
 
+// Return a list of signups by day
+function getSignupsByDay(&$db,$raid_id) {
+	$sql = "SELECT * FROM pqr_signups 
+		WHERE raid_id=".$raid_id." 
+		ORDER BY csc_role DESC, csc_name ASC";
+	$rslt = mysql_query($sql);
+	if (!$rslt) die(" failure: ".mysql_error($db));
+
+	if (mysql_num_rows($rslt) > 0) {
+		while ($row = mysql_fetch_array($rslt)){
+			$signups[$row['csc_name']] = $row;
+		}
+	} else {
+		$signups = null;
+	}
+	
+	return $signups;
+}
+
+/* Get the access tokens for a given CSC
+ */
+function getAchievementsByRaid($rid,&$db) {
+	$rslt = mysql_query('SELECT * FROM pqr_raidaccess WHERE raid_id ='.$rid);
+	if (!$rslt) die('csc access token error: '.mysql_error($db));
+	
+	$accesslist = null;
+	while ($row = mysql_fetch_array($rslt)){
+		$accesslist[$row['achievement_id']] = $row;
+	}
+	
+	return $accesslist;
+}
+
 // Return the number of unavailable, but eligible-to-raid (valid CSC), players.
 function getDailyUnavail(&$db,$day) {
 	$sql = "SELECT DISTINCT(pqr_unavail.player_id) FROM pqr_unavail 
@@ -95,6 +128,6 @@ function getRaids(&$db,$day) {
 	}
 	
 	return $raid_info;
-}	
+}
 
 ?>

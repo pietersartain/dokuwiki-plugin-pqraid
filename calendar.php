@@ -64,8 +64,7 @@ $lastday = mktime(0, 0, 0, gmdate("m",getRaidEpoch()), gmdate("d",getRaidEpoch()
 	// Calendar header
 	$calendar='
 		
-		<form id="calendarform" method="POST" 
-		action="lib/plugins/praid/calendarInterface.php?func=saveUnavailable()">
+		<form id="calendarform" method="POST">
 		<input type="hidden" name="uname" value="'.$username.'"></input>
 		<input type="hidden" name="start" value="'.($week-1).'"></input>
 		<input type="hidden" name="end" value="'.($week+3).'"></input>
@@ -169,10 +168,13 @@ $lastday = mktime(0, 0, 0, gmdate("m",getRaidEpoch()), gmdate("d",getRaidEpoch()
 		
 		if ($isadmin) {
 			// admin
-			$calendar.='
-			<div class="admincell">
-				<a href="">[+]</a>
-			</div>';
+			$calendar.='<div class="admincell">';
+			if ($loopday >= getToday()) {
+				$calendar.='<a href="#" onclick="showMakeRaid(\''.$loopday.'\')">[+]</a>';
+			} else {
+				$calendar.='[+]';
+			}			
+			$calendar.='</div>';
 		}
 
 		if ($islogged) {
@@ -208,8 +210,13 @@ $lastday = mktime(0, 0, 0, gmdate("m",getRaidEpoch()), gmdate("d",getRaidEpoch()
 				name="'.$loopday.'" 
 				class="calendarcheck" 
 				'.$checked.' 
-				onchange="updateUnavail(this.form);"></input>				
+				onchange="updateUnavail(this.form);"';
 				
+				if ($loopday < getToday()) {
+					$calendar.='disabled';
+				}
+				
+				$calendar.='></input>
 			</div>
 			';
 		}
@@ -230,7 +237,7 @@ $lastday = mktime(0, 0, 0, gmdate("m",getRaidEpoch()), gmdate("d",getRaidEpoch()
 				$calendar.='
 				<img 
 					src="lib/plugins/pqraid/images/'.$raid['icon'].'" 
-					onmouseover="showtip(\'tip'.$raid['raid_id'].'\');" 
+					onmouseover="showtip(\'tip'.$raid['raid_id'].'\',5,5);" 
 					onmouseout="hidetip(\'tip'.$raid['raid_id'].'\');"
 					onclick="showRaid(\''.$raid['raid_id'].'\')" 
 					alt="'.$raid['name'].'" 

@@ -29,7 +29,7 @@ function updateAchievements(id,fobj){
 		clearInterval(iTimeID);
 	}
 	iTimeID = setInterval(function(){updateDivText('saveinfo','Unsaved. Saving in '+(iTimeCount--),'unsaved')},800);
-	timerID = setTimeout(function(){saveAchievements(fobj);fobj=null},8000);			
+	timerID = setTimeout(function(){saveAchievements(fobj);fobj=null},(iTimeCount*1000));			
 }
 
 function saveAchievements(fobj){
@@ -73,7 +73,7 @@ function updateCSC(fobj){
 		clearInterval(iTimeID);
 	}
 	iTimeID = setInterval(function(){updateDivText('saveinfo','Unsaved. Saving in '+(iTimeCount--),'unsaved')},800);
-	timerID = setTimeout(function(){saveCSC(fobj);fobj=null},4000);		
+	timerID = setTimeout(function(){saveCSC(fobj);fobj=null},(iTimeCount*1000));		
 }
 
 function saveCSC(fobj){
@@ -82,8 +82,8 @@ function saveCSC(fobj){
 	//Build a parameter list from the form elements
 	var params = getForm(fobj);
 	
-	ajaxPost('cscInterface.php?func=saveCSC()',params,null,'updateDivText(\"saveinfo\",\"Saved.\",\"saved\")');
-	//ajaxPost('cscInterface.php?func=saveCSC()',params,'saveinfo',null);	
+ajaxPost('cscInterface.php?func=saveCSC()',params,null,'updateDivText(\"saveinfo\",\"Saved.\",\"saved\")');
+//	ajaxPost('cscInterface.php?func=saveCSC()',params,'saveinfo',null);	
 	clearTimeout(timerID);
 	clearInterval(iTimeID);
 }
@@ -92,7 +92,7 @@ function saveCSC(fobj){
  *  Calendar  *
  **************/
 function updateUnavail(fobj){
-	iTimeCount = 2;
+	iTimeCount = 4;
 	if (timerID != 0) {
 		clearTimeout(timerID);
 	}
@@ -100,7 +100,7 @@ function updateUnavail(fobj){
 		clearInterval(iTimeID);
 	}
 	iTimeID = setInterval(function(){updateDivText('saveinfo','Unsaved. Saving in '+(iTimeCount--),'unsaved')},800);
-	timerID = setTimeout(function(){saveUnavail(fobj);fobj=null},2000);
+	timerID = setTimeout(function(){saveUnavail(fobj);fobj=null},(iTimeCount*1000));
 }
 
 function saveUnavail(fobj){
@@ -119,6 +119,14 @@ function showRaid(raid_id){
 	boxit('in');
 	ajax('calendarInterface.php','showRaid(\''+raid_id+'\')','light',null);
 }
+
+function showMakeRaid(day){
+	boxit('in');
+	ajax('calendarInterface.php','showMakeRaid(\''+day+'\')','light',null);
+}
+
+function saveRaid(fobj){
+	}
 
 // This was used to try and rewrite all the availability information after a
 // local ajax update. It didn't work well. Deprecated.
@@ -154,13 +162,13 @@ function saveEditBox(week_num,id) {
 
 // Mouseover tooltip code, largely ripped from tooltip.js:
 // http://www.gerd-tentler.de/tools/
-function showtip(thisid) {
+function showtip(thisid,xoffset,yoffset) {
 	getMouseXY;
 	var obj = document.getElementById(thisid);
 //	obj.style.left = mouseX;
 //	obj.style.top = mouseY;
-	obj.style.left = (mouseX+5)+'px';
-	obj.style.top = (mouseY+5)+'px';
+	obj.style.left = (mouseX+xoffset)+'px';
+	obj.style.top = (mouseY+yoffset)+'px';
 	obj.style.visibility = 'visible';
 }
 
