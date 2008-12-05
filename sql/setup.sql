@@ -23,7 +23,9 @@ CREATE TABLE pqr_csc (
 	csc_id integer auto_increment primary key,
 	character_name varchar(64),
 	role_id integer,
-	player_id varchar(32));
+	player_id varchar(32),
+	csc_possible integer,
+	csc_attended integer);
 
 -- ########################
 -- #  Achievement tables  #
@@ -84,12 +86,12 @@ CREATE TABLE pqr_weeks (
 -- #######################
 
 -- Main CSC order table
-DROP TABLE IF EXISTS pqr_cscorder;
-CREATE TABLE pqr_cscorder (
-	order_id integer auto_increment primary key,
-	player_id varchar(32),
-	csc_id integer,
-	cscorder integer);
+-- DROP TABLE IF EXISTS pqr_cscorder;
+-- CREATE TABLE pqr_cscorder (
+--	order_id integer auto_increment primary key,
+--	player_id varchar(32),
+--	csc_id integer,
+--	cscorder integer);
 
 -- Signup list. Static to save problems with changing CSC ids
 DROP TABLE IF EXISTS pqr_signups;
@@ -108,10 +110,10 @@ CREATE TABLE pqr_unavail (
 	unavail datetime);
 
 -- Autopsy tables
-DROP TABLE IF EXISTS pqr_log;
-CREATE TABLE pqr_log (
-	raid_id integer,
-	csc_id integer);
+-- DROP TABLE IF EXISTS pqr_log;
+-- CREATE TABLE pqr_log (
+--	raid_id integer,
+--	csc_id integer);
 
 -- Default data
 INSERT INTO pqr_roles(name,colour) VALUES('Healer','FFFFCC');
@@ -128,24 +130,10 @@ INSERT INTO pqr_achievements(short_name,long_name,icon) VALUES('lvl80','Achieve 
 INSERT INTO pqr_achievements(short_name,long_name,icon) VALUES('lvl80','Achieve level 80','l80.jpg');
 INSERT INTO pqr_achievements(short_name,long_name,icon) VALUES('lvl80','Achieve level 80','l80.jpg');
 
-INSERT INTO pqr_csc(player_id,character_name,role_id) VALUES('eritha','Eritha',2);
-INSERT INTO pqr_csc(player_id,character_name,role_id) VALUES('eritha','Phee',1);
-INSERT INTO pqr_csc(player_id,character_name,role_id) VALUES('eritha','',-1);
-INSERT INTO pqr_csc(player_id,character_name,role_id) VALUES('owan','Kilvanis',3);
-INSERT INTO pqr_csc(player_id,character_name,role_id) VALUES('owan','Tarathel',2);
-INSERT INTO pqr_csc(player_id,character_name,role_id) VALUES('owan','',-1);
-INSERT INTO pqr_csc(player_id,character_name,role_id) VALUES('jason','',2);
-INSERT INTO pqr_csc(player_id,character_name,role_id) VALUES('jason','Geoff',-1);
-INSERT INTO pqr_csc(player_id,character_name,role_id) VALUES('jason','',-1);
-INSERT INTO pqr_csc(player_id,character_name,role_id) VALUES('grace','Rashir',1);
-INSERT INTO pqr_csc(player_id,character_name,role_id) VALUES('grace','Kaethlin',2);
-INSERT INTO pqr_csc(player_id,character_name,role_id) VALUES('grace','LittleTimmy',3);
-
 INSERT INTO pqr_raids(name,info,icon,raid_oclock) VALUES('Kara','Some info here','mystery.png',DATE('2008-12-02 18:00:00'));
-INSERT INTO pqr_raidaccess(achievement_id,raid_id) VALUES(1,1);
-INSERT INTO pqr_raidaccess(achievement_id,raid_id) VALUES(2,1);
-INSERT INTO pqr_raidaccess(achievement_id,raid_id) VALUES(3,1);
-INSERT INTO pqr_raidaccess(achievement_id,raid_id) VALUES(8,1);
+
+-- INSERT INTO pqr_raidaccess(achievement_id,raid_id) VALUES(2,1);
+
 INSERT INTO pqr_raidroles(raid_id,role_id,quantity) VALUES(1,1,3);
 INSERT INTO pqr_raidroles(raid_id,role_id,quantity) VALUES(1,2,5);
 INSERT INTO pqr_raidroles(raid_id,role_id,quantity) VALUES(1,3,2);

@@ -165,6 +165,8 @@ function showRaid($raid_id) {
 				id="achievement'.$at['achievement_id'].'" 
 				name="achievement'.$at['achievement_id'].'" 
 				class="achievementcheck"
+onmouseover="showtip(\'atip'.$at['achievement_id'].'\',-220,-60)" 
+				onmouseout="hidetip(\'atip'.$at['achievement_id'].'\')"				
 				'.$checked.' 
 				></input>';
 
@@ -232,6 +234,8 @@ function showMakeRaid($datestring) {
 			type="checkbox" 
 			id="achievement'.$at['achievement_id'].'" 
 			name="achievement'.$at['achievement_id'].'" 
+			onmouseover="showtip(\'atip'.$at['achievement_id'].'\',-220,-60)" 
+			onmouseout="hidetip(\'atip'.$at['achievement_id'].'\')"
 			class="achievementcheck"></input>';
 
 		if($count==8) { 
@@ -242,16 +246,22 @@ function showMakeRaid($datestring) {
 		$count++;
 	}
 
+/**** pqr_cscorder DEPRECATED *******/
+/*
 	$cscolist = getCSCOrderList($db);
 	
 	$cscs='';
 	if ($cscolist != null) {
 		foreach($cscolist as $csc) {	
 			$cscs.=
-				"<div style='background: #".$csc['colour']."'>".
+				"<div style='background: #".$csc['colour']."'>
+				(".$csc['cscorder'].")&nbsp;&nbsp;".
 				$csc['character_name']."</div>";
 		}
 	}
+*/
+
+	$cscs='';
 
 	$mraid="
 	<div id='closeX'><a href='#' onclick='boxit()'>X</a></div>
@@ -381,14 +391,23 @@ function saveRaid() {
 	// Role information
 	$rlist = getRoleList($db);	
 	foreach ($rlist as $token) {
-			$sql = 'INSERT INTO 
-				pqr_raidroles(raid_id,role_id,quantity) 
-				VALUES(
-				'.$row['rid'].',
-				'.$token['role_id'].',
-				'.$_POST['role'.$token['role_id']].')';
-			runquery($sql,$db);
+		$sql = 'INSERT INTO 
+			pqr_raidroles(raid_id,role_id,quantity) 
+			VALUES(
+			'.$row['rid'].',
+			'.$token['role_id'].',
+			'.$_POST['role'.$token['role_id']].')';
+		runquery($sql,$db);
+
+		$scheduledroles[$token['role_id']] = $_POST['role'.$token['role_id']];
 	}
+
+	// Perform raid scheduling
+	
+	$loopday = strtotime($_POST['time']);
+	$loopday = mktime(0,0,0,date("m",$loopday),date("d",$loopday),date("Y",$loopday));
+	
+	scheduleCSC($row['rid'],$scheduledRoles,$loopday);
 
 	header("location: ".WIKIROOT."/doku.php?id=raid");
 

@@ -186,11 +186,13 @@ $lastday = mktime(0, 0, 0, gmdate("m",getRaidEpoch()), gmdate("d",getRaidEpoch()
 				$checked = 'checked';
 			}
 			
+			$gdu = count(getDailyUnavail($db,$loopday));
+			
 			// Graphical display of the number of people who are unavailable
 			// As a percentage of 10:
-			$unav = floor(getDailyUnavail($db,$loopday)/10*100);
+			$unav = floor($gdu/10*100);
 			
-			$av = floor(($totalplayers-getDailyUnavail($db,$loopday))/10*100);
+			$av = floor(($totalplayers-$gdu)/10*100);
 
 			//$unavT = floor(getDailyUnavail($db,$loopday)/$totalplayers*100);
 

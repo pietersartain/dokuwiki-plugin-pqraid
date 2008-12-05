@@ -36,7 +36,7 @@ function getCSCList($username, &$db) {
 	if (mysql_num_rows($rslt) > 3) {
 		die("More than 3 CSCs detected. Problem.");
 	} else {
-		while ($row = mysql_fetch_array($rslt)){
+		while ($row = mysql_fetch_array($rslt,MYSQL_ASSOC)){
 			$csclist[$count] = $row;
 			$count++;
 		}
@@ -48,28 +48,31 @@ function getCSCList($username, &$db) {
 	return $csclist;	
 }
 
+/**** pqr_cscorder DEPRECATED *******/
 /* Get the cscorder list
 */
-function getCSCOrderList(&$db) {
+/*function getCSCOrderList(&$db) {
 	$rslt = mysql_query('SELECT pqr_cscorder.*,pqr_csc.*,pqr_roles.*  
 		FROM pqr_cscorder 
 		LEFT JOIN pqr_csc ON pqr_csc.csc_id = pqr_cscorder.csc_id 
 		LEFT JOIN pqr_roles ON pqr_roles.role_id = pqr_csc.role_id 
-		ORDER BY cscorder ASC');
+		ORDER BY cscorder ASC, order_id ASC');
 	if (!$rslt) die('csc order list error: '.mysql_error($db));
 	
 	$cscolist = null;
-	while ($row = mysql_fetch_array($rslt)){
+	while ($row = mysql_fetch_array($rslt,MYSQL_ASSOC)){
 		$cscolist[$row['order_id']] = $row;
 	}
 	
 	return $cscolist;
 	
 }
+*/
+
 
 /* Get the cscorder list for a given player
 */
-function getCSCOrderListByPlayer($player,&$db) {
+/*function getCSCOrderListByPlayer($player,&$db) {
 	$rslt = mysql_query('SELECT * 
 		FROM pqr_cscorder 
 		WHERE player_id = "'.$player.'" 
@@ -84,6 +87,23 @@ function getCSCOrderListByPlayer($player,&$db) {
 	return $cscolist;
 	
 }
+*/
+
+/* Get the list of CSCs matching accesstoken list
+ */
+function getCSCListWhereAccess(&$db,$accesstokens) {
+	$rslt = mysql_query('SELECT * FROM pqr_accesstokens WHERE csc_id ='.$csc);
+	if (!$rslt) die('csc access token error: '.mysql_error($db));
+	
+//	$count = 0;
+	$accesslist = null;
+	while ($row = mysql_fetch_array($rslt)){
+		$accesslist[$row['achievement_id']] = $row['csc_id'];
+//		$count++;
+	}
+	
+	return $csc;
+}	
 
 /* Get the access tokens for a given CSC
  */
@@ -107,10 +127,8 @@ function getRoleList(&$db) {
 	$rslt = mysql_query('SELECT * FROM pqr_roles');
 	if (!$rslt) die('role sql error: '.mysql_error($db));
 
-	$count = 0;
-	while ($row = mysql_fetch_array($rslt)){
-		$rolelist[$count] = $row;
-		$count++;
+	while ($row = mysql_fetch_array($rslt,MYSQL_ASSOC)){
+		$rolelist[$row['role_id']] = $row;
 	}
 
 	return $rolelist;

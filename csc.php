@@ -57,7 +57,7 @@ function mkAccessTokenBoxes($accesslist,$achievements,$id,$width) {
 		
 		<img src="lib/plugins/pqraid/images/'.$at['icon'].'" 
 			title="'.$at['long_name'].'" class="achievementcheck"
-			onmouseover="showtip(\'tip'.$at['achievement_id'].'\')" 
+			onmouseover="showtip(\'tip'.$at['achievement_id'].'\',3,3)" 
 			onmouseout="hidetip(\'tip'.$at['achievement_id'].'\')"
 			></img>
 		
@@ -66,6 +66,8 @@ function mkAccessTokenBoxes($accesslist,$achievements,$id,$width) {
 			id="'.$id.'achievement'.$at['achievement_id'].'" 
 			name="'.$id.'achievement'.$at['achievement_id'].'" 
 			class="achievementcheck"
+			onmouseover="showtip(\'tip'.$at['achievement_id'].'\',3,3)" 
+			onmouseout="hidetip(\'tip'.$at['achievement_id'].'\')"
 			'.$checked.' 
 			onchange="updateCSC(this.form)"></input>';
 

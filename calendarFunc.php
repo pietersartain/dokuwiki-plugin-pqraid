@@ -102,7 +102,7 @@ function getAchievementsByRaid($rid,&$db) {
 	return $accesslist;
 }
 
-// Return the number of unavailable, but eligible-to-raid (valid CSC), players.
+// Return the unavailable, but eligible-to-raid (valid CSC), players.
 function getDailyUnavail(&$db,$day) {
 	$sql = "SELECT DISTINCT(pqr_unavail.player_id) FROM pqr_unavail 
 		JOIN pqr_csc ON pqr_csc.player_id = pqr_unavail.player_id 
@@ -110,7 +110,17 @@ function getDailyUnavail(&$db,$day) {
 		AND (role_id > 0 AND CHAR_LENGTH(character_name) > 0)";
 	$rslt = mysql_query($sql);
 	if (!$rslt) die("daily unavail failure: ".mysql_error($db));
-	return mysql_num_rows($rslt);
+
+	if (mysql_num_rows($rslt) > 0) {
+		while ($row = mysql_fetch_array($rslt)){
+			$signups[$row['player_id']] = $row;
+		}
+	} else {
+		$signups = null;
+	}
+	
+	return $signups;
+//	return mysql_num_rows($rslt);
 }
 
 // Return an array of raids for a given day
