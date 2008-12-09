@@ -8,23 +8,6 @@
 
 include_once "achievementsfunc.php";
 
-/** DEPRECATED **/
-/* Get all character names for a given user
- */
-/*function getCharacterNames($username, &$db) {
-	$rslt = mysql_query("SELECT character_id,name FROM pqr_character WHERE player_id = '".$username."'");
-	if (!$rslt) die("character sql error: ".mysql_error($db));
-
-	$count = 0;
-	while ($row = mysql_fetch_array($rslt)){
-		$rsltarray[$count] = $row;
-		$count++;
-	}
-
-    return $rsltarray;
-}
-*/
-
 /* Get all CSC information for a given user
  */
 function getCSCList($username, &$db) {
@@ -49,47 +32,6 @@ function getCSCList($username, &$db) {
 
 	return $csclist;	
 }
-
-/**** pqr_cscorder DEPRECATED *******/
-/* Get the cscorder list
-*/
-/*function getCSCOrderList(&$db) {
-	$rslt = mysql_query('SELECT pqr_cscorder.*,pqr_csc.*,pqr_roles.*  
-		FROM pqr_cscorder 
-		LEFT JOIN pqr_csc ON pqr_csc.csc_id = pqr_cscorder.csc_id 
-		LEFT JOIN pqr_roles ON pqr_roles.role_id = pqr_csc.role_id 
-		ORDER BY cscorder ASC, order_id ASC');
-	if (!$rslt) die('csc order list error: '.mysql_error($db));
-	
-	$cscolist = null;
-	while ($row = mysql_fetch_array($rslt,MYSQL_ASSOC)){
-		$cscolist[$row['order_id']] = $row;
-	}
-	
-	return $cscolist;
-	
-}
-*/
-
-
-/* Get the cscorder list for a given player
-*/
-/*function getCSCOrderListByPlayer($player,&$db) {
-	$rslt = mysql_query('SELECT * 
-		FROM pqr_cscorder 
-		WHERE player_id = "'.$player.'" 
-		ORDER BY cscorder ASC');
-	if (!$rslt) die('csc order list error: '.mysql_error($db));
-	
-	$cscolist = null;
-	while ($row = mysql_fetch_array($rslt)){
-		$cscolist[$row['order_id']] = $row;
-	}
-	
-	return $cscolist;
-	
-}
-*/
 
 /* Get the list of CSCs matching accesstoken list
  */

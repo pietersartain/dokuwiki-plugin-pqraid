@@ -252,21 +252,6 @@ function showMakeRaid($datestring) {
 		$count++;
 	}
 
-/**** pqr_cscorder DEPRECATED *******/
-/*
-	$cscolist = getCSCOrderList($db);
-	
-	$cscs='';
-	if ($cscolist != null) {
-		foreach($cscolist as $csc) {	
-			$cscs.=
-				"<div style='background: #".$csc['colour']."'>
-				(".$csc['cscorder'].")&nbsp;&nbsp;".
-				$csc['character_name']."</div>";
-		}
-	}
-*/
-
 	$mraid="
 
 	<div id='closeX'><a href='#' onclick='boxit()'>X</a></div>
@@ -411,31 +396,6 @@ function writeCSCList($loopday,$raidaccess=null,$checkedcsc=null) {
 		}
 	}
 
-/*
-	// Role information
-	$rlist = getRoleList($db);
-
-	$idlist='';
-	$vallist='';
-	
-	foreach ($rlist as $token) {
-		$idlist.= $token['role_id']."|";
-		
-		if (isset($vlist[$token['role_id']])) {
-			$vallist.= $vlist[$token['role_id']]."|";
-		} else {
-			$vallist.= "0|";
-		}
-	}
-	$idlist=rtrim($idlist,"|");
-	$vallist=rtrim($vallist,"|");
-*/
-
-//	$cscs.="<div onload='updateCSCCount('".$idlist."','".$vallist."')'></div>";
-//	$cscs.="<script type='text/javascript'>
-//	updateCSCCount('".$idlist."','".$vallist."');
-//	</script>";
-
 	echo $cscs;
 
 }
@@ -525,13 +485,6 @@ function saveRaid() {
 
 	$users = _loadUserData();
 
-/*	
-	foreach($users as $key => $user) {
-		echo $key." | ".$user['mail']."<br>";
-	}
-	die();
-*/
-
 	$sql="INSERT INTO pqr_raids(name,info,icon,raid_oclock) VALUES(
 			'".htmlspecialchars($_POST['raidname'])."',
 			'".htmlspecialchars($_POST['raid_note'])."',
@@ -561,43 +514,6 @@ function saveRaid() {
 		}
 	}
 
-
-/*** DEPRECATED ***/
-/*	
-		// All achievements
-	$achievements = getAchievementList($db);
-
-	// Then update the achievement lists	
-	foreach($achievements as $token) {
-		$achievestr = 'achievement'.$token['achievement_id'];
-
-		if (isset($_POST[$achievestr])) {
-			$sql = 'INSERT INTO 
-				pqr_raidaccess(achievement_id,raid_id) 
-				VALUES(
-				'.$token['achievement_id'].',
-				'.$row['rid'].')';
-			runquery($sql,$db);
-		}
-	} // achievement foreach
-*/
-
-/*** DEPRECATED ***/
-/*
-	// Role information
-	$rlist = getRoleList($db);	
-	foreach ($rlist as $token) {
-		$sql = 'INSERT INTO 
-			pqr_raidroles(raid_id,role_id,quantity) 
-			VALUES(
-			'.$row['rid'].',
-			'.$token['role_id'].',
-			'.$_POST['role'.$token['role_id']].')';
-		runquery($sql,$db);
-
-		$scheduledroles[$token['role_id']] = $_POST['role'.$token['role_id']];
-	}
-*/
 	// Perform raid scheduling
 	
 	$loopday = strtotime($_POST['time']);
@@ -696,40 +612,5 @@ function getRaidMessage($raidname,$time) {
 	return array($subj,$message);
 }
 
-
-// Get all CSCs in the cscorder table
-/*
-function getCSCOrder(&$db) {
-	$rslt = mysql_query('SELECT pqr_csc.*,pqr_roles.name FROM pqr_csc 
-		LEFT JOIN pqr_roles ON pqr_roles.role_id = pqr_csc.role_id');
-
-	if (!$rslt) die("csc sql error: ".mysql_error($db));
-
-	$count = 0;
-	if (mysql_num_rows($rslt) > 3) {
-		die("More than 3 CSCs detected. Problem.");
-	} else {
-		while ($row = mysql_fetch_array($rslt)){
-			$csclist[$count] = $row;
-			$count++;
-		}
-		if ($count == 0) {
-			$csclist = null;
-		}
-	}
-
-	return $csclist;	
-
-}
-*/
-
-// This was used to try and rewrite all the availability information after a
-// local ajax update. It didn't work well. Deprecated.
-/*
-function updateUnavailDisplay($day) {
-	$db = getDb();
-	echo getDailyUnavail($db,$day);
-}
-*/
 
 ?>
