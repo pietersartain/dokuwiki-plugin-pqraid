@@ -24,7 +24,7 @@ eval($func.";");
 function saveCSC() {
 
 	//print_r($_POST);
-	$username = $_POST['uname'];
+	$username = htmlspecialchars($_POST['uname']);
 	$db = getDb();
 	
 	// All achievements

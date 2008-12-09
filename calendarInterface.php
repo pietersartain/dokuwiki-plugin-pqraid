@@ -62,13 +62,13 @@ function saveWeekEditBox($week,$new_info,$day) {
 
 function saveUnavailable() {
 
-	$username = $_POST['uname'];
+	$username = htmlspecialchars($_POST['uname']);
 	$db = getDb();
 
 //	print_r($_POST);
 	
 	// Get the players existing information
-	$unavail = getUnavailable($db,$_POST['start'],$_POST['end'],$username);
+	$unavail = getUnavailable($db,$_POST['start']),$_POST['end'],$username);
 	
 	// The current week, for sanity we'll use the same var as calendar.
 	$week = (int)$_POST['start'] +1;
@@ -533,9 +533,9 @@ function saveRaid() {
 */
 
 	$sql="INSERT INTO pqr_raids(name,info,icon,raid_oclock) VALUES(
-			'".$_POST['raidname']."',
-			'".$_POST['raid_note']."',
-			'".$_POST['icon']."',
+			'".htmlspecialchars($_POST['raidname'])."',
+			'".htmlspecialchars($_POST['raid_note'])."',
+			'".htmlspecialchars($_POST['icon'])."',
 			FROM_UNIXTIME('".$_POST['time']."'))";
 	runquery($sql,$db);
 
@@ -650,7 +650,7 @@ function saveRaid() {
 		$headers .= 'From: Peace and Quiet <nobody@example.com>' . "\r\n";
 		$headers .= 'Content-type: text/html; charset=iso-8859-1' . "\r\n";
 	//	$headers .= 'Bcc: '.$users[$csc['player_id']]."\r\n";
-		list($subj,$message) = getRaidMessage($_POST['raidname'],$_POST['time']);
+		list($subj,$message) = getRaidMessage(htmlspecialchars($_POST['raidname']),$_POST['time']);
 
 			if ($leader == $lcount++){
 				$message = '';
@@ -658,7 +658,7 @@ function saveRaid() {
 			
 
 
-	//			mail($to,$subj,$message,$headers);
+				mail($to,$subj,$message,$headers);
 
 			}
 		}
@@ -673,12 +673,13 @@ function saveRaid() {
 	$headers .= 'From: Peace and Quiet <nobody@example.com>' . "\r\n";
 	$headers .= 'Content-type: text/html; charset=iso-8859-1' . "\r\n";
 //	$headers .= 'Bcc: '.$users[$csc['player_id']]."\r\n";
-	list($subj,$message) = getRaidMessage($_POST['raidname'],$_POST['time']);
+	list($subj,$message) = getRaidMessage(htmlspecialchars($_POST['raidname']),$_POST['time']);
+
 		if ($leader == $lcount++){
 			$message = '';
 		}
 
-//			mail($to,$subj,$message,$headers);			
+			mail($to,$subj,$message,$headers);			
 
 		}
 	}
