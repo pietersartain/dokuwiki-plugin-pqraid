@@ -550,15 +550,14 @@ function saveRaid() {
 		// Process the raidaccesses
 		foreach($_POST['achievement'] as $achievement) {
 		
-		
 		$sql = 'INSERT INTO 
 				pqr_raidaccess(achievement_id,raid_id) 
 				VALUES(
 				'.$achievement.',
 				'.$row['rid'].')';
 			runquery($sql,$db);
-		
-			//$raidaccess[$achievement] = array('achievement_id'=>$achievement);
+
+		$raidaccess[$achievement] = array('achievement_id'=>$achievement);
 		}
 	}
 
@@ -606,15 +605,27 @@ function saveRaid() {
 	
 //	scheduleCSC($row['rid'],$scheduledRoles,$loopday);
 
+	// Get a CSC list, limit by access for this raid
+	$csclist = getCSCListWhereAccess($db,$raidaccess);
+	
+	// Trim that down by day
+	stripCSCListByAvailability($db,$loopday,$csclist);
 
-
+	foreach($csclist as $csc) {
+		$sql = "UPDATE pqr_csc SET csc_possible=(csc_possible+1) 
+			WHERE csc_id=".$cscid;
+		runquery($sql,$db);
+	}	
+	
+	// If "open invite" is **NOT** set
 	if (!isset($_POST['sendglobal'])) {
 
+		// Randomise the raid leader
+		$leader = rand(0,count($_POST['cscid']));
+		$lcount = 0;
+
+		// For each CSC ticked
 		if (isset($_POST['cscid'])) {
-
-			$leader = rand(0,count($_POST['cscid']));
-			$lcount = 0;
-
 			foreach($_POST['cscid'] as $cscid) {
 			// Mail & save all the people who were invited
 
@@ -628,7 +639,8 @@ function saveRaid() {
 				// If "closed invitation / no raid time" is **NOT** checked
 				if (!isset($_POST['noincrement'])) {
 					// Update the raid times
-					$sql = "UPDATE pqr_csc";
+					$sql = "UPDATE pqr_csc SET csc_attended=(csc_attended+1) 
+						WHERE csc_id=".$cscid;
 					runquery($sql,$db);
 				}
 
