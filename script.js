@@ -125,8 +125,115 @@ function showMakeRaid(day){
 	ajax('calendarInterface.php','showMakeRaid(\''+day+'\')','light',null);
 }
 
-function saveRaid(fobj){
+function updateRaidAchievement(fobj,day){
+
+	iTimeCount = 2;
+	if (timerID != 0) {
+		clearTimeout(timerID);
 	}
+	if (iTimeID != 0) {
+		clearInterval(iTimeID);
+	}
+	iTimeID = setInterval(function(){updateDivText('cscstatus','Updating ('+(iTimeCount--)+'s)',null)},800);
+	timerID = setTimeout(function(){saveRaidAchievement(fobj,day);fobj=null,day=null},(iTimeCount*1000));			
+}
+
+//var fob;
+function saveRaidAchievement(fobj,day){
+
+	updateDivText('cscstatus','Updating ...',null);
+//	fob = fobj;
+	
+	//Build a parameter list from the form elements
+	var params = getForm(fobj);
+	
+		ajaxPost('calendarInterface.php?func=writeCSCList(\''+day+'\')',params,'csclist','updateDivText(\"cscstatus\",\"Current CSC list\",null);updateCSCCount();');
+	
+	clearTimeout(timerID);
+	clearInterval(iTimeID);
+}
+
+//window.onload = function(){
+   // Place code to execute here.
+//}
+
+/*
+function updateCSCCount(ids,vals){
+
+//alert("running");
+
+	idlist = ids.split("|");
+	vallist = vals.split("|");
+
+	for(var x=0; x < count(idlist); x++) {
+		document.getElementById('rolecount'+id).value = vallist[x];
+	}
+
+}*/
+
+function updateCSCCount(){
+
+	var rcount = [];
+	var frm = document.newraid;;
+	for (var i = 0; i < frm.elements.length; i++) {
+	
+		if (frm.elements[i].type == 'text' && frm.elements[i].name == 'rolecount') {
+		
+			var ival = frm.elements[i].id;
+		
+			//alert();
+			rcount[ival.slice(9)] = 0;
+	
+		} else if (frm.elements[i].type == 'checkbox' && frm.elements[i].name == 'cscid[]' && frm.elements[i].checked) {
+
+			var info = frm.elements[i].id.split("|");
+			if (rcount[info[0]] == undefined) {
+				rcount[info[0]] = 1;
+			} else {
+				++rcount[info[0]];
+			}
+		}
+	}
+	
+	var updateValCount = function(x,idx) {
+		document.getElementById('rolecount'+idx).value = x;
+	};
+	
+	rcount.forEach(updateValCount);
+}
+
+//This prototype is provided by the Mozilla foundation and
+//is distributed under the MIT license.
+//http://www.ibiblio.org/pub/Linux/LICENSES/mit.license
+
+if (!Array.prototype.forEach)
+{
+  Array.prototype.forEach = function(fun /*, thisp*/)
+  {
+    var len = this.length;
+    if (typeof fun != "function")
+      throw new TypeError();
+
+    var thisp = arguments[1];
+    for (var i = 0; i < len; i++)
+    {
+      if (i in this)
+        fun.call(thisp, this[i], i, this);
+    }
+  };
+}
+
+function updateCSCCountSolo(id,box){
+
+	var tval = document.getElementById('rolecount'+id).value;
+
+	if (box.checked) {
+	// Add to the value
+		document.getElementById('rolecount'+id).value = (++tval);
+	} else {
+		document.getElementById('rolecount'+id).value = (--tval);
+	}
+}
 
 // This was used to try and rewrite all the availability information after a
 // local ajax update. It didn't work well. Deprecated.
@@ -303,7 +410,7 @@ function ajaxPost(file,params,id,posthook) {
 }
 
 function stateChanged(id,posthook) {
-	if (xmlHttp.readyState==4 || xmlHttp.readyState=="complete");
+	if (xmlHttp.readyState==4 || xmlHttp.readyState=="complete")
 	{
 		if (id != null){
 			document.getElementById(id).innerHTML=xmlHttp.responseText;

@@ -70,10 +70,10 @@ CREATE TABLE pqr_raidaccess (
 
 -- Role numbers for a given raid: raid/role join table
 DROP TABLE IF EXISTS pqr_raidroles;
-CREATE TABLE pqr_raidroles (
-	raid_id integer,
-	role_id integer,
-	quantity integer);
+-- CREATE TABLE pqr_raidroles (
+--	raid_id integer,
+--	role_id integer,
+--	quantity integer);
 
 -- Week information
 DROP TABLE IF EXISTS pqr_weeks;
@@ -110,7 +110,7 @@ CREATE TABLE pqr_unavail (
 	unavail datetime);
 
 -- Autopsy tables
--- DROP TABLE IF EXISTS pqr_log;
+DROP TABLE IF EXISTS pqr_log;
 -- CREATE TABLE pqr_log (
 --	raid_id integer,
 --	csc_id integer);

@@ -191,6 +191,7 @@ div.tooltip {
 	padding: 6px;
 	border: 1px outset purple;
 	z-index: 100000001;
+	max-width: 200px;
 	}
 
 div.black_overlay {
@@ -248,7 +249,19 @@ div.white_content input,select,textarea {
 	background: __background__ url(images/inputshadow.png) repeat-x;
 	}
 
-div#cscorderlist {
+div.cscplayer {
+	font-size: 1.2em;
+	font-weight: bold;
+	border-bottom: 1px solid __border__;
+	margin-bottom: 5px;
+	}
+
+div.csc {
+	margin-left: 20px;
+	height: 1.3em;
+	}
+
+div#csclist {
 	float: left;
 	width: 25%;
 	height: 80%;
@@ -257,6 +270,6 @@ div#cscorderlist {
 
 div#addnewraid {
 	float: left;
-	width: 50%;
+	width: 60%;
 	margin-right: 15px;
 	}

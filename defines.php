@@ -13,8 +13,12 @@ if(!defined('DOKU_PLUGIN')) define('DOKU_PLUGIN',DOKU_INC.'lib/plugins/');
 */
 //define("THISPAGE","http://".$_SERVER['SERVER_NAME'].$_SERVER['REQUEST_URI']);
 
-define("WIKIROOT","http://".$_SERVER['SERVER_NAME']."/pq/wiki");
+define("WIKIPATH","/pq/wiki");
+
+define("WIKIROOT","http://".$_SERVER['SERVER_NAME'].WIKIPATH);
 define("PQIMG",WIKIROOT."/lib/plugins/pqraid/images");
 define("PQDIR",WIKIROOT."/lib/plugins/pqraid");
-	
+
+define("DOCROOT",$_SERVER['DOCUMENT_ROOT'].WIKIPATH);
+
 ?>

@@ -11,6 +11,33 @@ require_once(DOKU_PLUGIN.'syntax.php');
  */
 class syntax_plugin_pqraid extends DokuWiki_Syntax_Plugin {
 
+/*
+    var $_auth = null;        // auth object
+    var $_start = 0;          // index of first user to be displayed
+    var $_pagesize = 20;      // number of users to list on one page
+    var $_filter = array();   // user selection filter(s)
+*/
+    /**
+     * Constructor
+     */
+/*    function syntax_plugin_pqraid(){
+        global $auth;
+
+        $this->setupLocale();
+
+        if (!isset($auth)) {
+          $this->disabled = $this->lang['noauth'];
+        } else if (!$auth->canDo('getUsers')) {
+          $this->disabled = $this->lang['nosupport'];
+        } else {
+
+          // we're good to go
+          $this->_auth = & $auth;
+
+        }
+    }
+*/
+
     /**
      * return some info
      */
@@ -88,6 +115,15 @@ class syntax_plugin_pqraid extends DokuWiki_Syntax_Plugin {
 					include_once "achievements.php";
 					$renderer->doc .= getAchievements(getDb());
 					break;
+/*				case "clist":
+					$user_list = $this->_auth->retrieveUsers($this->_start, $this->_pagesize, $this->_filter);
+					
+					foreach($user_list as $user => $userinfo){
+//						$renderer->doc .= print_r($user)."<br>";
+						$renderer->doc .= $userinfo['mail']."<br>";
+					}
+*/					break;
+				
 			}
 			return true;
 		}
