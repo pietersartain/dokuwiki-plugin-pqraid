@@ -61,7 +61,7 @@ function getCSCListWhereAccess(&$db,$raidaccess) {
 		}
 
 		if ($addme) {
-			$accesslist[] = $csc;
+			$accesslist[$csc['csc_id']] = $csc;
 //			echo " is eligible.";
 		}
 	}
@@ -77,12 +77,14 @@ function stripCSCListByAvailability(&$db,$loopday,&$csclist) {
 		foreach($csclist as $csc) {
 			if (isset($unavailable[$csc['player_id']])) {
 				// Remove from the CSC list if unavailable
-	//			echo " is unavailable.";
+//				print_r($unavailable[$csc['player_id']]);
+//				echo " is unavailable.";
 				unset($csclist[$csc['csc_id']]);
 			}
 		}
 	}
 	
+//	print_r($csclist);
 //	return $csclist;
 }
 

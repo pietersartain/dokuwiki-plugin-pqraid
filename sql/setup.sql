@@ -24,8 +24,8 @@ CREATE TABLE pqr_csc (
 	character_name varchar(64),
 	role_id integer,
 	player_id varchar(32),
-	csc_possible integer,
-	csc_attended integer);
+	csc_possible integer DEFAULT 0,
+	csc_attended integer DEFAULT 0);
 
 -- ########################
 -- #  Achievement tables  #

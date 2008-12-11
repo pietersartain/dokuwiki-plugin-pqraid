@@ -15,7 +15,8 @@ if(!defined('DOKU_PLUGIN')) define('DOKU_PLUGIN',DOKU_INC.'lib/plugins/');
 
 define("WIKIPATH","/pq/wiki");
 
-define("WIKIROOT","http://".$_SERVER['SERVER_NAME'].WIKIPATH);
+//define("WIKIROOT","http://".$_SERVER['SERVER_NAME'].WIKIPATH);
+define("WIKIROOT","http://".$_SERVER['HTTP_HOST'].WIKIPATH);
 define("PQIMG",WIKIROOT."/lib/plugins/pqraid/images");
 define("PQDIR",WIKIROOT."/lib/plugins/pqraid");
 

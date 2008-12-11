@@ -71,7 +71,7 @@ div.textbox {
 
 .datecell {
 	width: 50px;
-	float: left;
+	float: none;
 	margin: 2px 0px 0px 3px;
 	padding: 0px;
 	}
@@ -86,7 +86,13 @@ div.textbox {
 	margin: 5px 0px 0px 3px;
 	}
 
-.raidcell img {
+.raidcell div.img {
+	width: 35px;
+	height: 35px;
+	float: left;
+	}
+
+.raidcell,div.img img {
 	cursor: pointer;
 	}
 

@@ -68,7 +68,7 @@ function saveUnavailable() {
 //	print_r($_POST);
 	
 	// Get the players existing information
-	$unavail = getUnavailable($db,$_POST['start']),$_POST['end'],$username);
+	$unavail = getUnavailable($db,$_POST['start'],$_POST['end'],$username);
 	
 	// The current week, for sanity we'll use the same var as calendar.
 	$week = (int)$_POST['start'] +1;
@@ -338,6 +338,8 @@ function showMakeRaid($datestring) {
 //
 function writeCSCList($loopday,$raidaccess=null,$checkedcsc=null) {
 	$db = getDb();
+	
+	$loopday = mktime(0,0,0,date("m",$loopday),date("d",$loopday),date("Y",$loopday));
 
 	if (isset($_POST['achievement'])) {
 		// Build a raidaccess array
@@ -512,11 +514,13 @@ function saveRaid() {
 
 		$raidaccess[$achievement] = array('achievement_id'=>$achievement);
 		}
+	} else {
+		$raidaccess = null;
 	}
 
 	// Perform raid scheduling
 	
-	$loopday = strtotime($_POST['time']);
+	$loopday = $_POST['time'];
 	$loopday = mktime(0,0,0,date("m",$loopday),date("d",$loopday),date("Y",$loopday));
 	
 //	scheduleCSC($row['rid'],$scheduledRoles,$loopday);
@@ -528,8 +532,8 @@ function saveRaid() {
 	stripCSCListByAvailability($db,$loopday,$csclist);
 
 	foreach($csclist as $csc) {
-		$sql = "UPDATE pqr_csc SET csc_possible=(csc_possible+1) 
-			WHERE csc_id=".$cscid;
+		$sql = "UPDATE pqr_csc SET csc_possible=csc_possible+1 
+			WHERE csc_id=".$csc['csc_id'];
 		runquery($sql,$db);
 	}	
 	
@@ -537,8 +541,9 @@ function saveRaid() {
 	if (!isset($_POST['sendglobal'])) {
 
 		// Randomise the raid leader
-		$leader = rand(0,count($_POST['cscid']));
-		$lcount = 0;
+		$loffset = rand(0,(count($_POST['cscid'])-1));
+		list($leader_id) = array_slice($_POST['cscid'],$loffset,1);
+		list($leader) = getCSCById($db,$leader_id);
 
 		// For each CSC ticked
 		if (isset($_POST['cscid'])) {
@@ -555,24 +560,26 @@ function saveRaid() {
 				// If "closed invitation / no raid time" is **NOT** checked
 				if (!isset($_POST['noincrement'])) {
 					// Update the raid times
-					$sql = "UPDATE pqr_csc SET csc_attended=(csc_attended+1) 
+					$sql = "UPDATE pqr_csc SET csc_attended=csc_attended+1 
 						WHERE csc_id=".$cscid;
 					runquery($sql,$db);
 				}
 
 				// Mail these people.
-		$to = $users[$csc['player_id']];
+		$to = $users[$csc['player_id']]['mail'];
 		$headers  = 'MIME-Version: 1.0' . "\r\n";
 		$headers .= 'From: Peace and Quiet <nobody@example.com>' . "\r\n";
 		$headers .= 'Content-type: text/html; charset=iso-8859-1' . "\r\n";
 	//	$headers .= 'Bcc: '.$users[$csc['player_id']]."\r\n";
-		list($subj,$message) = getRaidMessage(htmlspecialchars($_POST['raidname']),$_POST['time']);
+		list($subj,$message) = getRaidMessage(htmlspecialchars($_POST['raidname']),$_POST['time'],$leader,htmlspecialchars($_POST['raid_note']));
 
+/*
 			if ($leader == $lcount++){
 				$message = '';
 			}
-			
-
+*/
+		
+		$message = wordwrap($message,70,"<br>\r\n",true);
 
 				mail($to,$subj,$message,$headers);
 
@@ -589,25 +596,31 @@ function saveRaid() {
 	$headers .= 'From: Peace and Quiet <nobody@example.com>' . "\r\n";
 	$headers .= 'Content-type: text/html; charset=iso-8859-1' . "\r\n";
 //	$headers .= 'Bcc: '.$users[$csc['player_id']]."\r\n";
-	list($subj,$message) = getRaidMessage(htmlspecialchars($_POST['raidname']),$_POST['time']);
+	list($subj,$message) = getRaidMessage(htmlspecialchars($_POST['raidname']),$_POST['time'],$leader,htmlspecialchars($_POST['raid_note']));
 
+/*
 		if ($leader == $lcount++){
 			$message = '';
 		}
+*/
+		$message = wordwrap($message,70,"<br>\r\n",true);
 
 			mail($to,$subj,$message,$headers);			
 
 		}
 	}
 
-
-//	header("location: ".WIKIROOT."/doku.php?id=raid");
+	header("location: ".WIKIROOT."/doku.php?id=raid");
 
 }
 
-function getRaidMessage($raidname,$time) {
-	$subj = '[PQ Raid] '.$raidname.' ('.date('m/d/Y H:i',strtotime($time)).')';
-	$message = 'Peace and Quiet would like to';
+function getRaidMessage($raidname,$time,$leader,$notes,$mailaddress=null) {
+	$subj = '[PQ Raid] '.$raidname.' ('.date('m/d/Y H:i',$time).')';
+	$message = 'Peace and Quiet cordially invite you to '.$raidname.' on '.date('m/d/Y H:i',$time).'. Your raid leader will be '.$leader['character_name'].'. Please ensure you arrive up on time and prepared; '.$leader['character_name'].' will thank you for it!'."<br>\r\n<br>\r\n";
+	$message .= 'If you are the raid leader, invitations should be sent at a convenient time and the first pull should be close to the start of the raid time to get as much out of the session as possible.'."<br>\r\n<br>\r\n";
+	$message .= 'The raid notes:'."<br>\r\n<br>\r\n".$notes."<br>\r\n<br>\r\n";
+	$message .= 'Enjoy yourselves and remember, if you\'re not having fun, you\'re not doing it right!'."<br>\r\n<br>\r\n";
+	$message .= ' - Peace and Quiet.'."<br>\r\n<br>\r\n";
 
 	return array($subj,$message);
 }

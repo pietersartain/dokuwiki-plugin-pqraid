@@ -186,16 +186,28 @@ $lastday = mktime(0, 0, 0, gmdate("m",getRaidEpoch()), gmdate("d",getRaidEpoch()
 				$checked = 'checked';
 			}
 			
-			$gdu = count(getDailyUnavail($db,$loopday));
+			// How many people are unavailable?
+			$unavailable = count(getDailyUnavail($db,$loopday));
 			
-			// Graphical display of the number of people who are unavailable
-			// As a percentage of 10:
-			$unav = floor($gdu/10*100);
+			// How many are available?
+			$available = $gdu - $totalplayers;
 			
-			$av = floor(($totalplayers-$gdu)/10*100);
-
-			//$unavT = floor(getDailyUnavail($db,$loopday)/$totalplayers*100);
-
+			// Now hard code some limits. The display should show at most
+			// 10 people, regardless of their available/unavailable status
+			// $av and $unav are % values for the size of a div
+			if ($available > 10) {
+				$av = 100;
+				$unav = 0;
+			} else {
+				$av = $available;
+				
+				if ($totalplayers <= 10) {
+					$unav = $unavailable;
+				} else {
+					$unav = 100-$av;
+				}
+			}
+			
 			$calendar.='
 			<div class="availcell">
 
@@ -237,14 +249,15 @@ $lastday = mktime(0, 0, 0, gmdate("m",getRaidEpoch()), gmdate("d",getRaidEpoch()
 				</div>';
 			
 				$calendar.='
-				<img 
+				<div class="img"><img 
 					src="lib/plugins/pqraid/images/'.$raid['icon'].'" 
 					onmouseover="showtip(\'tip'.$raid['raid_id'].'\',5,5);" 
 					onmouseout="hidetip(\'tip'.$raid['raid_id'].'\');"
 					onclick="showRaid(\''.$raid['raid_id'].'\')" 
 					alt="'.$raid['name'].'" 
 					title="'.$raid['name'].'" 
-				></img>';
+				></img>
+				</div>';
 			}
 
 			$calendar.='</div>';
