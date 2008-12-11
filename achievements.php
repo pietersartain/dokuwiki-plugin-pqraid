@@ -199,7 +199,7 @@ function showAchievements(&$db,$character){
 			$accesslist[$row['achievement_id']] = $row['icon'];
 		}
 
-		print_r($accesslist);
+//		print_r($accesslist);
 
 		if (count($accesslist) > 0) {
 			foreach($accesslist as $csc) {
