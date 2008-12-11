@@ -83,8 +83,24 @@ class syntax_plugin_pqraid extends DokuWiki_Syntax_Plugin {
      */
     function render($mode, &$renderer, $data) {
 	
-		global $INFO;
-	
+		global $INFO;	
+		global $USERINFO;
+		
+		if(isset($USERINFO)) {
+			$logged_in=1;
+		} else {
+			$logged_in=0;
+		}
+
+// Determine if the logged in user is in the "user" group
+/*
+		foreach($INFO['userinfo']['grps'] as $grp) {
+			if ($grp == 'user') {
+				$logged_in=1;
+			}
+		}
+*/
+
 		include_once "connect.php";
 //		include_once "borderFunc.php";
 
@@ -103,17 +119,27 @@ class syntax_plugin_pqraid extends DokuWiki_Syntax_Plugin {
 					$renderer->doc .= getCalendar($week,$INFO['perm'],getDb());
 					break;
 				case "csceditor":
-					include_once "csc.php";
-					$renderer->doc .= getCSCEditor(getDb());
+					
+					if ($logged_in) {
+						include_once "csc.php";
+						$renderer->doc .= getCSCEditor(getDb());
+					} else {
+						$renderer->doc .= 'You must be logged in to use the CSC editor.';
+					}				
 					break;
 				case "achievementeditor":
 /*					if (isset($_GET['addnew'])) {
 						$addnew = $_GET['addnew'];
 					} else {
 						$addnew = 0;
-					} */
-					include_once "achievements.php";
-					$renderer->doc .= getAchievements(getDb());
+					} */	
+
+					if ($logged_in && $INFO['isadmin']) {
+						include_once "achievements.php";
+						$renderer->doc .= getAchievements(getDb());
+					} else {
+						$renderer->doc .= 'You must be logged in and an Administrator to use the achievement editor.';
+					}	
 					break;
 /*				case "clist":
 					$user_list = $this->_auth->retrieveUsers($this->_start, $this->_pagesize, $this->_filter);
