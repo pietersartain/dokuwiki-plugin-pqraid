@@ -179,7 +179,7 @@ $lastday = mktime(0, 0, 0, gmdate("m",getRaidEpoch()), gmdate("d",getRaidEpoch()
 
 		if ($islogged) {
 			// User
-			
+
 			if (isset($unavailable[$loopday])) {
 				$checked = '';
 			} else {
@@ -187,26 +187,31 @@ $lastday = mktime(0, 0, 0, gmdate("m",getRaidEpoch()), gmdate("d",getRaidEpoch()
 			}
 			
 			// How many people are unavailable?
-			$unavailable = count(getDailyUnavail($db,$loopday));
+			$unavailable_num = count(getDailyUnavail($db,$loopday));
 			
 			// How many are available?
-			$available = $gdu - $totalplayers;
+			$available = $totalplayers - $unavailable_num;
 			
 			// Now hard code some limits. The display should show at most
 			// 10 people, regardless of their available/unavailable status
 			// $av and $unav are % values for the size of a div
-			if ($available > 10) {
+			
+			$display_size = 10;
+			
+			if ($available > $display_size) {
 				$av = 100;
 				$unav = 0;
 			} else {
-				$av = $available;
+				$av = $available/$display_size*100;
 				
 				if ($totalplayers <= 10) {
-					$unav = $unavailable;
+					$unav = $unavailable_num*10;
 				} else {
 					$unav = 100-$av;
 				}
 			}
+			
+//			echo "$av : $available // $unavailable_num : $unav<br>";
 			
 			$calendar.='
 			<div class="availcell">

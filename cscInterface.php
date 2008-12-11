@@ -19,7 +19,17 @@ include_once "connect.php";
 
 // This means we can execute arbitrary PHP code through a querystring.
 // This is probably bad ...
-eval($func.";");
+//eval($func.";");
+
+// This is a bit more secure.
+switch("ui$func") {
+	case "uisaveCSC":
+		saveCSC();
+		break;
+	default:
+		echo "$func not found in ".$_SERVER['PHP_SELF'];
+		break;
+}
 
 function saveCSC() {
 

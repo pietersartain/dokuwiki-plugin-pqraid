@@ -39,7 +39,7 @@ function saveAchievements(fobj){
 	//Build a parameter list from the form elements
 	var params = getForm(fobj);
 	
-		ajaxPost('achieveInterface.php?func=saveAchievements()',params,'achievements','updateDivText(\"saveinfo\",\"Saved.\",\"saved\")');
+		ajaxPost('achieveInterface.php?func=saveAchievements',params,'achievements','updateDivText(\"saveinfo\",\"Saved.\",\"saved\")');
 	//ajaxPost('achieveInterface.php?func=saveAchievements()',params,'saveinfo',null);	
 	clearTimeout(timerID);
 	clearInterval(iTimeID);
@@ -58,7 +58,7 @@ function addAchievement(fobj){
 
 	updateDivText('saveinfo','Saving ...','unsaved');
 	var params = getForm(fobj);
-	ajaxPost('achieveInterface.php?func=addAchievement()',params,'achievements','updateDivText(\"saveinfo\",\"Saved.\",\"saved\")');
+	ajaxPost('achieveInterface.php?func=addAchievement',params,'achievements','updateDivText(\"saveinfo\",\"Saved.\",\"saved\")');
 }
 
 /****************
@@ -82,8 +82,8 @@ function saveCSC(fobj){
 	//Build a parameter list from the form elements
 	var params = getForm(fobj);
 	
-ajaxPost('cscInterface.php?func=saveCSC()',params,null,'updateDivText(\"saveinfo\",\"Saved.\",\"saved\")');
-//	ajaxPost('cscInterface.php?func=saveCSC()',params,'saveinfo',null);	
+ajaxPost('cscInterface.php?func=saveCSC',params,null,'updateDivText(\"saveinfo\",\"Saved.\",\"saved\")');
+//	ajaxPost('cscInterface.php?func=saveCSC',params,'saveinfo',null);	
 	clearTimeout(timerID);
 	clearInterval(iTimeID);
 }
@@ -108,7 +108,8 @@ function saveUnavail(fobj){
 	
 	//Build a parameter list from the form elements
 	var params = getForm(fobj);
-	var rstr = 'calendarInterface.php?func=saveUnavailable()';
+	var rstr = 'calendarInterface.php?func=saveUnavailable';
+
 	ajaxPost(rstr,params,null,'updateDivText(\"saveinfo\",\"Saved. Refresh the page to update the availability information.\",\"saved\")');
 //	ajaxPost(rstr,params,'saveinfo',null);
 	clearTimeout(timerID);
@@ -117,12 +118,12 @@ function saveUnavail(fobj){
 
 function showRaid(raid_id){
 	boxit('in');
-	ajax('calendarInterface.php','showRaid(\''+raid_id+'\')','light',null);
+	ajax('calendarInterface.php','showRaid&arg1='+raid_id,'light',null);
 }
 
 function showMakeRaid(day){
 	boxit('in');
-	ajax('calendarInterface.php','showMakeRaid(\''+day+'\')','light',null);
+	ajax('calendarInterface.php','showMakeRaid&arg1='+day,'light',null);
 }
 
 function updateRaidAchievement(fobj,day){
@@ -147,7 +148,7 @@ function saveRaidAchievement(fobj,day){
 	//Build a parameter list from the form elements
 	var params = getForm(fobj);
 	
-		ajaxPost('calendarInterface.php?func=writeCSCList(\''+day+'\')',params,'csclist','updateDivText(\"cscstatus\",\"Current CSC list\",null);updateCSCCount();');
+		ajaxPost('calendarInterface.php?func=writeCSCList&arg1='+day,params,'csclist','updateDivText(\"cscstatus\",\"Current CSC list\",null);updateCSCCount();');
 	
 	clearTimeout(timerID);
 	clearInterval(iTimeID);
@@ -253,14 +254,14 @@ function updateUnavailDisplay(start,end) {
 function makeEditBox(week_num,week_info,id) {
 	//ajax('calendarInterface.php','showString(\'Loading ...\')',id,null);
 	updateDivText(id,'Loading ...',null);
-	ajax('calendarInterface.php','makeWeekEditBox(\''+week_num+'\',\''+week_info+'\',\''+id+'\')',id,"document.getElementById('editWeekBox'+id).focus()");
+	ajax('calendarInterface.php','makeWeekEditBox&arg1='+week_num+'&arg2='+week_info+'&arg3='+id,id,"document.getElementById('editWeekBox'+id).focus()");
 }
 
 function saveEditBox(week_num,id) {
 	var new_info = document.getElementById('editWeekBox'+id).value;
 	//ajax('calendarInterface.php','showString(\'Saving ...\')',id,null);
 	updateDivText(id,'Saving ...',null);
-	ajax('calendarInterface.php','saveWeekEditBox(\''+week_num+'\',\''+new_info+'\',\''+id+'\')',id,null);
+	ajax('calendarInterface.php','saveWeekEditBox&arg1='+week_num+'&arg2='+week_info+'&arg3='+id,id,null);
 }
 
 /**********************

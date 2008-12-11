@@ -71,19 +71,20 @@ div.textbox {
 
 .datecell {
 	width: 50px;
-	float: none;
+	float: left;
 	margin: 2px 0px 0px 3px;
 	padding: 0px;
 	}
 
 .admincell {
 	float: left;
+	clear: right;
 	width: 15px;
 	}
 
 .raidcell {
 	float: none;
-	margin: 5px 0px 0px 3px;
+	margin: 22px 0px 0px 3px;
 	}
 
 .raidcell div.img {

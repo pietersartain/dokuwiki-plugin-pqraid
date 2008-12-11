@@ -98,7 +98,7 @@ function getCSCById(&$db,$cscid) {
 						WHERE csc_id = '.$cscid.' 
 						ORDER BY pqr_csc.player_id ASC, 
 						csc_percent ASC');
-	if (!$rslt) die('all csc accesstoken error: '.mysql_error($db));
+	if (!$rslt) die('get csc by id error: '.mysql_error($db));
 
 	$csc = null;
 	while ($cscinfo = mysql_fetch_array($rslt,MYSQL_ASSOC)){
