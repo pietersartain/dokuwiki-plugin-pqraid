@@ -134,9 +134,7 @@ class syntax_plugin_pqraid extends DokuWiki_Syntax_Plugin {
 					break;
 
 				case "csceditor":
-					
-					echo $logged_in;
-					
+			
 					if ($logged_in) {
 						include_once "csc.php";
 						$renderer->doc .= getCSCEditor(getDb());
