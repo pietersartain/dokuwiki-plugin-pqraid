@@ -8,6 +8,7 @@
 */
 
 include_once "achievementsfunc.php";
+include_once "cscfunc.php";
 
 define("THISPAGE","http://".$_SERVER['SERVER_NAME'].$_SERVER['REQUEST_URI']);
 
@@ -137,6 +138,81 @@ $x = 0;
 			
 return $astr;
 
+}
+
+function showAchievements(&$db,$character){
+
+	$astr = '';
+	$achievements = getAchievementList($db);
+
+
+	if ($character == null) {
+		// Show all in a grid	
+//		$achievements = getAchievementList($db);
+		$csclist = getCSCListWhereAccess($db);
+
+		$astr .= "<table><tr><th></th>";
+
+		foreach($achievements as $token) {
+			$astr .= '<th><img 
+			src="lib/plugins/pqraid/images/'.$token['icon'].'" 
+			id="img'.$token['achievement_id'].'" 
+			name="img'.$token['achievement_id'].'" 
+			></img></th>';
+		}
+
+		$astr .= "</tr>";
+
+		foreach($csclist as $csc) {
+			$access = getCSCAccessTokens($csc['csc_id'],$db);
+			
+			$astr .= '<tr><td>'.$csc['character_name'].'</td>';
+			
+			foreach($achievements as $token) {
+				$astr .= "<td>";
+				if (isset($access[$token['achievement_id']])) {
+					$astr .= 'X';
+				}
+				$astr .= "</td>";
+			}
+			
+			$astr .= '</tr>';
+		}
+
+		$astr .= "</table>";
+
+	} else {
+		// Show just the one
+		//$csclist = getCSCList($character,$db);
+		
+		// Because I don't have a function (or any other need) to 
+		// call by name, let's inline it.
+		$rslt = mysql_query('SELECT * 
+				FROM pqr_accesstokens 
+				JOIN pqr_csc ON pqr_accesstokens.csc_id = pqr_csc.csc_id 
+				JOIN pqr_achievements ON pqr_accesstokens.achievement_id = pqr_achievements.achievement_id 
+				WHERE pqr_csc.character_name ="'.$character.'"');
+		if (!$rslt) die('csc access token by name error: '.mysql_error($db));
+
+		$accesslist = null;
+		while ($row = mysql_fetch_array($rslt)){
+			$accesslist[$row['achievement_id']] = $row['icon'];
+		}
+
+		print_r($accesslist);
+
+		if (count($accesslist) > 0) {
+			foreach($accesslist as $csc) {
+				$astr .= '<img 
+			src="lib/plugins/pqraid/images/'.$csc.'" style="margin: 1px;"></img>';
+			}
+		}
+	}
+	
+	
+	
+
+return $astr;
 }
 
 ?>

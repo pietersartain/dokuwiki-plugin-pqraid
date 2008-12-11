@@ -75,7 +75,13 @@ class syntax_plugin_pqraid extends DokuWiki_Syntax_Plugin {
      */
     function handle($match, $state, $pos, &$handler) {
         $match = substr($match, 9, -2);
-		return $match;		
+		
+		if (substr_count($match,'&') > 0) {
+	        list($module,$character) = explode('&',$match);
+			return array($module,$character);
+		} else {
+			return array($match,null);
+		}
     }
 
     /**
@@ -83,6 +89,8 @@ class syntax_plugin_pqraid extends DokuWiki_Syntax_Plugin {
      */
     function render($mode, &$renderer, $data) {
 	
+		list($module,$character) = $data;
+
 		global $INFO;	
 		global $USERINFO;
 		
@@ -91,6 +99,11 @@ class syntax_plugin_pqraid extends DokuWiki_Syntax_Plugin {
 		} else {
 			$logged_in=0;
 		}
+
+/*
+		echo $logged_in;		
+		print_r($USERINFO);
+*/
 
 // Determine if the logged in user is in the "user" group
 /*
@@ -105,7 +118,8 @@ class syntax_plugin_pqraid extends DokuWiki_Syntax_Plugin {
 //		include_once "borderFunc.php";
 
 		if($mode == 'xhtml'){
-			switch ($data) {
+			switch ($module) {
+
 				case "calendar":
 					if (isset($_GET['week'])) {
 						// Set the raid week to the desired, or ...
@@ -118,7 +132,10 @@ class syntax_plugin_pqraid extends DokuWiki_Syntax_Plugin {
 					include_once "calendar.php";
 					$renderer->doc .= getCalendar($week,$INFO['perm'],getDb());
 					break;
+
 				case "csceditor":
+					
+					echo $logged_in;
 					
 					if ($logged_in) {
 						include_once "csc.php";
@@ -127,6 +144,7 @@ class syntax_plugin_pqraid extends DokuWiki_Syntax_Plugin {
 						$renderer->doc .= 'You must be logged in to use the CSC editor.';
 					}				
 					break;
+
 				case "achievementeditor":
 /*					if (isset($_GET['addnew'])) {
 						$addnew = $_GET['addnew'];
@@ -141,6 +159,12 @@ class syntax_plugin_pqraid extends DokuWiki_Syntax_Plugin {
 						$renderer->doc .= 'You must be logged in and an Administrator to use the achievement editor.';
 					}	
 					break;
+					
+				case "achievements":
+					include_once "achievements.php";
+					$renderer->doc .= showAchievements(getDb(),$character);
+					break;
+					
 /*				case "clist":
 					$user_list = $this->_auth->retrieveUsers($this->_start, $this->_pagesize, $this->_filter);
 					

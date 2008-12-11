@@ -17,25 +17,44 @@ function getCSCList($username, &$db) {
 
 	if (!$rslt) die("csc sql error: ".mysql_error($db));
 
-	$count = 0;
+//	$count = 0;
 	if (mysql_num_rows($rslt) > 3) {
 		die("More than 3 CSCs detected. Problem.");
 	} else {
+		$csclist = null;
 		while ($row = mysql_fetch_array($rslt,MYSQL_ASSOC)){
-			$csclist[$count] = $row;
-			$count++;
+//			$csclist[$count] = $row;
+//			$count++;
+			$csclist[] = $row;
 		}
-		if ($count == 0) {
-			$csclist = null;
-		}
+//		if ($count == 0) {
+//			$csclist = null;
+//		}
 	}
 
 	return $csclist;	
 }
 
+/* Get all CSCs
+ */
+/*
+function getCSCFullList(&$db) {
+	$rslt = mysql_query('SELECT pqr_csc.*,pqr_roles.name FROM pqr_csc 
+		LEFT JOIN pqr_roles ON pqr_roles.role_id = pqr_csc.role_id');
+
+	if (!$rslt) die("get all csc sql error: ".mysql_error($db));
+	$csclist = null;
+	while ($row = mysql_fetch_array($rslt,MYSQL_ASSOC)){
+		$csclist[] = $row;
+	}
+
+	return $csclist;	
+}
+*/
+
 /* Get the list of CSCs matching accesstoken list
  */
-function getCSCListWhereAccess(&$db,$raidaccess) {
+function getCSCListWhereAccess(&$db,$raidaccess=null) {
 	$rslt = mysql_query('SELECT pqr_csc.*, pqr_roles.*, 
 		(pqr_csc.csc_attended/pqr_csc.csc_possible*100) AS csc_percent 
 						FROM pqr_csc 
