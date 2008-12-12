@@ -13,7 +13,7 @@ if(!defined('DOKU_PLUGIN')) define('DOKU_PLUGIN',DOKU_INC.'lib/plugins/');
 */
 //define("THISPAGE","http://".$_SERVER['SERVER_NAME'].$_SERVER['REQUEST_URI']);
 
-define("WIKIPATH","/pq/wiki");
+define("WIKIPATH","/pqdev");
 
 //define("WIKIROOT","http://".$_SERVER['SERVER_NAME'].WIKIPATH);
 define("WIKIROOT","http://".$_SERVER['HTTP_HOST'].WIKIPATH);

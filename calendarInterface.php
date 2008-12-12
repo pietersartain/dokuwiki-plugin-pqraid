@@ -652,7 +652,7 @@ $AUTH_USERFILE = DOCROOT."/conf/users.auth.php";
   return $users;
 }
 
-function getRaidMessage($raidname,$time,$leader,$notes,$to=null) {
+function sendRaidMessage($raidname,$time,$leader,$notes,$to=null) {
 	$subj = '[PQ Raid] '.$raidname.' ('.date('m/d/Y H:i',$time).')';
 	$message = 'Peace and Quiet cordially invite you to '.$raidname.' on '.date('m/d/Y H:i',$time).'. Your raid leader will be '.$leader['character_name'].'. Please ensure you arrive up on time and prepared; '.$leader['character_name'].' will thank you for it!'."<br>\r\n<br>\r\n";
 	$message .= 'If you are the raid leader, invitations should be sent at a convenient time and the first pull should be close to the start of the raid time to get as much out of the session as possible.'."<br>\r\n<br>\r\n";
