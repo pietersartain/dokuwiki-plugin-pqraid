@@ -34,7 +34,7 @@ switch("ui$func") {
 function saveCSC() {
 
 	//print_r($_POST);
-	$username = htmlspecialchars($_POST['uname']);
+	$username = htmlspecialchars($_POST['uname'],ENT_QUOTES);
 	$db = getDb();
 	
 	// All achievements
@@ -45,7 +45,7 @@ function saveCSC() {
 		// First update pqr_csc table with changes to name/role
 		$cscid = $_POST['cscid'.$x];
 		$sql = 'UPDATE pqr_csc SET 
-				character_name = "'.$_POST['character_name'.$cscid].'", 
+				character_name = "'.htmlspecialchars($_POST['character_name'.$cscid],ENT_QUOTES).'", 
 				role_id = "'.$_POST['rolelist'.$cscid].'" 
 				WHERE csc_id='.$cscid.' 
 				AND player_id="'.$username.'"';

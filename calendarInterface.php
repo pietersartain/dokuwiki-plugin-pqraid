@@ -91,7 +91,7 @@ function saveWeekEditBox($week,$new_info,$day) {
 
 function saveUnavailable() {
 
-	$username = htmlspecialchars($_POST['uname']);
+	$username = htmlspecialchars($_POST['uname'],ENT_QUOTES);
 	$db = getDb();
 
 	print_r($_POST);
@@ -443,9 +443,9 @@ function saveRaid() {
 	$users = _loadUserData();
 
 	$sql="INSERT INTO pqr_raids(name,info,icon,raid_oclock) VALUES(
-			'".htmlspecialchars($_POST['raidname'])."',
-			'".htmlspecialchars($_POST['raid_note'])."',
-			'".htmlspecialchars($_POST['icon'])."',
+			'".htmlspecialchars($_POST['raidname'],ENT_QUOTES)."',
+			'".htmlspecialchars($_POST['raid_note'],ENT_QUOTES)."',
+			'".htmlspecialchars($_POST['icon'],ENT_QUOTES)."',
 			FROM_UNIXTIME('".$_POST['time']."'))";
 	runquery($sql,$db);
 
@@ -487,8 +487,12 @@ function saveRaid() {
 	// Trim that down by day
 	stripCSCListByAvailability($db,$loopday,$csclist);
 
+	// Sort the CSC list by role, for use later on.
+	//msort($csclist,"role_id");
+
 	// If "open invite" is **NOT** set
 	if (!isset($_POST['sendglobal'])) {
+		$updatepossible = 1;
 
 		// For each CSC ticked
 		if (isset($_POST['cscid'])) {
@@ -501,6 +505,7 @@ function saveRaid() {
 
 				// Get the CSC information
 				list($csc) = getCSCById($db,$cscid);
+				$raidinvites[] = $csc;
 
 				// Save the invitees to the signup table
 				$sql = "INSERT INTO pqr_signups(raid_id, player_id, csc_name, csc_role, csc_role_colour) VALUES('".$row['rid']."','".$csc['player_id']."','".$csc['character_name']."','".$csc['name']."','".$csc['colour']."')";
@@ -515,14 +520,22 @@ function saveRaid() {
 				} else {
 					$updatepossible = 0;
 				}
-
-				// Mail these people.
+			}
+			
+		foreach($raidinvites as $csc){
+			
+		// Mail these people.
 		$to = $users[$csc['player_id']]['mail'];
-	sendRaidMessage(htmlspecialchars($_POST['raidname']),
+	sendRaidMessage($_POST['raidname'],
 		$_POST['time'],
 		$leader,
-		htmlspecialchars($_POST['raid_note']),$to);
-			}
+		htmlspecialchars($_POST['raid_note'],ENT_QUOTES),
+		$to,
+		array($csc['character_name'],$csc['name']),
+		$raidinvites);
+		
+		}
+			
 		}
 	
 	} else {
@@ -540,10 +553,13 @@ function saveRaid() {
 			//echo $key." | ".$user['mail']."<br>";
 
 	$to = $users[$csc['player_id']];
-	sendRaidMessage(htmlspecialchars($_POST['raidname']),
+	sendRaidMessage($_POST['raidname'],
 		$_POST['time'],
 		$leader,
-		htmlspecialchars($_POST['raid_note']),$to);
+		htmlspecialchars($_POST['raid_note'],ENT_QUOTES),
+		$to,
+		array($csc['character_name'],$csc['name']),
+		$csclist);
 
 		}
 	}
@@ -652,13 +668,18 @@ $AUTH_USERFILE = DOCROOT."/conf/users.auth.php";
   return $users;
 }
 
-function sendRaidMessage($raidname,$time,$leader,$notes,$to=null) {
+function sendRaidMessage($raidname,$time,$leader,$notes,$to,$yourcsc,$yourraid) {
 	$subj = '[PQ Raid] '.$raidname.' ('.date('m/d/Y H:i',$time).')';
-	$message = 'Peace and Quiet cordially invite you to '.$raidname.' on '.date('m/d/Y H:i',$time).'. Your raid leader will be '.$leader['character_name'].'. Please ensure you arrive up on time and prepared; '.$leader['character_name'].' will thank you for it!'."<br>\r\n<br>\r\n";
+	$message = 'Peace and Quiet cordially invite '.$yourcsc[0].' ('.$yourcsc[1].') to '.$raidname.' on '.date('m/d/Y H:i',$time).'. Your raid leader will be '.$leader['character_name'].'. Please ensure you arrive up on time and prepared; '.$leader['character_name'].' will thank you for it!'."<br>\r\n<br>\r\n";
 	$message .= 'If you are the raid leader, invitations should be sent at a convenient time and the first pull should be close to the start of the raid time to get as much out of the session as possible.'."<br>\r\n<br>\r\n";
 	$message .= 'The raid notes:'."<br>\r\n<br>\r\n".$notes."<br>\r\n<br>\r\n";
 	$message .= 'Enjoy yourselves and remember, if you\'re not having fun, you\'re not doing it right!'."<br>\r\n<br>\r\n";
 	$message .= ' - Peace and Quiet.'."<br>\r\n<br>\r\n";
+	$message .= 'Your fellow raiders will be:'."<br>\r\n";
+
+	foreach($yourraid as $csc) {
+		$message .= $csc['character_name'].' ('.$csc['name'].')'."<br>\r\n";
+	}
 
 	$message = wordwrap($message,70,"<br>\r\n",true);
 
@@ -667,10 +688,38 @@ function sendRaidMessage($raidname,$time,$leader,$notes,$to=null) {
 	$headers .= 'Content-type: text/html; charset=iso-8859-1' . "\r\n";
 //	$headers .= 'Bcc: '.$users[$csc['player_id']]."\r\n";
 
+//	echo $message;
+
 	mail($to,$subj,$message,$headers);
 
 //	return array($subj,$message);
 }
 
+// Stolen from http://www.php.net/manual/en/function.sort.php#76547
+// Called with: msort($array,$some_key_val,$reverse)
+function msort($array, $id="id", $sort_ascending=true) {
+        $temp_array = array();
+        while(count($array)>0) {
+            $lowest_id = 0;
+            $index=0;
+            foreach ($array as $item) {
+                if (isset($item[$id])) {
+                                    if ($array[$lowest_id][$id]) {
+                    if ($item[$id]<$array[$lowest_id][$id]) {
+                        $lowest_id = $index;
+                    }
+                    }
+                                }
+                $index++;
+            }
+            $temp_array[] = $array[$lowest_id];
+            $array = array_merge(array_slice($array, 0,$lowest_id), array_slice($array, $lowest_id+1));
+        }
+                if ($sort_ascending) {
+            return $temp_array;
+                } else {
+                    return array_reverse($temp_array);
+                }
+    }
 
 ?>

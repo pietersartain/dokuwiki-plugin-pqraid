@@ -23,13 +23,52 @@
 		//$dinfo = getdate($date);
 		//$mon = mktime(0,0,0,gmdate("m",$date),gmdate("d",$date)-$dinfo['wday'],gmdate("Y"));
 		
+		// Get the current day index:
+		/*
+			0 Sun
+			1 Mon
+			2 Tues
+			3 Weds
+			4 Thurs
+			5 Fri
+			6 Sat
+		*/
 		$dinfo = date("w",$date);
+		
+		// Convert it to a 1 - 7 scale
+		/*
+			1 Mon
+			2 Tues
+			3 Weds
+			4 Thurs
+			5 Fri
+			6 Sat
+			7 Sun
+		*/
 		if ($dinfo == 0) {
 			$dinfo = 7;
-		} else {
-			--$dinfo;
 		}
-		$mon = mktime(0,0,0,gmdate("m",$date),gmdate("d",$date)-$dinfo,gmdate("Y"));
+		
+		// Then decrement it all, to return it to a 0-6 scale
+		--$dinfo;
+
+		// Align the raiding epoch with a monday
+		$repoch = mktime(0,0,0,date("m",getRaidEpoch()),date("d",getRaidEpoch())-3,date("Y",getRaidEpoch()));
+		
+		// Get the monday of this week in $date by subtracting the value in 
+		// $dinfo from whatever today is
+		$mon = mktime(0,0,0,gmdate("m",$date),gmdate("d",$date)-$dinfo,gmdate("Y",$date));
+	
+	// Debug info
+/*		echo $mon."::".$repoch."::".date("m/d/Y",$date)."::";
+		// Get the difference between the monday and the epoch
+		echo diffTime($mon,$repoch)."::";
+		// Count the number of weeks (7-day-blocks) between them
+		echo (diffTime($mon,$repoch)/86400/7)."::";
+		// Floor the response
+		echo floor(diffTime($mon,$repoch)/86400/7);
+		echo "<Br>";
+*/	
 		return floor(diffTime($mon,getRaidEpoch())/86400/7)+1;		
 	}
 	

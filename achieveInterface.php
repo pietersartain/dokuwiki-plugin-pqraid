@@ -36,7 +36,7 @@ switch("ui$func") {
 
 function saveAchievements() {
 
-	$username = htmlspecialchars($_POST['uname']);
+	$username = htmlspecialchars($_POST['uname'],ENT_QUOTES);
 	$db = getDb();
 
 //	print_r($_POST);
@@ -82,7 +82,7 @@ function saveAchievements() {
 function addAchievement(){
 	$db = getDb();
 	
-	$sql = "INSERT INTO pqr_achievements(short_name,long_name,icon) VALUES('".htmlspecialchars($_POST['newshort0'])."','".htmlspecialchars($_POST['newlong0'])."','".htmlspecialchars($_POST['newicon0'])."')";
+	$sql = "INSERT INTO pqr_achievements(short_name,long_name,icon) VALUES('".htmlspecialchars($_POST['newshort0'])."','".htmlspecialchars($_POST['newlong0'],ENT_QUOTES)."','".htmlspecialchars($_POST['newicon0'],ENT_QUOTES)."')";
 	runquery($sql,$db);
 	
 	echo buildAchieveTable($db);

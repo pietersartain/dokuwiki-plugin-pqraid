@@ -89,6 +89,12 @@ $lastday = mktime(0, 0, 0, gmdate("m",getRaidEpoch()), gmdate("d",getRaidEpoch()
 // Debug info
 //	echo "Const: ".$week." : ".getToday()." : ".getRaidEpoch()."<br>";
 
+
+/*	for ($days=-7;$days<21;$days++) {
+		$loopday = mktime(0, 0, 0, gmdate("m",getRaidEpoch()), gmdate("d",getRaidEpoch())+$days+(6*7)-3, gmdate("Y",getRaidEpoch()));
+		echo $loopday."::".date("d/m/Y",$loopday)."<br>";
+	}
+*/
 	for ($days=-7;$days<21;$days++) {
 
 		// The loopday is all relative to the raiding epoch
