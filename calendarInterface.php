@@ -401,10 +401,13 @@ function writeCSCList($loopday,$raidaccess=null,$checkedcsc=null) {
 	$player = '';
 	$vlist = array();
 
+	// Get a user list to convert from user_id to a real name
+	$users = _loadUserData();
+
 	if (count($csclist) > 0) {
 		foreach($csclist as $csc) {
 			if ($csc['player_id'] != $player) {
-				$cscs.="<div class='cscplayer'>".$csc['player_id']."</div>";
+				$cscs.="<div class='cscplayer'>".$users[$csc['player_id']]['name']."</div>";
 				$player = $csc['player_id'];
 			}
 
