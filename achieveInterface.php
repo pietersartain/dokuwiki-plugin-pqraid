@@ -64,8 +64,8 @@ function saveAchievements() {
 			($token['short_name'] != $_POST['short'.$aid])) {
 			$sql = 'UPDATE pqr_achievements SET
 						icon = "'.$_POST['icon'.$aid].'",
-						long_name = "'.$_POST['long'.$aid].'",
-						short_name = "'.$_POST['short'.$aid].'"
+						long_name = "'.htmlspecialchars($_POST['long'.$aid],ENT_QUOTES).'",
+						short_name = "'.htmlspecialchars($_POST$_POST['short'.$aid],ENT_QUOTES).'"
 						WHERE achievement_id = '.$aid;
 			runquery($sql,$db);
 			}

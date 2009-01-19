@@ -9,6 +9,7 @@
 
 include_once "achievementsfunc.php";
 include_once "cscfunc.php";
+include_once "defines.php";
 
 define("THISPAGE","http://".$_SERVER['SERVER_NAME'].$_SERVER['REQUEST_URI']);
 
@@ -32,6 +33,36 @@ function getAchievements($db) {
 return $astr;
 }
 
+// List raid icons, mark $sel as selected
+function getIconList($sel,$at) {
+	$retval = '<select 
+	name="icon'.$at.'" 
+	id="icon'.$at.'"';
+	
+	if ($sel == -1) {
+		$retval.='onchange="unsavedAchieve('.$at.')"';
+	} else {
+		$retval.='onchange="updateAchievements(\''.$at.'\',this.form)"';
+	}
+	
+	$retval.='>';
+
+	$d = dir(DOCROOT."/lib/plugins/pqraid/images");
+	while (false !== ($entry = $d->read())) {
+		if ($entry!="." && $entry!=".."){
+				$selected = '';
+				if ($sel == $entry) $selected='selected="selected"';
+				$retval = $retval.'<option value='.$entry.' '.$selected.'>'.$entry.'</option>';
+			}
+		}
+	$d->close();
+
+	$retval = $retval.'</select>';
+	
+	return $retval;
+}
+
+// Show achievements in a table
 function buildAchieveTable($db) {
 
 	$astr='<table id="aeditor">
@@ -50,19 +81,25 @@ function buildAchieveTable($db) {
 <tr>
 	<td class="img">
 		<img 
-			src="lib/plugins/pqraid/images/'.$token['icon'].'" 
+			src="'.PQIMG.'/'.$token['icon'].'" 
 			id="img'.$token['achievement_id'].'" 
 			name="img'.$token['achievement_id'].'" 
+			height=31 
+			width=29 
 			>
 		</img>
 	</td>
-	<td><input type="text" 
+	<td>';
+/*	
+	<input type="text" 
 			size="8"
 			id="icon'.$token['achievement_id'].'" 
 			name="icon'.$token['achievement_id'].'" 
 			onchange="updateAchievements(\''.$token['achievement_id'].'\',this.form)" 
 			value="'.$token['icon'].'">
 		</input>
+*/
+	$astr.=getIconList($token['icon'],$token['achievement_id']).'
 	</td>
 	<td><input type="text" 
 			size="8"
@@ -102,17 +139,21 @@ $x = 0;
 	$astr.='
 
 <tr>
-	<td class="img"><img src="lib/plugins/pqraid/images/mystery.png"
+	<td class="img"><img src="'.PQIMG.'/mystery.png"
 				id="newimg'.$x.'" 
 				name="newimg'.$x.'" 
 				></img></td>
-	<td><input type="text" 
+	<td>';
+/*	
+	<input type="text" 
 			size="8"
 			id="newicon'.$x.'" 
 			name="newicon'.$x.'" 
 			onchange="unsavedAchieve('.$x.')" 
 			value="">
 		</input>
+*/
+	$astr.=getIconList(-1,0).'
 	</td>
 	<td><input type="text" 
 			size="8"
@@ -153,11 +194,21 @@ function showAchievements(&$db,$character){
 
 		$astr .= "<table><tr><th></th>";
 
-		foreach($achievements as $token) {
-			$astr .= '<th><img 
-			src="lib/plugins/pqraid/images/'.$token['icon'].'" 
+		foreach($achievements as $token) {		
+			$astr .= '<th>
+			
+			<div id="atip'.$token['achievement_id'].'" class="tooltip">
+			'.$token['long_name'].'
+			</div>
+			
+			<img 
+			src="'.PQIMG.'/'.$token['icon'].'" 
 			id="img'.$token['achievement_id'].'" 
 			name="img'.$token['achievement_id'].'" 
+			onmouseover="showtip(\'atip'.$token['achievement_id'].'\',15,15)" 
+			onmouseout="hidetip(\'atip'.$token['achievement_id'].'\')"
+			height=31 
+			width=29 
 			></img></th>';
 		}
 
@@ -166,12 +217,12 @@ function showAchievements(&$db,$character){
 		foreach($csclist as $csc) {
 			$access = getCSCAccessTokens($csc['csc_id'],$db);
 			
-			$astr .= '<tr><td>'.$csc['character_name'].'</td>';
+			$astr .= '<tr style="background: #'.$csc['colour'].'"><td>'.$csc['character_name'].'</td>';
 			
 			foreach($achievements as $token) {
-				$astr .= "<td>";
+				$astr .= "<td align='center'>";
 				if (isset($access[$token['achievement_id']])) {
-					$astr .= 'X';
+					$astr .= '<b>X</b>';
 				}
 				$astr .= "</td>";
 			}
