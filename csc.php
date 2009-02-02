@@ -59,6 +59,8 @@ function mkAccessTokenBoxes($accesslist,$achievements,$id,$width) {
 			title="'.$at['long_name'].'" class="achievementcheck"
 			onmouseover="showtip(\'tip'.$at['achievement_id'].'\',3,3)" 
 			onmouseout="hidetip(\'tip'.$at['achievement_id'].'\')"
+			width=29
+			height=31
 			></img>
 		
 			<input 
