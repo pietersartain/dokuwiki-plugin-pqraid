@@ -45,7 +45,7 @@ a:hover
 	}
 
 div.textbox input {
-	background: __background__ url(images/inputshadow.png) repeat-x; 
+	background: __background__ url(res/inputshadow.png) repeat-x; 
 	font-size: 0.9em;
 	margin: 2px;
 	border: 1px solid __text_alt__;
@@ -253,7 +253,7 @@ img.achievementcheck {
 
 div.white_content input,select,textarea {
 	border: 1px solid __border__;
-	background: __background__ url(images/inputshadow.png) repeat-x;
+	background: __background__ url(res/inputshadow.png) repeat-x;
 	}
 
 div.cscplayer {

@@ -141,7 +141,9 @@ $x = 0;
 <tr>
 	<td class="img"><img src="'.PQIMG.'/mystery.png"
 				id="newimg'.$x.'" 
-				name="newimg'.$x.'" 
+				name="newimg'.$x.'"
+				height=31 
+				width=29  
 				></img></td>
 	<td>';
 /*	
@@ -255,7 +257,10 @@ function showAchievements(&$db,$character){
 		if (count($accesslist) > 0) {
 			foreach($accesslist as $csc) {
 				$astr .= '<img 
-			src="lib/plugins/pqraid/images/'.$csc.'" style="margin: 1px;"></img>';
+			src="lib/plugins/pqraid/images/'.$csc.'" 
+			style="margin: 1px;"
+			height=31 
+			width=29 ></img>';
 			}
 		}
 	}

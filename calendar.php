@@ -9,6 +9,7 @@
 include_once "timeFunc.php";
 //include_once "authFunc.php"; // deprecated.
 include_once "calendarFunc.php";
+include_once "defines.php";
 
 define("THISPAGE","http://".$_SERVER['SERVER_NAME'].$_SERVER['REQUEST_URI']);
 
@@ -75,7 +76,7 @@ $lastday = mktime(0, 0, 0, gmdate("m",getRaidEpoch()), gmdate("d",getRaidEpoch()
 				<td><a href="'.$fqn[1].'">&lt;&lt;</a></td>
 				<td colspan="3">Weeks</td>
 				<td><a href="'.$fqn[2].'">&gt;&gt;</a></td>
-				<td><a href="'.$fqn[3].'">&gt;|</a></td>
+				<td><!--<a href="'.$fqn[3].'">&gt;|</a>--></td>
 			</tr>
 			<tr>
 				<th>Mo</th>
@@ -261,12 +262,14 @@ $lastday = mktime(0, 0, 0, gmdate("m",getRaidEpoch()), gmdate("d",getRaidEpoch()
 			
 				$calendar.='
 				<div class="img"><img 
-					src="lib/plugins/pqraid/images/'.$raid['icon'].'" 
+					src="'.PQIMG.'/'.$raid['icon'].'" 
 					onmouseover="showtip(\'tip'.$raid['raid_id'].'\',5,5);" 
 					onmouseout="hidetip(\'tip'.$raid['raid_id'].'\');"
 					onclick="showRaid(\''.$raid['raid_id'].'\')" 
 					alt="'.$raid['name'].'" 
 					title="'.$raid['name'].'" 
+					height=31 
+					width=29 
 				></img>
 				</div>';
 			}

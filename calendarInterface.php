@@ -185,6 +185,8 @@ function showRaid($raid_id) {
 				title="'.$at['long_name'].'" class="achievementcheck"
 				onmouseover="showtip(\'atip'.$at['achievement_id'].'\',-220,-60)" 
 				onmouseout="hidetip(\'atip'.$at['achievement_id'].'\')"
+				height=31 
+				width=29 
 				></img>';
 
 /*
@@ -266,6 +268,8 @@ function showMakeRaid($datestring) {
 			title="'.$at['long_name'].'" class="achievementcheck"
 			onmouseover="showtip(\'atip'.$at['achievement_id'].'\',-220,-60)" 
 			onmouseout="hidetip(\'atip'.$at['achievement_id'].'\')"
+			height=31 
+			width=29 
 			></img>
 		
 			<input 
@@ -672,8 +676,8 @@ $AUTH_USERFILE = DOCROOT."/conf/users.auth.php";
 }
 
 function sendRaidMessage($raidname,$time,$leader,$notes,$to,$yourcsc,$yourraid) {
-	$subj = '[PQ Raid] '.$raidname.' ('.date('m/d/Y H:i',$time).')';
-	$message = 'Peace and Quiet cordially invite '.$yourcsc[0].' ('.$yourcsc[1].') to '.$raidname.' on '.date('m/d/Y H:i',$time).'. Your raid leader will be '.$leader['character_name'].'. Please ensure you arrive up on time and prepared; '.$leader['character_name'].' will thank you for it!'."<br>\r\n<br>\r\n";
+	$subj = '[PQ Raid] '.$raidname.' ('.date('l d/m/Y H:i',$time).')';
+	$message = 'Peace and Quiet cordially invite '.$yourcsc[0].' ('.$yourcsc[1].') to '.$raidname.' on '.date('l d/m/Y H:i',$time).'. Your raid leader will be '.$leader['character_name'].'. Please ensure you arrive up on time and prepared; '.$leader['character_name'].' will thank you for it!'."<br>\r\n<br>\r\n";
 	$message .= 'If you are the raid leader, invitations should be sent at a convenient time and the first pull should be close to the start of the raid time to get as much out of the session as possible.'."<br>\r\n<br>\r\n";
 	$message .= 'The raid notes:'."<br>\r\n<br>\r\n".$notes."<br>\r\n<br>\r\n";
 	$message .= 'Enjoy yourselves and remember, if you\'re not having fun, you\'re not doing it right!'."<br>\r\n<br>\r\n";
