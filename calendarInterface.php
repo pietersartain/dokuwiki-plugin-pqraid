@@ -35,11 +35,11 @@ switch("ui$func") {
 	case "uiwriteCSCList":
 		writeCSCList($_GET['arg1']);
 		break;
-	case "uimakeWeekEditBox":
+/*	case "uimakeWeekEditBox":
 		makeWeekEditBox($_GET['arg1'],$_GET['arg2'],$_GET['arg2']);
 		break;
-	case "uisaveWeekEditBox":
-		makeWeekEditBox($_GET['arg1'],$_GET['arg2'],$_GET['arg2']);
+*/	case "uisaveWeekEditBox":
+		saveWeekEditBox();
 		break;
 	case "uisaveUnavailable":
 		saveUnavailable();
@@ -52,17 +52,22 @@ switch("ui$func") {
 		break;
 }
 
-
+/* DEPRECATED */
+/*
 function makeWeekEditBox($week,$current_info,$day) {
 	echo '
 	<div class="textbox">
 	Week '.$week.': <input type="text" value="'.$current_info.'" id="editWeekBox'.$day.'" onblur="saveEditBox(\''.$week.'\',\''.$day.'\')" />
 	</div>';
 }
+*/
 
-function saveWeekEditBox($week,$new_info,$day) {
+function saveWeekEditBox() {
 
-	include_once "connect.php";
+	print_r($_GET);
+	$week = $_GET['arg2'];
+	$new_info = $_GET['arg1'];
+
 	$db = getDb();
 
 	if (strlen($new_info) == 0) {
@@ -80,13 +85,15 @@ function saveWeekEditBox($week,$new_info,$day) {
 	if (!$rslt){
 		die("<br /><br />Error: ".mysql_error($db)." from sql: ".htmlspecialchars($sql));
 	}
-	
+
+/*	
 	$out='
 	<div onclick="makeEditBox(\''.$week.'\', \''.$new_info.'\',\''.$day.'\')">
 	Week '.$week.': '.$new_info.'
 	</div>';
 	
 	echo $out;
+*/
 }
 
 function saveUnavailable() {

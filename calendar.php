@@ -130,15 +130,15 @@ $lastday = mktime(0, 0, 0, gmdate("m",getRaidEpoch()), gmdate("d",getRaidEpoch()
 				$calendar.='
 					<tr>
 						<td colspan="7">
-							<div 
+							
+							<div class="weekinfo">
+							Week '.$week_num.': 
+							<input 
+								type="text" 
+								value="'.$week_info[$week_num].'" 
 								id="weekinfo'.($days+7).'" 
-								class="weekinfo" 
-								onmouseover="mover(this,\'over\');" 
-								onmouseout="mover(this,\'weekinfo\');"
-								>
-						<div onclick="makeEditBox(\''.$week_num.'\', \''.$week_info[$week_num].'\',\'weekinfo'.($days+7).'\')">
-							Week '.$week_num.': '.$week_info[$week_num].'
-						</div>
+								size=40 
+								onblur="saveEditBox('.$week_num.','.($days+7).');"/>
 							</div>
 						</td>
 					</tr>';
@@ -147,10 +147,7 @@ $lastday = mktime(0, 0, 0, gmdate("m",getRaidEpoch()), gmdate("d",getRaidEpoch()
 				$calendar.='
 					<tr>
 						<td colspan="7">
-							<div
-								id="weekinfo'.($days+7).'"
-								class="weekinfo"
-							>
+							<div class="weekinfo">
 								Week '.$week_num.': '.$week_info[$week_num].'
 							</div>
 						</td>

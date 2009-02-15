@@ -251,17 +251,34 @@ function updateUnavailDisplay(start,end) {
 }
 */
 
+
+/* DEPRECATED */
+/*
 function makeEditBox(week_num,week_info,id) {
 	//ajax('calendarInterface.php','showString(\'Loading ...\')',id,null);
 	updateDivText(id,'Loading ...',null);
 	ajax('calendarInterface.php','makeWeekEditBox&arg1='+week_num+'&arg2='+week_info+'&arg3='+id,id,"document.getElementById('editWeekBox'+id).focus()");
 }
+*/
 
 function saveEditBox(week_num,id) {
-	var new_info = document.getElementById('editWeekBox'+id).value;
+
+	var new_info = document.getElementById('weekinfo'+id).value;
+
 	//ajax('calendarInterface.php','showString(\'Saving ...\')',id,null);
-	updateDivText(id,'Saving ...',null);
+/*	updateDivText(id,'Saving ...',null);
 	ajax('calendarInterface.php','saveWeekEditBox&arg1='+week_num+'&arg2='+week_info+'&arg3='+id,id,null);
+*/
+
+	updateDivText('saveinfo','Saving ...','unsaved');
+	
+	//Build a parameter list from the form elements
+//	var params = getForm(fobj);
+	var params = 'saveWeekEditBox&arg1='+new_info+'&arg2='+week_num;
+
+	ajax('calendarInterface.php',params,null,'updateDivText(\"saveinfo\",\"Saved.\",\"saved\")');
+//	ajax('calendarInterface.php',params,'saveinfo',null);
+
 }
 
 /**********************
