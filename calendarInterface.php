@@ -226,7 +226,7 @@ onmouseover="showtip(\'atip'.$at['achievement_id'].'\',-220,-60)"
 		$str ='
 		<div id="closeX"><a href="#" onclick="boxit()">X</a></div>
 		<div id="lefthead"><img src="'.PQIMG.'/'.$row['icon'].'"></img>
-		'.$row['name'].' - '.date("d/m/Y h:i",$raid_oclock).'</div>
+		'.$row['name'].' - '.date("d/m/Y H:i",$raid_oclock).'</div>
 		
 		<div id="addnewraid">
 		'.$row['info'].'<br>
@@ -242,13 +242,208 @@ onmouseover="showtip(\'atip'.$at['achievement_id'].'\',-220,-60)"
 	}
 }
 
+/* Show the create-new-raid window
+ */
+function showMakeRaid($datestring) {
+	$db = getDb();
 
+
+	$mraid="
+
+	<div id='closeX'><a href='#' onclick='boxit()'>X</a></div>
+	<div id='lefthead'>".date('F jS, Y',$datestring)."</div>
+
+	<form id='newraid' method='POST' name='newraid' 
+	action='".PQDIR."/calendarInterface.php?func=saveRaid'>";
+	
+	echo $mraid;
+
+
+	// Get all CSCs
+	$csclist = getCSCInfoByPlayerID($db);
+
+	// Unavailable sign ups
+	$unavailable = getDailyUnavail($db,$datestring);
+
+	$mraid = "
+	<div>
+	<table class='playerlist'>
+		<tr><th>Player</th><th>CSC 1</th><th>CSC 2</th><th>CSC 3</th><th></th></tr>";
+
+	// Get a user list to convert from user_id to a real name
+	$users = _loadUserData();
+
+	$playercount = 0;
+	foreach($csclist as $key=>$player) {
+
+		if (isset($unavailable[$key])) {
+			$disabled = 'class="disabled"';
+			$disabledbutton = 'disabled';
+		} else {
+			$disabled = '';
+			$disabledbutton = '';
+		}
+		
+		$rank = getRank($db,$key);
+
+		$mraid .= "<tr ".$disabled."><td>
+			<img src='".PQIMG."/ranks/".$rank[$key]['rank_id'].".gif' style='height: 16px; width: 16px;' />
+			".$users[$key]['name']."</td>";
+
+		$rows=0;
+		foreach($player as $cscid=>$cscinfo) {
+			$mraid .= "<td style='background: #".$cscinfo['colour'].";'>
+			
+				<input type='radio' name='playercsc".$key."' value='".$cscid."' ".$disabledbutton." 
+					onclick=\"updateRoleCount('".$playercount."','".$cscinfo['role_id']."');\"
+				/>
+				<img src='".PQIMG."/classes/16".strtolower($cscinfo['csc_class']).".png' style='' />
+				".$cscinfo['character_name']." - 		
+				<span>".$cscinfo['csc_percent']."% / ".$cscinfo['csc_totalpercent']."%</span>
+			
+			</td>";
+			++$rows;
+		}
+
+		for ($x = $rows; $x < 3; $x++){
+			$mraid .= "<td></td>";
+		}
+		
+		$mraid .= "<td width='20px'>
+			<input type='radio' name='playercsc".$key."' value='0' ".$disabledbutton." checked 
+				onclick=\"updateRoleCount('".$playercount."','0');\"
+			/>
+		</td>";
+
+		$mraid .= "</tr>";
+		++$playercount;
+	}
+
+	$mraid .= "</table></div>";
+
+	echo $mraid;
+
+	// Role information
+	$rlist = getRoleList($db);	
+
+	$rolenames='';
+	$roleboxes='';
+	foreach ($rlist as $token) {
+		$rolenames.=$token['name']."/";
+		$roleboxes.=" <input type='text' size='1' name='rolecount' id='rolecount".$token['role_id']."'
+		style='background: #".$token['colour']."' value='0'>";
+	}
+	$rolenames=rtrim($rolenames,"/");
+
+
+	// Achievement information
+	$alist = getAchievementList($db);
+	$count = 1;
+	$achievements='';
+	foreach($alist as $at) {
+	
+		$achievements .= '
+		<div id="atip'.$at['achievement_id'].'" class="tooltip">
+		'.$at['long_name'].'
+		</div>
+		
+		<img src="'.PQIMG.'/'.$at['icon'].'" 
+			title="'.$at['long_name'].'" class="achievementcheck"
+			onmouseover="showtip(\'atip'.$at['achievement_id'].'\',-220,-60)" 
+			onmouseout="hidetip(\'atip'.$at['achievement_id'].'\')"
+			height=31 
+			width=29 
+			></img>
+		
+			<input 
+			type="checkbox" 
+			id="achievement'.$at['achievement_id'].'" 
+			name="achievement[]" 
+			value="'.$at['achievement_id'].'" 
+			onmouseover="showtip(\'atip'.$at['achievement_id'].'\',-220,-60)" 
+			onmouseout="hidetip(\'atip'.$at['achievement_id'].'\')" 
+			onchange="updateRaidAchievement(this.form,\''.$datestring.'\')" 
+			class="achievementcheck"></input>';
+
+		if($count==8) { 
+			$achievements .= '<br></br>'; 
+			$count = 0;
+		}
+		
+		$count++;
+	}
+
+	$mraid = "	
+	<div id='leftfloat'>
+	
+	<table>
+		<tr>
+			<td>Title:	</td>
+			<td><input type='text' name='raidname'><td>
+		</tr>
+		<tr>
+			<td>Icon:	</td>
+			<td>".getIconList(-1)."</td>
+		</tr>
+		<tr>
+			<td>".$rolenames."</td>
+			<td>".$roleboxes."</td>
+		</tr>
+		<tr>
+			<td>Time 
+			(<a href='http://wwp.greenwichmeantime.com/time-zone/europe/uk/time/'>UK</a>)</td>
+			<td>".getTimes($datestring,-1)."</td>
+		</tr>
+		
+		<tr>
+			<td>Scheduling:</td>
+			<td>
+			
+			<div id='sendglobaltip' class='tooltip'>
+			<b>Open Invitation / No Raid Time</b><br>
+			If this box is checked, all eligible 
+			members will be sent an invitation.
+			Any boxes checked in the current CSC 
+			list will be ignored and no raid time
+			will be creditted.
+			</div>
+			
+			<input type='checkbox' name='sendglobal'
+			onmouseover='showtip(\"sendglobaltip\",-220,-60)'
+			onmouseout='hidetip(\"sendglobaltip\")'>
+			
+			<div id='noincrementtip' class='tooltip'>
+			<b>Closed Invitation / No Raid Time</b><br>
+			If this box is checked, only members selected
+			from the current CSC list will be invited,
+			however no raid time will be creditted.
+			</div>
+			
+			<input type='checkbox' name='noincrement'
+			onmouseover='showtip(\"noincrementtip\",-220,-60)'
+			onmouseout='hidetip(\"noincrementtip\")'>			
+			
+			</td>
+		</tr>
+	</table>
+	<input type='submit' value='Create'>
+	</div>
+	
+	<div id='rightfloat'>
+		Requirements<br />".$achievements."
+	</div>
+	
+	</form>";
+	
+	echo $mraid;
+}
+
+/*
 function showMakeRaid($datestring) {
 	$db = getDb();
 
 	// Role information
 	$rlist = getRoleList($db);	
-
 
 	$rolenames='';
 	$roleboxes='';
@@ -379,8 +574,13 @@ function showMakeRaid($datestring) {
 	
 	</form>";
 }
+*/
 
-//
+/* Generate a CSC list for a given:
+ 	$loopday
+	$raidaccess = which achievements were checked on submit
+	$checkedcsc = which CSCs were checked on submit
+*/
 function writeCSCList($loopday,$raidaccess=null,$checkedcsc=null) {
 	$db = getDb();
 	
@@ -441,7 +641,7 @@ function writeCSCList($loopday,$raidaccess=null,$checkedcsc=null) {
 				onchange='updateCSCCountSolo(".$csc['role_id'].",this);'
 				id='".$csc['role_id']."|".$csc['csc_id']."'
 				>&nbsp;&nbsp;".
-					$csc['character_name']." - ".$csc['csc_percent']."%</div>";
+					$csc['character_name']." - ".$csc['csc_percent']."% / ".$csc['csc_totalpercent']."%</div>";
 		
 		}
 	}
@@ -504,21 +704,16 @@ function saveRaid() {
 	// Sort the CSC list by role, for use later on.
 	//msort($csclist,"role_id");
 
+
 	// If "open invite" is **NOT** set
 	if (!isset($_POST['sendglobal'])) {
 		$updatepossible = 1;
 
-		// For each CSC ticked
-		if (isset($_POST['cscid'])) {
 
-		// Randomise the raid leader
-		$leader = getRandomLeader($_POST['cscid'],$db);
-
-			foreach($_POST['cscid'] as $cscid) {
-			// Mail & save all the people who were invited
-
-				// Get the CSC information
-				list($csc) = getCSCById($db,$cscid);
+		// For each potential CSC
+		foreach($csclist as $csc) {
+			// For each CSC ticked
+			if ($_POST['playercsc'.$csc['player_id']] == $csc['csc_id']) {
 				$raidinvites[] = $csc;
 
 				// Save the invitees to the signup table
@@ -529,39 +724,49 @@ function saveRaid() {
 				if (!isset($_POST['noincrement'])) {
 					// Update the raid times
 					$sql = "UPDATE pqr_csc SET csc_attended=csc_attended+1 
-						WHERE csc_id=".$cscid;
+						WHERE csc_id=".$csc['csc_id'];
 					runquery($sql,$db);
 				} else {
 					$updatepossible = 0;
-				}
+				}	
 			}
-			
-		foreach($raidinvites as $csc){
-			
-		// Mail these people.
-		$to = $users[$csc['player_id']]['mail'];
-	sendRaidMessage($_POST['raidname'],
-		$_POST['time'],
-		$leader,
-		htmlspecialchars($_POST['raid_note'],ENT_QUOTES),
-		$to,
-		array($csc['character_name'],$csc['name']),
-		$raidinvites);
-		
 		}
-			
+
+		// Randomise the raid leader
+		list($leader,$eo) = getRandomLeader($raidinvites,$db);
+		
+		// Save the leader & EO to the signup table
+		$sql = "UPDATE pqr_signups
+			SET static_raid_organiser='".$eo."', 
+				static_lead_raider='".$leader."' 
+			WHERE raid_id = '".$row['rid']."'";
+		runquery($sql,$db);
+		
+		foreach($raidinvites as $csc){
+			// Mail these people.
+			$to = $users[$csc['player_id']]['mail'];
+		sendRaidMessage($_POST['raidname'],
+			$_POST['time'],
+			$leader,
+			htmlspecialchars($_POST['raid_note'],ENT_QUOTES),
+			$to,
+			array($csc['character_name'],$csc['name']),
+			$raidinvites);
 		}
 	
 	} else {
 		$updatepossible = 0;
 		
 		// Randomise the raid leader
+		/*
 		foreach($csclist as $csc) {
 			$leader_list[] = $csc['csc_id'];
 		}
 		
 		$leader = getRandomLeader($leader_list,$db);
-		
+		*/
+		$leader['character_name'] = 'whomever put this up';
+
 		// Send everyone a mail
 		foreach($csclist as $csc) {
 			//echo $key." | ".$user['mail']."<br>";
@@ -589,18 +794,29 @@ function saveRaid() {
 		}
 	}
 
-	header("location: ".WIKIROOT."/doku.php?id=raid");
+	//header("location: ".WIKIROOT."/doku.php?id=raid");
 
 }
 
 /*********** HELPER FUNCTIONS, NOT AJAX LINKED ****************/
 
 function getRandomLeader(&$csclist,&$db) {
+// This mostly returned Luke
+/*
 	$loffset = rand(0,(count($csclist)-1));
 	list($leader_id) = array_slice($csclist,$loffset,1);
 	list($leader) = getCSCById($db,$leader_id);
+*/
+
+	foreach($csclist as $csc) {
+		$rankinfo = getRank($db,$csc['player_id']);
+		$rank_check_list[$csc['player_id']] = ($raidinfo['last'] - $raidinfo['count']);
+	}
+		
+	print_r($rank_check_list);
 	
-	return $leader;
+	// These should just be text values.
+	return array($leader,$organiser);
 }
 
 // List raid icons, mark $sel as selected

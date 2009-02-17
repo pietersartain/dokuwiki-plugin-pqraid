@@ -10,6 +10,7 @@ var xmlHttp;
 var timerID = 0;
 var iTimeID = 0;
 var iTimeCount = 0;
+var rGroup = [];
 
 /************************
  *  Achievement editor  *
@@ -234,6 +235,61 @@ function updateCSCCountSolo(id,box){
 	} else {
 		document.getElementById('rolecount'+id).value = (--tval);
 	}
+}
+
+// From http://ejohn.org/blog/fast-javascript-maxmin/
+Array.max = function( array ){
+      var narray = [];
+  for ( var i = 0; i < array.length; i++ )
+    if ( array[i] != null )
+      narray.push( array[i] );    
+	  return Math.max.apply( Math, narray );
+};
+
+Array.min = function( array ){
+      var narray = [];
+  for ( var i = 0; i < array.length; i++ )
+    if ( array[i] != null )
+      narray.push( array[i] );
+return Math.min.apply( Math, narray );
+};
+
+function updateRoleCount(key,val){
+
+	rGroup[key] = val; 
+
+	var rolecounts = [];
+
+	/* This is not at all scalable */
+	document.getElementById('rolecount1').value = 0;
+	document.getElementById('rolecount2').value = 0;
+	document.getElementById('rolecount3').value = 0;
+
+	for (var i = 0; i < rGroup.length; i++) {
+		if (rolecounts[rGroup[i]] == undefined) {
+			rolecounts[rGroup[i]] = 1;
+		} else {
+			++rolecounts[rGroup[i]];
+		}
+	}
+	
+	var min = Array.min(rGroup);
+	var max = Array.max(rGroup);
+
+//	alert(min+" .. "+max+" / "+rolecounts[1]);
+
+	for (var i = min; i <= max; i++) {
+			if (i > 0){	
+				if (rolecounts[i] == undefined){
+					var outc = 0;
+				} else {
+					var outc = rolecounts[i];
+				}
+				
+				document.getElementById('rolecount'+i).value = outc;
+			}
+	}
+	
 }
 
 // This was used to try and rewrite all the availability information after a

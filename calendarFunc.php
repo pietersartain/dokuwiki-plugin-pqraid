@@ -140,4 +140,23 @@ function getRaids(&$db,$day) {
 	return $raid_info;
 }
 
+function getNumRaids(&$db) {
+
+	$sql = "SELECT COUNT(raid_id) FROM pqr_raids";
+
+	$rslt = mysql_query($sql);
+	if (!$rslt) die("get num raids failure: ".mysql_error($db));
+	
+	$raid_info = 0;
+	
+	if (mysql_num_rows($rslt) > 0) {	
+		$raid_info = mysql_fetch_row($rslt);
+	}
+	$raid_info = $raid_info[0];
+	
+	return $raid_info;
+}
+
+
+
 ?>

@@ -168,6 +168,42 @@ div.availplayers {
 	background: green;
 	}
 
+/*************************
+     Create new raid
+**************************/
+
+table.playerlist {
+	width: 100%;
+	border: 1px solid __border__;
+	border-collapse: collapse;
+}
+
+table.playerlist th {
+	text-align: center;
+	border: 1px solid __border__;
+}
+
+table.playerlist td {
+	border: 1px solid __border__;
+	width: 25%;
+}
+
+table.playerlist tr {}
+
+table.playerlist tr.disabled td {
+	color: silver !important;
+	font-style: italic !important;
+}
+
+table.playerlist span {
+	font-size: 75%;
+	font-style: italic;
+}
+
+/*************************
+     Calendar front info
+**************************/
+
 #editWeekBoxweekinfo0 {
 	width: 450px;
 	}
@@ -266,15 +302,14 @@ div.csc {
 	height: 1.3em;
 	}
 
-div#csclist {
+div#rightfloat {
 	float: left;
-	width: 25%;
-	height: 80%;
+	width: 50%;
 	overflow: auto;
 	}
 
-div#addnewraid {
+div#leftfloat {
 	float: left;
-	width: 60%;
+	width: 40%;
 	margin-right: 15px;
 	}

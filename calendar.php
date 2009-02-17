@@ -168,7 +168,7 @@ $lastday = mktime(0, 0, 0, gmdate("m",getRaidEpoch()), gmdate("d",getRaidEpoch()
 		// Cell content divs:
 		
 		// date
-		$calendar.='<div class="datecell">'.date('M j',$loopday).'</div>';
+		$calendar.='<div class="datecell"><a href="doku.php?id=feeds:raids:'.date('Ymj',$loopday).'">'.date('M j',$loopday).'</a></div>';
 		
 		if ($isadmin) {
 			// admin

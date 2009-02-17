@@ -7,6 +7,7 @@
 */
 
 include_once "cscfunc.php";
+include_once "calendarFunc.php";
 
 /* Build a drop box from $roles, with the id rolelist.$id and optionally
  * set the value to $selected (where $roles[..]['role_id'] == $selected)
@@ -39,6 +40,44 @@ function mkRoleList($roles,$id,$selected) {
 	return $rolelist;
 }
 
+/* Build a radio group from $ranks
+ */
+function mkRankList($roles,$id,$selected) {
+	$rolelist = "";
+	
+//	if ($selected==null)
+//		$selected = 2;
+		
+	foreach($roles as $rinfo) {
+
+//		echo $rinfo['rank_id']." :: ".$selected."<br>";
+
+		if ($rinfo['rank_id'] == $selected) {
+			$cscset = "checked";
+		} else {
+			$cscset = "";
+		}
+		
+		$rolelist .= "
+		
+			<div id='tip".$rinfo['rank_id']."' class='tooltip'>
+				".$rinfo['rank_desc']."
+			</div>
+		
+			<input 
+				type='radio' 
+				name='ranklist' 
+				value='".$rinfo['rank_id']."' 
+				onmouseover='showtip(\"tip".$rinfo['rank_id']."\",3,3)' 
+				onmouseout='hidetip(\"tip".$rinfo['rank_id']."\")'
+				onchange='updateCSC(this.form)'
+				".$cscset.">".$rinfo['rank_name']."&nbsp;&nbsp;";
+	}
+	
+	return $rolelist;
+}
+
+/* Build a tickable list of accesstokens */
 function mkAccessTokenBoxes($accesslist,$achievements,$id,$width) {
 	
 	$count = 1;
@@ -84,16 +123,95 @@ function mkAccessTokenBoxes($accesslist,$achievements,$id,$width) {
 	return $tokenboxes;
 }
 
+/* Build a drop list of classes.
+ * $id : csc ID
+ * $selected : current saved class
+ */
+function mkClassList($id,$selected=''){
+	$classlist = "<select name='classlist".$id."' 
+					id='classlist".$id."' 
+					class='classlist' 
+					onchange='updateCSC(this.form)'
+					>";
+	
+	// For colouring the classes
+/*	$colours['DRUID']="#FF7D0A";
+	$colours['HUNTER']="#ABD473";
+	$colours['MAGE']="#69CCF0";
+	$colours['PALADIN']="#F58CBA";
+	$colours['PRIEST']="#000000";
+	$colours['ROGUE']="#FFF569";
+	$colours['SHAMAN']="#2459FF";
+	$colours['WARLOCK']="#9482CA";
+	$colours['WARRIOR']="#C79C6E";
+	$colours['DEATHKNIGHT']="#C41F3B";
+*/
+
+	$class['DEATHKNIGHT']="Death Knight";
+	$class['DRUID']="Druid";
+	$class['HUNTER']="Hunter";
+	$class['MAGE']="Mage";
+	$class['PALADIN']="Paladin";
+	$class['PRIEST']="Priest";
+	$class['ROGUE']="Rogue";
+	$class['SHAMAN']="Shaman";
+	$class['WARLOCK']="Warlock";
+	$class['WARRIOR']="Warrior";
+	
+	foreach($class as $key=>$cname) {
+		if ($key == $selected) {
+			$cscset = "selected='selected'";
+		} else {
+			$cscset = "";
+		}
+		
+		$classlist .= "<option value='".$key."' ".$cscset.">".$cname."</option>";
+	}
+	
+	if ($selected == '') {
+		$noneset = "selected='selected'";
+	}
+	
+	$classlist .= "
+			<option value='' ".$noneset.">None</option>
+		</select>";
+	
+	return $classlist;
+}
+
 function getCSCEditor(&$db) {
 	global $INFO;
 
 	//Acquire the user's name.
 	$username = $INFO['client'];
 
+	// Get the rank
+	$rank = getRank($db,$username);
+
+	// Run initialisation on ranks
+	if ($rank == null) {
+	echo "rank init.";
+		$sql = 'INSERT INTO pqr_ranks(player_id,rank_id,count,total,last)
+				VALUES("'.$username.'","2","0","'.getNumRaids($db).'","0")';
+		mysql_query($sql);
+		// Rerun to init the ranks
+		$rank = getRank($db,$username);
+	}
+	
+//	print_r($rank);
+//	echo getNumRaids($db);
+
 	$csceditor = "<form id='csceditor' method='POST' action='lib/plugins/pqraid/cscInterface.php?func=saveCSC()'>
 	<input type='hidden' name='uname' value='".$username."'></input>
 
-					<table class='table'>";
+		<table class='table'>
+		<tr><td></td><td></td><td><td></tr>
+		<tr><td colspan='3'>
+
+		Rank: ".mkRankList(getRankList($db),$username,$rank[$username]['rank_id'])."		
+		
+		</td></tr>
+		<tr><td colspan='3'><hr /></td></tr>";
 	
 	//Get the CSC list (if any)
 	$csclist = getCSCList($username, $db);
@@ -135,7 +253,9 @@ function getCSCEditor(&$db) {
 			name='character_name".$cscid."' 
 			onchange='updateCSC(this.form)' 
 			id='character_name".$cscid."' ></input>
-			".mkRoleList($roles,$cscid,$cscinfo['role_id'])."</div>
+			".mkRoleList($roles,$cscid,$cscinfo['role_id'])."
+			".mkClassList($cscid,$cscinfo['csc_class'])." 
+		</div>
 		</td>
 	</tr>
 	<tr>
@@ -143,7 +263,7 @@ function getCSCEditor(&$db) {
 			".mkAccessTokenBoxes($accesslist,$achievements,$cscid,8)."
 		</td>
 	</tr>
-	<tr><td colspan='2'><hr /></td></tr>";
+	<tr><td colspan='3'><hr /></td></tr>";
 
 			++$x;
 		}

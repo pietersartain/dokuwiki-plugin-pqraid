@@ -33,7 +33,7 @@ switch("ui$func") {
 
 function saveCSC() {
 
-	//print_r($_POST);
+//	print_r($_POST);
 	$username = htmlspecialchars($_POST['uname'],ENT_QUOTES);
 	$db = getDb();
 	
@@ -46,11 +46,18 @@ function saveCSC() {
 		$cscid = $_POST['cscid'.$x];
 		$sql = 'UPDATE pqr_csc SET 
 				character_name = "'.htmlspecialchars($_POST['character_name'.$cscid],ENT_QUOTES).'", 
-				role_id = "'.$_POST['rolelist'.$cscid].'" 
+				role_id = "'.$_POST['rolelist'.$cscid].'", 
+				csc_class = "'.$_POST['classlist'.$cscid].'" 
 				WHERE csc_id='.$cscid.' 
 				AND player_id="'.$username.'"';
 
 		//echo $sql."<br />";
+		runquery($sql,$db);
+
+		// Now update pqr_ranks table with changes to rank
+		$sql = 'UPDATE pqr_ranks SET
+					rank_id = "'.$_POST['ranklist'].'" 
+					WHERE player_id = "'.$username.'"';
 		runquery($sql,$db);
 
 		// Get the existing CSC access list

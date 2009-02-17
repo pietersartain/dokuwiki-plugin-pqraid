@@ -183,6 +183,10 @@ return $astr;
 
 }
 
+/* Show:
+ *		all CSCs + achievements in a grid
+ *		one character achievement
+ */
 function showAchievements(&$db,$character){
 
 	$astr = '';

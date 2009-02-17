@@ -52,11 +52,35 @@ function getCSCFullList(&$db) {
 }
 */
 
+/* Get a list of CSCs grouped by player. Include all relevant CSC info except achievements */
+function getCSCInfoByPlayerID(&$db) {
+	$rslt = mysql_query('SELECT pqr_csc.*, pqr_roles.*, 
+		ROUND((pqr_csc.csc_attended/pqr_csc.csc_possible*100),1) AS csc_percent, 
+		ROUND((pqr_csc.csc_attended/(SELECT COUNT(raid_id) FROM pqr_raids)*100),1) AS csc_totalpercent 
+						FROM pqr_csc 
+						JOIN pqr_roles ON pqr_csc.role_id = pqr_roles.role_id 
+						ORDER BY pqr_csc.player_id ASC, 
+						csc_id ASC');
+	if (!$rslt) die('all csc accesstoken error: '.mysql_error($db));
+
+	$accesslist = null;
+	while ($csc = mysql_fetch_array($rslt,MYSQL_ASSOC)){
+	
+//		print_r($csc);
+//		echo "<br />";
+	
+		$accesslist[$csc['player_id']][$csc['csc_id']] = $csc;
+	}
+	
+	return $accesslist;
+}
+
 /* Get the list of CSCs matching accesstoken list
  */
 function getCSCListWhereAccess(&$db,$raidaccess=null) {
 	$rslt = mysql_query('SELECT pqr_csc.*, pqr_roles.*, 
-		(pqr_csc.csc_attended/pqr_csc.csc_possible*100) AS csc_percent 
+		ROUND((pqr_csc.csc_attended/pqr_csc.csc_possible*100),1) AS csc_percent, 
+		ROUND((pqr_csc.csc_attended/(SELECT COUNT(raid_id) FROM pqr_raids)*100),1) AS csc_totalpercent 
 						FROM pqr_csc 
 						JOIN pqr_roles ON pqr_csc.role_id = pqr_roles.role_id 
 						ORDER BY pqr_csc.player_id ASC, 
@@ -111,7 +135,8 @@ function stripCSCListByAvailability(&$db,$loopday,&$csclist) {
  */
 function getCSCById(&$db,$cscid) {
 	$rslt = mysql_query('SELECT pqr_csc.*, pqr_roles.*, 
-		(pqr_csc.csc_attended/pqr_csc.csc_possible*100) AS csc_percent 
+		ROUND((pqr_csc.csc_attended/pqr_csc.csc_possible*100),1) AS csc_percent, 
+		ROUND((pqr_csc.csc_attended/(SELECT COUNT(raid_id) FROM pqr_raids)*100),1) AS csc_totalpercent 
 						FROM pqr_csc 
 						JOIN pqr_roles ON pqr_csc.role_id = pqr_roles.role_id 
 						WHERE csc_id = '.$cscid.' 
@@ -152,6 +177,35 @@ function getRoleList(&$db) {
 
 	while ($row = mysql_fetch_array($rslt,MYSQL_ASSOC)){
 		$rolelist[$row['role_id']] = $row;
+	}
+
+	return $rolelist;
+}
+
+/* Get ranks
+ */
+function getRankList(&$db) {
+	$rslt = mysql_query('SELECT * FROM pqr_rank_list');
+	if (!$rslt) die('rank sql error: '.mysql_error($db));
+
+	$rolelist = null;
+
+	while ($row = mysql_fetch_array($rslt,MYSQL_ASSOC)){
+		$rolelist[$row['rank_id']] = $row;
+	}
+
+	return $rolelist;
+}
+
+/* Get rank of a player
+ */
+function getRank(&$db,$id) {
+	$rslt = mysql_query('SELECT * FROM pqr_ranks WHERE player_id = "'.$id.'"');
+	if (!$rslt) die('rank sql error: '.mysql_error($db));
+
+	$rolelist = null;
+	while ($row = mysql_fetch_array($rslt,MYSQL_ASSOC)){
+		$rolelist[$row['player_id']] = $row;
 	}
 
 	return $rolelist;
