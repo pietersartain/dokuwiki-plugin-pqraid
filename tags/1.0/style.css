@@ -1,0 +1,280 @@
+/*
+
+	main.css
+	author:	P E Sartain
+	date:	20/10/2008
+
+*/
+
+a:link, a:visited
+{
+   color: #6495ED;
+   text-decoration: none;
+}
+a:hover
+{
+  color: white;
+  text-decoration: underline overline;
+}
+
+#maincontent {
+	background: green;
+}
+
+#calendar,#aeditor {
+	border: 1px solid __border__;
+	border-collapse: collapse;
+	border-spacing: 0px;
+	margin: 0px auto;
+	}
+
+#calendar th {
+	background: __background_other__;
+	border: 0px;
+	}
+
+#aeditor th {
+	background: __background_other__;
+	border: 1px solid __border__;
+	padding: 3px;
+	}
+
+.weekinfo {
+	background: __background_alt__; 
+	font-size: 0.9em;
+	}
+
+div.weekinfo input {
+	background: __background_alt__; 
+	font-size: 0.9em;
+	margin: 2px;
+	border: 0px;
+	border-bottom: 1px solid __text_alt__;
+	}
+
+
+.cell {
+	background: __background__;
+	width: 100px; 
+	height: 100px; 
+	padding: 0px; 
+	border: 1px solid __border__; 
+	margin: 0px;
+	vertical-align: top;
+	}
+
+.cell.today {
+	background: __highlight__;
+	}
+
+.datecell {
+	width: 50px;
+	float: left;
+	margin: 2px 0px 0px 3px;
+	padding: 0px;
+	}
+
+.admincell {
+	float: left;
+	clear: right;
+	width: 15px;
+	}
+
+.raidcell {
+	float: none;
+	margin: 22px 0px 0px 3px;
+	}
+
+.raidcell div.img {
+	width: 35px;
+	height: 35px;
+	float: left;
+	}
+
+.raidcell,div.img img {
+	cursor: pointer;
+	}
+
+.availcell {
+	float: right;
+	width: 13px;
+	margin: 2px 2px 1px 0px;
+	}
+
+.calendarcheck {
+	border: 1px solid black;
+	}
+
+.weekscroller td {
+	text-align: center;
+	}
+
+div#closeX {
+	width: 25px;
+	float: right;
+	font-size: 1.2em;
+	font-weight: bold;
+	}
+
+div#lefthead {
+	font-size: 1.5em;
+	font-weight: bold;
+	border-bottom: 1px solid __border__;
+	margin-bottom: 5px;
+	}
+
+#lefthead img {
+	position: relative;
+	top: 3px;
+	}
+
+#aeditor input {
+	border: 0px solid __text_alt__;
+ 	}
+
+#aeditor td {
+	padding: 2px;
+	border: 1px solid __border__;
+	}
+
+#aeditor img {
+	width: 30px;
+	height: 30px;
+	}
+
+td.img {
+	text-align: center;
+	}
+
+div.over {
+	background: white;
+	font-size: 0.9em;
+	cursor: text;
+	}
+
+div.out {}
+
+div.totalplayers {
+	background: __background_alt__;
+	width: 13px;
+	height: 80px;
+	}
+
+div.unavailplayers {
+	background: red;
+	}
+
+div.availplayers {
+	background: green;
+	}
+
+#editWeekBoxweekinfo0 {
+	width: 450px;
+	}
+
+#editWeekBoxweekinfo7 {
+	width: 450px;
+	}
+
+#editWeekBoxweekinfo14 {
+	width: 450px;
+	}
+
+#editWeekBoxweekinfo21 {
+	width: 450px;
+	}
+
+#linkheader {
+	background-color: blue;
+	}
+
+div.tooltip {
+	position: absolute;
+	visibility: hidden;
+	color: silver;
+	background-color: black;
+	padding: 6px;
+	border: 1px outset purple;
+	z-index: 100000001;
+	max-width: 200px;
+	}
+
+div.black_overlay {
+	display: none; 
+	position: absolute; 
+	top: 0%; 
+	left: 0%; 
+	width: 100%; 
+	height: 100%; 
+	background-color: black; 
+	z-index: 1001; 
+	-moz-opacity: 0.8; 
+	opacity:.80; 
+	filter: alpha(opacity=80);
+	}
+
+div.white_content {
+	display: none; 
+	position: absolute; 
+	top: 10%; 
+	left: 17%; 
+	width: 65%; 
+	height: 70%; 
+	padding: 16px; 
+	border: 1px solid gray; 
+	background-color: white; 
+	z-index: 1002; 
+	overflow: auto;
+	color: black;
+	}
+
+div.unsaved {
+	border: 1px solid red;
+	background: #FF9999;
+}
+
+div.saved {
+	border: 1px solid green;
+	background: #99FF99;
+}
+
+input.achievementcheck {
+	margin: 0px;
+	padding: 0px;
+	position: relative;
+	right: 17px;
+}
+
+img.achievementcheck {
+	position: relative;
+}
+
+div.white_content input,select,textarea {
+	border: 1px solid __border__;
+	background: __background__ url(res/inputshadow.png) repeat-x;
+	}
+
+div.cscplayer {
+	font-size: 1.2em;
+	font-weight: bold;
+	border-bottom: 1px solid __border__;
+	margin-bottom: 5px;
+	}
+
+div.csc {
+	margin-left: 20px;
+	height: 1.3em;
+	}
+
+div#csclist {
+	float: left;
+	width: 25%;
+	height: 80%;
+	overflow: auto;
+	}
+
+div#addnewraid {
+	float: left;
+	width: 60%;
+	margin-right: 15px;
+	}
