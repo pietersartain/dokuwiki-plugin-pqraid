@@ -60,7 +60,7 @@ function mkRankList($roles,$id,$selected) {
 		
 		$rolelist .= "
 		
-			<div id='tip".$rinfo['rank_id']."' class='tooltip'>
+			<div id='ranktip".$rinfo['rank_id']."' class='tooltip'>
 				".$rinfo['rank_desc']."
 			</div>
 		
@@ -68,8 +68,8 @@ function mkRankList($roles,$id,$selected) {
 				type='radio' 
 				name='ranklist' 
 				value='".$rinfo['rank_id']."' 
-				onmouseover='showtip(\"tip".$rinfo['rank_id']."\",3,3)' 
-				onmouseout='hidetip(\"tip".$rinfo['rank_id']."\")'
+				onmouseover='showtip(\"ranktip".$rinfo['rank_id']."\",3,3)' 
+				onmouseout='hidetip(\"ranktip".$rinfo['rank_id']."\")'
 				onchange='updateCSC(this.form)'
 				".$cscset.">".$rinfo['rank_name']."&nbsp;&nbsp;";
 	}
