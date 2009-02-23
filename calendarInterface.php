@@ -175,84 +175,6 @@ function showRaid($raid_id) {
 
 		echo '[[<a href="http://pq.pesartain.com/raid/'.date('Y',$raid_oclock).'/'.date('md',$raid_oclock).'_'.$row['name'].'">Raid notes</a>]]<br /><br />';
 
-		// Get all CSCs
-		$csclist = getCSCInfoByPlayerID($db);
-
-		// Unavailable sign ups
-		$unavailable = getDailyUnavail($db,$raid_oclock);
-
-		$mraid = "
-		<div>
-		<table class='playerlist'>
-			<tr><th>Player</th><th>CSC 1</th><th>CSC 2</th><th>CSC 3</th><th></th></tr>";
-
-		// Get a user list to convert from user_id to a real name
-		$users = _loadUserData();
-
-		$playercount = 0;
-		foreach($csclist as $key=>$player) {
-
-			$disabled = (isset($unavailable[$key])) ? 'class="disabled"' : '';
-
-			$rank = getRank($db,$key);
-
-			$mraid .= "<tr ".$disabled."><td>
-				<img src='".PQIMG."/ranks/".$rank[$key]['rank_id'].".gif' style='height: 16px; width: 16px;' />
-				".$users[$key]['name']."</td>";
-
-			$rows=0;
-			foreach($player as $cscid=>$cscinfo) {
-
-				$checked = (isset($signups[$cscinfo['character_name']])) ? "checked" : ""; 
-
-				$eo = ($signups[$cscinfo['character_name']]['static_raid_organiser'] == $cscinfo['character_name']) ? 1 : ''; 
-				$rl = ($signups[$cscinfo['character_name']]['static_lead_raider'] == $cscinfo['character_name']) ? 1 : ''; 
-	//			$ranked = ($eo || $rl) ? true : false;
-
-				$mraid .= "<td style='background: #".$cscinfo['colour'].";'>
-					<input type='radio' name='playercsc".$key."' value='".$cscid."' disabled 
-						onclick=\"updateRoleCount('".$playercount."','".$cscinfo['role_id']."');\"
-						".$checked."
-					/>
-					<img src='".PQIMG."/classes/16".strtolower($cscinfo['csc_class']).".png' style='' />";
-
-					$mraid .= $cscinfo['character_name']." - 		
-					<span>".$cscinfo['csc_percent']."% / ".$cscinfo['csc_totalpercent']."%</span>";
-
-					if ($eo) $mraid .= "<img src='".PQIMG."/ranks/2.gif' style='height: 16px; width: 16px;' />";
-					if ($rl) $mraid .= "<img src='".PQIMG."/ranks/1.gif' style='height: 16px; width: 16px;' />";
-
-				$mraid .= "</td>";
-				++$rows;
-			}
-
-			for ($x = $rows; $x < 3; $x++){
-				$mraid .= "<td></td>";
-			}
-
-			$mraid .= "<td width='20px'>
-				<input type='radio' name='playercsc".$key."' value='0' disabled 
-					onclick=\"updateRoleCount('".$playercount."','0');\"
-				/>
-			</td>";
-
-			$mraid .= "</tr>";
-			++$playercount;
-		}
-
-		$mraid .= "</table></div>";
-
-		echo $mraid;
-		
-		
-		$cscs='';
-		if ($signups != null) {
-			foreach($signups as $csc) {	
-				$cscs.=
-					"<div style='background: #".$csc['csc_role_colour']."'>".
-					$csc['csc_name']."</div>";
-			}
-		}
 
 		// Achievement information
 		$alist = getAchievementList($db);
@@ -300,9 +222,110 @@ onmouseover="showtip(\'atip'.$at['achievement_id'].'\',-220,-60)"
 			}
 
 			$count++;
-		}		
-	
-			
+		}
+
+
+		// Get all CSCs
+		$csclist = getCSCInfoByPlayerID($db);
+
+		// Unavailable sign ups
+		$unavailable = getDailyUnavail($db,$raid_oclock);
+
+		$mraid = "
+		<div>
+		<table class='playerlist'>
+			<tr><th>Player</th><th>CSC 1</th><th>CSC 2</th><th>CSC 3</th><th></th></tr>";
+
+		// Get a user list to convert from user_id to a real name
+		$users = _loadUserData();
+
+		$playercount = 0;
+		foreach($csclist as $key=>$player) {
+
+			$disabled = (isset($unavailable[$key])) ? 'class="disabled"' : '';
+
+			$rank = getRank($db,$key);
+
+			$mraid .= "<tr ".$disabled."><td>
+				<img src='".PQIMG."/ranks/".$rank[$key]['rank_id'].".gif' style='height: 16px; width: 16px;' />
+				".$users[$key]['name']."</td>";
+
+			$rows=0;
+			foreach($player as $cscid=>$cscinfo) {
+
+				$checked = (isset($signups[$cscinfo['character_name']])) ? "checked" : ""; 
+
+				$eo = ($signups[$cscinfo['character_name']]['static_raid_organiser'] == $cscinfo['character_name']) ? 1 : ''; 
+				$rl = ($signups[$cscinfo['character_name']]['static_lead_raider'] == $cscinfo['character_name']) ? 1 : ''; 
+	//			$ranked = ($eo || $rl) ? true : false;
+
+				$cscaccess = getCSCAccessTokens($cscid,$db);
+				
+				$access = "<div id='accesstip$cscid' class='tooltip'>";
+				
+				/* This is looping through ALL The achievements per character, for ALL characters, just to print out
+				 * the access list.
+				 * The function in achievements @ line 247 is inlined, this probably needs
+				 * extracting and using here.
+				 */
+				foreach($alist as $aid=>$at) {
+					if (isset($cscaccess[$aid])) {			
+						$access .= '<img src="'.PQIMG.'/'.$at['icon'].'" 
+						title="'.$at['long_name'].'" class="achievementcheck"
+						width=29
+						height=31
+						></img>';
+					}
+				}
+				$access .= "</div>";
+
+				$mraid .= "<td style='background: #".$cscinfo['colour'].";'>";
+				$mraid .= $access."
+					<input type='radio' name='playercsc".$key."' value='".$cscid."' disabled 
+						onclick=\"updateRoleCount('".$playercount."','".$cscinfo['role_id']."');\"
+						".$checked."
+					/>
+					<img src='".PQIMG."/classes/16".strtolower($cscinfo['csc_class']).".png' style='' ";
+					$mraid .= 'onmouseover="showtip(\'accesstip'.$cscid.'\',-220,-60)"
+						onmouseout="hidetip(\'accesstip'.$cscid.'\')" />';
+					$mraid .= '<span class="csc_name">'.$cscinfo['character_name']."</span> - 		
+					<span>".$cscinfo['csc_percent']."% / ".$cscinfo['csc_totalpercent']."%</span>";
+
+					if ($eo) $mraid .= "<img src='".PQIMG."/ranks/2.gif' style='height: 16px; width: 16px;' />";
+					if ($rl) $mraid .= "<img src='".PQIMG."/ranks/1.gif' style='height: 16px; width: 16px;' />";
+
+				$mraid .= "</td>";
+				++$rows;
+			}
+
+			for ($x = $rows; $x < 3; $x++){
+				$mraid .= "<td></td>";
+			}
+
+			$mraid .= "<td width='20px'>
+				<input type='radio' name='playercsc".$key."' value='0' disabled 
+					onclick=\"updateRoleCount('".$playercount."','0');\"
+				/>
+			</td>";
+
+			$mraid .= "</tr>";
+			++$playercount;
+		}
+
+		$mraid .= "</table></div>";
+
+		echo $mraid;
+		
+		
+		$cscs='';
+		if ($signups != null) {
+			foreach($signups as $csc) {	
+				$cscs.=
+					"<div style='background: #".$csc['csc_role_colour']."'>".
+					$csc['csc_name']."</div>";
+			}
+		}
+		
 		$str = '
 		
 		<div id="leftfloat">'.$cscs.'</div>
@@ -335,84 +358,6 @@ function showMakeRaid($datestring) {
 	action='".PQDIR."/calendarInterface.php?func=saveRaid'>";
 	
 	echo $mraid;
-
-
-	// Get all CSCs
-	$csclist = getCSCInfoByPlayerID($db);
-
-	// Unavailable sign ups
-	$unavailable = getDailyUnavail($db,$datestring);
-
-	$mraid = "
-	<div>
-	<table class='playerlist'>
-		<tr><th>Player</th><th>CSC 1</th><th>CSC 2</th><th>CSC 3</th><th></th></tr>";
-
-	// Get a user list to convert from user_id to a real name
-	$users = _loadUserData();
-
-	$playercount = 0;
-	foreach($csclist as $key=>$player) {
-
-		if (isset($unavailable[$key])) {
-			$disabled = 'class="disabled"';
-			$disabledbutton = 'disabled';
-		} else {
-			$disabled = '';
-			$disabledbutton = '';
-		}
-		
-		$rank = getRank($db,$key);
-
-		$mraid .= "<tr ".$disabled."><td>
-			<img src='".PQIMG."/ranks/".$rank[$key]['rank_id'].".gif' style='height: 16px; width: 16px;' />
-			".$users[$key]['name']."</td>";
-
-		$rows=0;
-		foreach($player as $cscid=>$cscinfo) {
-			$mraid .= "<td style='background: #".$cscinfo['colour'].";'>
-			
-				<input type='radio' name='playercsc".$key."' value='".$cscid."' ".$disabledbutton." 
-					onclick=\"updateRoleCount('".$playercount."','".$cscinfo['role_id']."');\"
-				/>
-				<img src='".PQIMG."/classes/16".strtolower($cscinfo['csc_class']).".png' style='' />
-				".$cscinfo['character_name']." - 		
-				<span>".$cscinfo['csc_percent']."% / ".$cscinfo['csc_totalpercent']."%</span>
-			
-			</td>";
-			++$rows;
-		}
-
-		for ($x = $rows; $x < 3; $x++){
-			$mraid .= "<td></td>";
-		}
-		
-		$mraid .= "<td width='20px'>
-			<input type='radio' name='playercsc".$key."' value='0' ".$disabledbutton." checked 
-				onclick=\"updateRoleCount('".$playercount."','0');\"
-			/>
-		</td>";
-
-		$mraid .= "</tr>";
-		++$playercount;
-	}
-
-	$mraid .= "</table></div>";
-
-	echo $mraid;
-
-	// Role information
-	$rlist = getRoleList($db);	
-
-	$rolenames='';
-	$roleboxes='';
-	foreach ($rlist as $token) {
-		$rolenames.=$token['name']."/";
-		$roleboxes.=" <input type='text' size='1' name='rolecount' id='rolecount".$token['role_id']."'
-		style='background: #".$token['colour']."' value='0'>";
-	}
-	$rolenames=rtrim($rolenames,"/");
-
 
 	// Achievement information
 	$alist = getAchievementList($db);
@@ -450,6 +395,106 @@ function showMakeRaid($datestring) {
 		
 		$count++;
 	}
+
+	// Get all CSCs
+	$csclist = getCSCInfoByPlayerID($db);
+
+	// Unavailable sign ups
+	$unavailable = getDailyUnavail($db,$datestring);
+
+	$mraid = "
+	<div>
+	<table class='playerlist'>
+		<tr><th>Player</th><th>CSC 1</th><th>CSC 2</th><th>CSC 3</th><th></th></tr>";
+
+	// Get a user list to convert from user_id to a real name
+	$users = _loadUserData();
+
+	$playercount = 0;
+	foreach($csclist as $key=>$player) {
+
+		if (isset($unavailable[$key])) {
+			$disabled = 'class="disabled"';
+			$disabledbutton = 'disabled';
+		} else {
+			$disabled = '';
+			$disabledbutton = '';
+		}
+		
+		$rank = getRank($db,$key);
+
+		$mraid .= "<tr ".$disabled."><td>
+			<img src='".PQIMG."/ranks/".$rank[$key]['rank_id'].".gif' style='height: 16px; width: 16px;' />
+			".$users[$key]['name']."</td>";
+
+		$rows=0;
+		foreach($player as $cscid=>$cscinfo) {
+
+
+			$cscaccess = getCSCAccessTokens($cscid,$db);
+			$access = "<div id='accesstip$cscid' class='tooltip'>";
+
+			/* This is looping through ALL The achievements per character, for ALL characters, just to print out
+			 * the access list.
+			 * The function in achievements @ line 247 is inlined, this probably needs
+			 * extracting and using here.
+			 */
+			foreach($alist as $aid=>$at) {
+				if (isset($cscaccess[$aid])) {			
+					$access .= '<img src="'.PQIMG.'/'.$at['icon'].'" 
+					title="'.$at['long_name'].'" class="achievementcheck"
+					width=29
+					height=31
+					></img>';
+				}
+			}
+			$access .= "</div>";
+
+			$mraid .= "<td style='background: #".$cscinfo['colour'].";'>".$access."
+			
+				<input type='radio' name='playercsc".$key."' value='".$cscid."' ".$disabledbutton." 
+					onclick=\"updateRoleCount('".$playercount."','".$cscinfo['role_id']."');\"
+				/>
+				<img src='".PQIMG."/classes/16".strtolower($cscinfo['csc_class']).".png' style='' ";
+			$mraid .='onmouseover="showtip(\'accesstip'.$cscid.'\',-220,-60)"
+						onmouseout="hidetip(\'accesstip'.$cscid.'\')"
+						/>';
+			$mraid .= $cscinfo['character_name']." - 		
+				<span>".$cscinfo['csc_percent']."% / ".$cscinfo['csc_totalpercent']."%</span>
+			
+			</td>";
+			++$rows;
+		}
+
+		for ($x = $rows; $x < 3; $x++){
+			$mraid .= "<td></td>";
+		}
+		
+		$mraid .= "<td width='20px'>
+			<input type='radio' name='playercsc".$key."' value='0' ".$disabledbutton." checked 
+				onclick=\"updateRoleCount('".$playercount."','0');\"
+			/>
+		</td>";
+
+		$mraid .= "</tr>";
+		++$playercount;
+	}
+
+	$mraid .= "</table></div>";
+
+	echo $mraid;
+
+	// Role information
+	$rlist = getRoleList($db);	
+
+	$rolenames='';
+	$roleboxes='';
+	foreach ($rlist as $token) {
+		$rolenames.=$token['name']."/";
+		$roleboxes.=" <input type='text' size='1' name='rolecount' id='rolecount".$token['role_id']."'
+		style='background: #".$token['colour']."' value='0'>";
+	}
+	$rolenames=rtrim($rolenames,"/");
 
 	$mraid = "	
 	<div id='leftfloat'>
