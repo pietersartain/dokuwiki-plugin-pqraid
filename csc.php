@@ -8,6 +8,7 @@
 
 include_once "cscfunc.php";
 include_once "calendarFunc.php";
+include_once "defines.php";
 
 /* Build a drop box from $roles, with the id rolelist.$id and optionally
  * set the value to $selected (where $roles[..]['role_id'] == $selected)
@@ -64,7 +65,7 @@ function mkRankList($roles,$id,$selected) {
 				".$rinfo['rank_desc']."
 			</div>
 		
-			<img src='".PQIMG."/ranks/".$rinfo['rank_id'].".gif' style='height: 16px; width: 16px;' />;
+			<img src='".PQIMG."/ranks/".$rinfo['rank_id'].".gif' style='height: 16px; width: 16px;' />
 			<input 
 				type='radio' 
 				name='ranklist' 
