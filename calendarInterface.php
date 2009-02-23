@@ -163,6 +163,87 @@ function showRaid($raid_id) {
 		$row = mysql_fetch_array($rslt);
 	
 		$signups = getSignupsByDay($db,$raid_id);
+
+		$raid_oclock = strtotime($row['raid_oclock']);
+
+		$str ='
+		<div id="closeX"><a href="#" onclick="boxit()">X</a></div>
+		<div id="lefthead"><img src="'.PQIMG.'/'.$row['icon'].'"></img>
+		'.$row['name'].' - '.date("d/m/Y H:i",$raid_oclock).'
+		</div>';
+		echo $str;
+
+		echo '[[<a href="http://pq.pesartain.com/raid/'.date('Y',$raid_oclock).'/'.date('md',$raid_oclock).'_'.$row['name'].'">Raid notes</a>]]<br /><br />';
+
+		// Get all CSCs
+		$csclist = getCSCInfoByPlayerID($db);
+
+		// Unavailable sign ups
+		$unavailable = getDailyUnavail($db,$raid_oclock);
+
+		$mraid = "
+		<div>
+		<table class='playerlist'>
+			<tr><th>Player</th><th>CSC 1</th><th>CSC 2</th><th>CSC 3</th><th></th></tr>";
+
+		// Get a user list to convert from user_id to a real name
+		$users = _loadUserData();
+
+		$playercount = 0;
+		foreach($csclist as $key=>$player) {
+
+			$disabled = (isset($unavailable[$key])) ? 'class="disabled"' : '';
+
+			$rank = getRank($db,$key);
+
+			$mraid .= "<tr ".$disabled."><td>
+				<img src='".PQIMG."/ranks/".$rank[$key]['rank_id'].".gif' style='height: 16px; width: 16px;' />
+				".$users[$key]['name']."</td>";
+
+			$rows=0;
+			foreach($player as $cscid=>$cscinfo) {
+
+				$checked = (isset($signups[$cscinfo['character_name']])) ? "checked" : ""; 
+
+				$eo = ($signups[$cscinfo['character_name']]['static_raid_organiser'] == $cscinfo['character_name']) ? 1 : ''; 
+				$rl = ($signups[$cscinfo['character_name']]['static_lead_raider'] == $cscinfo['character_name']) ? 1 : ''; 
+	//			$ranked = ($eo || $rl) ? true : false;
+
+				$mraid .= "<td style='background: #".$cscinfo['colour'].";'>
+					<input type='radio' name='playercsc".$key."' value='".$cscid."' disabled 
+						onclick=\"updateRoleCount('".$playercount."','".$cscinfo['role_id']."');\"
+						".$checked."
+					/>
+					<img src='".PQIMG."/classes/16".strtolower($cscinfo['csc_class']).".png' style='' />";
+
+					$mraid .= $cscinfo['character_name']." - 		
+					<span>".$cscinfo['csc_percent']."% / ".$cscinfo['csc_totalpercent']."%</span>";
+
+					if ($eo) $mraid .= "<img src='".PQIMG."/ranks/2.gif' style='height: 16px; width: 16px;' />";
+					if ($rl) $mraid .= "<img src='".PQIMG."/ranks/1.gif' style='height: 16px; width: 16px;' />";
+
+				$mraid .= "</td>";
+				++$rows;
+			}
+
+			for ($x = $rows; $x < 3; $x++){
+				$mraid .= "<td></td>";
+			}
+
+			$mraid .= "<td width='20px'>
+				<input type='radio' name='playercsc".$key."' value='0' disabled 
+					onclick=\"updateRoleCount('".$playercount."','0');\"
+				/>
+			</td>";
+
+			$mraid .= "</tr>";
+			++$playercount;
+		}
+
+		$mraid .= "</table></div>";
+
+		echo $mraid;
+		
 		
 		$cscs='';
 		if ($signups != null) {
@@ -221,22 +302,19 @@ onmouseover="showtip(\'atip'.$at['achievement_id'].'\',-220,-60)"
 			$count++;
 		}		
 	
-		$raid_oclock = strtotime($row['raid_oclock']);
-	
-		$str ='
-		<div id="closeX"><a href="#" onclick="boxit()">X</a></div>
-		<div id="lefthead"><img src="'.PQIMG.'/'.$row['icon'].'"></img>
-		'.$row['name'].' - '.date("d/m/Y H:i",$raid_oclock).'</div>
+			
+		$str = '
 		
-		<div id="addnewraid">
+		<div id="leftfloat">'.$cscs.'</div>
+		<div id="rightfloat">
 		'.$row['info'].'<br>
 		'.$achievements.'
-		</div>
-		<div id="csclist">'.$cscs.'</div>';
+		</div>';
 		
 		
 	
 		echo $str;
+	
 	} else {
 		echo "Fudged.";
 	}
@@ -696,8 +774,13 @@ function saveRaid() {
 
 
 	// Get a CSC list, limit by access for this raid
-	$csclist = getCSCListWhereAccess($db,$raidaccess);
-	
+//	$csclist = getCSCListWhereAccess($db,$raidaccess);
+	$csclist = getCSCListWhereAccess($db,null); // Turned off for now
+
+	// Update the total raids, for everyone
+	$sql = "UPDATE pqr_ranks SET total=total+1";
+	runquery($sql,$db);
+
 	// Trim that down by day
 	stripCSCListByAvailability($db,$loopday,$csclist);
 
@@ -728,10 +811,10 @@ function saveRaid() {
 					runquery($sql,$db);
 				} else {
 					$updatepossible = 0;
-				}	
+				}
 			}
 		}
-
+		
 		// Randomise the raid leader
 		list($leader,$eo) = getRandomLeader($raidinvites,$db);
 		
@@ -748,6 +831,7 @@ function saveRaid() {
 		sendRaidMessage($_POST['raidname'],
 			$_POST['time'],
 			$leader,
+			$eo,
 			htmlspecialchars($_POST['raid_note'],ENT_QUOTES),
 			$to,
 			array($csc['character_name'],$csc['name']),
@@ -775,6 +859,7 @@ function saveRaid() {
 	sendRaidMessage($_POST['raidname'],
 		$_POST['time'],
 		$leader,
+		$leader,
 		htmlspecialchars($_POST['raid_note'],ENT_QUOTES),
 		$to,
 		array($csc['character_name'],$csc['name']),
@@ -794,12 +879,19 @@ function saveRaid() {
 		}
 	}
 
-	//header("location: ".WIKIROOT."/doku.php?id=raid");
+	header("location: ".WIKIROOT."/doku.php?id=raid");
 
+}
+
+function deleteRaid() {
+	$db = getDB();
 }
 
 /*********** HELPER FUNCTIONS, NOT AJAX LINKED ****************/
 
+/* This is hardcoded to return a leader and an EO.
+ * 
+ */
 function getRandomLeader(&$csclist,&$db) {
 // This mostly returned Luke
 /*
@@ -808,15 +900,82 @@ function getRandomLeader(&$csclist,&$db) {
 	list($leader) = getCSCById($db,$leader_id);
 */
 
+//	print_r($csclist);
+
 	foreach($csclist as $csc) {
 		$rankinfo = getRank($db,$csc['player_id']);
-		$rank_check_list[$csc['player_id']] = ($raidinfo['last'] - $raidinfo['count']);
-	}
+		// You can't use list() with non-numeric array indices.
+		$rankinfo = $rankinfo[$csc['player_id']];
+
+		print_r($rankinfo);
+		echo "<br>";
+
+		if ((int)($rankinfo['rank_id']) == 2) {
+			// Event organiser list
+			$eo[] = array(($rankinfo['last'] - $rankinfo['count']),$csc['csc_id'],$csc['character_name'],$csc['player_id']);
+		} else {
+			// Lead raider list
+			$lr[] = array(($rankinfo['last'] - $rankinfo['count']),$csc['csc_id'],$csc['character_name'],$csc['player_id']);
+		}
+
+		$sql = "UPDATE pqr_ranks SET count=count+1 
+				WHERE player_id='".$csc['player_id']."'";
+		runquery($sql,$db);
 		
-	print_r($rank_check_list);
+	}
 	
+	print_r($eo);
+	
+	if (isset($eo)) {
+		
+		multi2dSortAsc($eo,0);
+		$eo_id = array_slice($eo,0,1);
+		$eo_id = $eo_id[0];
+		
+		$sql = "UPDATE pqr_ranks SET last=last+1 
+				WHERE player_id='".$eo_id[3]."'";
+		runquery($sql,$db);
+		
+		$organiser = $eo_id[2];
+		
+	} else {
+		echo "EO: Fallback.";
+		$loffset = rand(0,(count($csclist)-1));
+		list($eo_id) = array_slice($csclist,$loffset,1);
+		list($organiser) = getCSCById($db,$eo_id['csc_id']);
+		$organiser = $organiser['character_name'];		
+	}
+
+	if (isset($lr)) {
+		multi2dSortAsc($lr,0);
+		$lr_id = array_slice($lr,0,1);
+		$lr_id = $lr_id[0];
+
+		$sql = "UPDATE pqr_ranks SET last=last+1 
+				WHERE player_id='".$lr_id[3]."'";
+		runquery($sql,$db);
+
+		$leader = $lr_id[2];
+
+	} else {
+		echo "LR: Fallback.";
+		$loffset = rand(0,(count($csclist)-1));
+		list($lr_id) = array_slice($csclist,$loffset,1);
+		list($leader) = getCSCById($db,$lr_id['csc_id']);
+		$leader = $leader['character_name'];		
+	}
+
 	// These should just be text values.
 	return array($leader,$organiser);
+}
+
+/* 2d multi sorting, from:
+ * http://www.prodevtips.com/2008/01/06/sorting-2d-arrays-in-php-anectodes-and-reflections/
+ */
+function multi2dSortAsc(&$arr, $key){ 
+  $sort_col = array(); 
+  foreach ($arr as $sub) $sort_col[] = $sub[$key]; 
+  array_multisort($sort_col, $arr); 
 }
 
 // List raid icons, mark $sel as selected
@@ -898,12 +1057,15 @@ $AUTH_USERFILE = DOCROOT."/conf/users.auth.php";
   return $users;
 }
 
-function sendRaidMessage($raidname,$time,$leader,$notes,$to,$yourcsc,$yourraid) {
+function sendRaidMessage($raidname,$time,$leader,$eo,$notes,$to,$yourcsc,$yourraid) {
 	$subj = '[PQ Raid] '.$raidname.' ('.date('l d/m/Y H:i',$time).')';
-	$message = 'Peace and Quiet cordially invite '.$yourcsc[0].' ('.$yourcsc[1].') to '.$raidname.' on '.date('l d/m/Y H:i',$time).'. Your raid leader will be '.$leader['character_name'].'. Please ensure you arrive up on time and prepared; '.$leader['character_name'].' will thank you for it!'."<br>\r\n<br>\r\n";
-	$message .= 'If you are the raid leader, invitations should be sent at a convenient time and the first pull should be close to the start of the raid time to get as much out of the session as possible.'."<br>\r\n<br>\r\n";
-	$message .= 'The raid notes:'."<br>\r\n<br>\r\n".$notes."<br>\r\n<br>\r\n";
-	$message .= 'Enjoy yourselves and remember, if you\'re not having fun, you\'re not doing it right!'."<br>\r\n<br>\r\n";
+	$message = 'Peace and Quiet cordially invite '.$yourcsc[0].' ('.$yourcsc[1].') to '.$raidname.' on '.date('l d/m/Y H:i',$time).'. 
+				Your event organiser is '.$eo.', to whom scheduling related problems should be addressed.'."<br>\r\n<br>\r\n";
+	$message .= 'Your lead raider is '.$leader.', to whom all other issues should be addressed.'."<br>\r\n<br>\r\n";
+	$message .= 'The latest raid notes for this raid are located at:'."<br>\r\n";
+	$message .= 'http://pq.pesartain.com/raid/'.date('Y',$time).'/'.date('md',$time).'_'.$raidname.''."<br>\r\n<br>\r\n";
+	$message .= 'Please remember it is your responsibility to locate your own replacement and to inform the EO that you are doing so.'."<br>\r\n<br>\r\n";
+	$message .= 'Good luck in there; enjoy yourselves and remember, if you\'re not having fun, you\'re not doing it right!'."<br>\r\n<br>\r\n";
 	$message .= ' - Peace and Quiet.'."<br>\r\n<br>\r\n";
 	$message .= 'Your fellow raiders will be:'."<br>\r\n";
 

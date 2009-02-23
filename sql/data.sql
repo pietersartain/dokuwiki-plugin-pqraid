@@ -1,3 +1,6 @@
+DELETE FROM pqr_csc;
+DELETE FROM pqr_cscorder;
+
 INSERT INTO pqr_csc(player_id,character_name,role_id) VALUES('a','a1',2);
 INSERT INTO pqr_csc(player_id,character_name,role_id) VALUES('a','a2',1);
 INSERT INTO pqr_csc(player_id,character_name,role_id) VALUES('a','',-1);
