@@ -64,6 +64,7 @@ function mkRankList($roles,$id,$selected) {
 				".$rinfo['rank_desc']."
 			</div>
 		
+			<img src='".PQIMG."/ranks/".$rinfo['rank_id'].".gif' style='height: 16px; width: 16px;' />;
 			<input 
 				type='radio' 
 				name='ranklist' 
