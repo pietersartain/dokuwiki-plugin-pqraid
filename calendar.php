@@ -58,9 +58,8 @@ $totalplayers = getCSCNumber($db);
 $unavailable = getUnavailable($db,$week-1,$week+3,$username);
 
 // Start and end dates, used for ajax display updates:
-$firstday = mktime(0, 0, 0, gmdate("m",getRaidEpoch()), gmdate("d",getRaidEpoch())-7+($week*7)-3, gmdate("Y",getRaidEpoch()));
-
-$lastday = mktime(0, 0, 0, gmdate("m",getRaidEpoch()), gmdate("d",getRaidEpoch())+21+($week*7)-3, gmdate("Y",getRaidEpoch()));
+$firstday = mktime(0, 0, 0, date("m",getRaidEpoch()), date("j",getRaidEpoch())-7+($week*7)-3, date("Y",getRaidEpoch()));
+$lastday = mktime(0, 0, 0, date("m",getRaidEpoch()), date("j",getRaidEpoch())+21+($week*7)-3, date("Y",getRaidEpoch()));
 
 	// Calendar header
 	$calendar='
@@ -96,23 +95,52 @@ $lastday = mktime(0, 0, 0, gmdate("m",getRaidEpoch()), gmdate("d",getRaidEpoch()
 		echo $loopday."::".date("d/m/Y",$loopday)."<br>";
 	}
 */
+
+/**************
+putenv("TZ=America/Los_Angeles");
+//1234771200
+
+for ($days=-7;$days<21;$days++) {
+
+		$loopday = mktime(0, 0, 0, date("n",getRaidEpoch()), date("j",getRaidEpoch())+$days+($week*7)-3, date("Y",getRaidEpoch()));
+
+
+// More debug info
+		$dbg = "1: ".$loopday." | ".date("m/d/Y H:i",$loopday)." | ".date("w",$loopday)." | ".($days+($week*7)-3)." : ".dateToWeek($loopday)."-";
+		$dbg .= "1: ".getRaidEpoch()." :: ".getToday()."<br>";
+		if ($loopday == getToday()) {
+			echo "<b>".$dbg."</b>";
+		} else {
+			echo $dbg;
+		}
+}
+/**************/
+
+
+/******
+putenv("TZ=Europe/London");
+/******/
+
 	for ($days=-7;$days<21;$days++) {
 
 		// The loopday is all relative to the raiding epoch
 		//	+$days		-- iterates through 28 cells only
 		// +($week*7)	-- allows viewing to cycle by week, not day
 		// -3			-- a constant to align the epoch to a Monday
-		$loopday = mktime(0, 0, 0, gmdate("m",getRaidEpoch()), gmdate("d",getRaidEpoch())+$days+($week*7)-3, gmdate("Y",getRaidEpoch()));
+
+		$loopday = mktime(0, 0, 0, date("n",getRaidEpoch()), date("j",getRaidEpoch())+$days+($week*7)-3, date("Y",getRaidEpoch()));
 
 
 // More debug info
-/*		$dbg = $loopday." | ".date("w",$loopday)." | ".($days+($week*7)-3)." : ".dateToWeek($loopday)."<br />";
+/*****************
+		$dbg = "0: ".$loopday." | ".date("m/d/Y H:i",$loopday)." | ".date("w",$loopday)." | ".($days+($week*7)-3)." : ".dateToWeek($loopday)."-";
+		$dbg .= "0: ".getRaidEpoch()." :: ".getToday()."<br>";
 		if ($loopday == getToday()) {
 			echo "<b>".$dbg."</b>";
 		} else {
 			echo $dbg;
 		}
-*/
+/*****************/
 
 		if (($days % 7) == 0) {
 			
@@ -168,7 +196,7 @@ $lastday = mktime(0, 0, 0, gmdate("m",getRaidEpoch()), gmdate("d",getRaidEpoch()
 		// Cell content divs:
 		
 		// date
-		$calendar.='<div class="datecell"><a href="doku.php?id=feeds:raids:'.date('Ymj',$loopday).'">'.date('M j',$loopday).'</a></div>';
+		$calendar.='<div class="datecell">'.date('M j',$loopday).'</div>';
 		
 		if ($isadmin) {
 			// admin
@@ -192,6 +220,8 @@ $lastday = mktime(0, 0, 0, gmdate("m",getRaidEpoch()), gmdate("d",getRaidEpoch()
 			
 			// How many people are unavailable?
 			$unavailable_num = count(getDailyUnavail($db,$loopday));
+			
+			//echo $unavailable_num;
 			
 			// How many are available?
 			$available = $totalplayers - $unavailable_num;

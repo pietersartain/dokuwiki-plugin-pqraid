@@ -28,7 +28,7 @@ function testdb($db,$udb)
 	if (!mysql_select_db($udb,$db)) {
 		printf("Connection failed: ".mysql_error($db)."<br>");
 	} else {
-		printf("Hua! Everything worked.<br><br><a href='?typ=forms'>Return</a>");
+		printf("Now connected to ".$udb."<br><br><a href='?typ=forms'>Return</a>");
 	}
 		
 }
@@ -138,7 +138,10 @@ th {background-color: #cceeff;}
 
 <a href="?typ=iall">Install all SQL</a><br><br>
 
-<a href="?typ=reset">Reset (clear / install all)</a><br>
+<a href="?typ=reset">Reset (clear / install all)</a><br><br>
+
+<a href="?typ=sync">Copy pq into pqdev</a><br>
+
 
 <h4>Table instantiation</h4>
 <table width=450>
@@ -277,6 +280,13 @@ $d->close();
 	case "password":
 		$passwordhash = sha1($_GET['password']);
 		printf($_GET['password']." hashes to: ".$passwordhash);
+	break;
+	
+	case "sync":
+	// Copy PQ over to PQDEV
+	system("mysqldump -u pesar2_pq --password=ollyship02 pesar2_pq | mysql -u pesar2_pqdev --password=ollyship02 pesar2_pqdev");
+	system("cp -a /home/pesar2/public_html/pq/conf/users.auth.php /home/pesar2/public_html/pqdev/conf/users.auth.php");
+	echo '<a href="?typ=forms">Return</a><br><br>';
 	break;
 
 }

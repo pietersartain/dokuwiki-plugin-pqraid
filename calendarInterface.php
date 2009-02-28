@@ -101,10 +101,15 @@ function saveUnavailable() {
 	$username = htmlspecialchars($_POST['uname'],ENT_QUOTES);
 	$db = getDb();
 
-	print_r($_POST);
-	
 	// Get the players existing information
 	$unavail = getUnavailable($db,$_POST['start'],$_POST['end'],$username);
+
+	/***********
+		print_r($_POST);
+		echo "<br><br>";
+		print_r($unavail);
+		echo "<br><br>";
+	/***********/
 	
 	// The current week, for sanity we'll use the same var as calendar.
 	$week = (int)$_POST['start'] +1;
@@ -114,7 +119,12 @@ function saveUnavailable() {
 		//	+$days		-- iterates through 28 cells only
 		// +($week*7)	-- allows viewing to cycle by week, not day
 		// -3			-- a constant to align the epoch to a Monday
-		$loopday = mktime(0, 0, 0, gmdate("m",getRaidEpoch()), gmdate("d",getRaidEpoch())+$days+($week*7)-3, gmdate("Y",getRaidEpoch()));
+		$loopday = mktime(0, 0, 0, date("n",getRaidEpoch()), date("j",getRaidEpoch())+$days+($week*7)-3, date("Y",getRaidEpoch()));
+		
+		/***********
+		$dbg = "1: ".$loopday." | ".date("m/d/Y H:i",$loopday)."<br>";
+		echo $dbg;
+		/***********/
 		
 		// Convert both the form and unavail information into easier
 		// variables, for comparison later on.
@@ -141,10 +151,10 @@ function saveUnavailable() {
 			if ($newtoken && !$oldtoken) {
 				$sql = "INSERT INTO
 					pqr_unavail(player_id,unavail) 
-					VALUES('".$username."',FROM_UNIXTIME(".$loopday."))";
+					VALUES('".$username."','".gmdate("Y-m-d H:i:s",$loopday)."')";
 			} else {
 				$sql = "DELETE FROM pqr_unavail WHERE
-					unavail=FROM_UNIXTIME(".$loopday.") AND 
+					unavail='".gmdate("Y-m-d H:i:s",$loopday)."' AND 
 					player_id='".$username."'";
 			}
 			echo $sql."<br>";
@@ -166,7 +176,7 @@ function showRaid($raid_id) {
 
 		$raid_oclock = strtotime($row['raid_oclock']);
 
-		$str ='
+		$str ='		
 		<div id="closeX"><a href="#" onclick="boxit()">X</a></div>
 		<div id="lefthead"><img src="'.PQIMG.'/'.$row['icon'].'"></img>
 		'.$row['name'].' - '.date("d/m/Y H:i",$raid_oclock).'
@@ -263,8 +273,8 @@ onmouseover="showtip(\'atip'.$at['achievement_id'].'\',-220,-60)"
 				
 				$access = "<div id='accesstip$cscid' class='tooltip'>";
 				
-				/* This is looping through ALL The achievements per character, for ALL characters, just to print out
-				 * the access list.
+				/* This is looping through ALL The achievements per character, for ALL characters, 
+				 * just to print out the access list.
 				 * The function in achievements @ line 247 is inlined, this probably needs
 				 * extracting and using here.
 				 */
@@ -286,9 +296,13 @@ onmouseover="showtip(\'atip'.$at['achievement_id'].'\',-220,-60)"
 						".$checked."
 					/>
 					<img src='".PQIMG."/classes/16".strtolower($cscinfo['csc_class']).".png' style='' ";
-					$mraid .= 'onmouseover="showtip(\'accesstip'.$cscid.'\',-220,-60)"
-						onmouseout="hidetip(\'accesstip'.$cscid.'\')" />';
-					$mraid .= '<span class="csc_name">'.$cscinfo['character_name']."</span> - 		
+					$mraid .= ' />';
+					$mraid .= '<div class="csc_name"
+					
+					onmouseover="showtip(\'accesstip'.$cscid.'\',-200,-60)"
+					onmouseout="hidetip(\'accesstip'.$cscid.'\')"
+					
+					>'.$cscinfo['character_name']."</div> - 		
 					<span>".$cscinfo['csc_percent']."% / ".$cscinfo['csc_totalpercent']."%</span>";
 
 					if ($eo) $mraid .= "<img src='".PQIMG."/ranks/2.gif' style='height: 16px; width: 16px;' />";
@@ -350,6 +364,18 @@ function showMakeRaid($datestring) {
 
 
 	$mraid="
+	
+		<table>
+			<tr>
+				<td>M</td>
+				<td>T</td>
+				<td>W</td>
+				<td>T</td>
+				<td>F</td>
+				<td>S</td>
+				<td>S</td>
+			</tr>
+		</table>
 
 	<div id='closeX'><a href='#' onclick='boxit()'>X</a></div>
 	<div id='lefthead'>".date('F jS, Y',$datestring)."</div>
@@ -456,10 +482,12 @@ function showMakeRaid($datestring) {
 					onclick=\"updateRoleCount('".$playercount."','".$cscinfo['role_id']."');\"
 				/>
 				<img src='".PQIMG."/classes/16".strtolower($cscinfo['csc_class']).".png' style='' ";
-			$mraid .='onmouseover="showtip(\'accesstip'.$cscid.'\',-220,-60)"
-						onmouseout="hidetip(\'accesstip'.$cscid.'\')"
-						/>';
-			$mraid .= $cscinfo['character_name']." - 		
+			$mraid .='/>';
+			$mraid .= '<div class="csc_name"
+				onmouseover="showtip(\'accesstip'.$cscid.'\',-200,-60)"
+				onmouseout="hidetip(\'accesstip'.$cscid.'\')">
+			
+				'.$cscinfo['character_name']."</div> - 	
 				<span>".$cscinfo['csc_percent']."% / ".$cscinfo['csc_totalpercent']."%</span>
 			
 			</td>";
@@ -1050,7 +1078,7 @@ function getTimes($tday,$sel) {
 	for ($x=0;$x<24;$x=$x+1) {
 		for ($y=0;$y<60;$y=$y+30) {
 		
-		$tstamp = mktime(0+$x, 0+$y, 0, gmdate("m",$tday), gmdate("d",$tday), gmdate("Y",$tday));
+		$tstamp = mktime(0+$x, 0+$y, 0, date("m",$tday), date("d",$tday), date("Y",$tday));
 
 		$selected="";
 		if ($sel == -1) {
@@ -1103,13 +1131,17 @@ $AUTH_USERFILE = DOCROOT."/conf/users.auth.php";
 }
 
 function sendRaidMessage($raidname,$time,$leader,$eo,$notes,$to,$yourcsc,$yourraid) {
+	
+	$rnotes = 'http://pq.pesartain.com/raid/'.date('Y',$time).'/'.date('md',$time).'_'.$raidname;
+	
 	$subj = '[PQ Raid] '.$raidname.' ('.date('l d/m/Y H:i',$time).')';
-	$message = 'Peace and Quiet cordially invite '.$yourcsc[0].' ('.$yourcsc[1].') to '.$raidname.' on '.date('l d/m/Y H:i',$time).'. 
-				Your event organiser is '.$eo.', to whom scheduling related problems should be addressed.'."<br>\r\n<br>\r\n";
+	$message = 'Peace and Quiet cordially invite '.$yourcsc[0].' ('.$yourcsc[1].') to '.$raidname.' on '.date('l d/m/Y H:i',$time).".<br>\r\n<br>\r\n".' 
+				Your event organiser is '.$eo.', to whom scheduling related problems should be addressed.'."<br>\r\n";
 	$message .= 'Your lead raider is '.$leader.', to whom all other issues should be addressed.'."<br>\r\n<br>\r\n";
 	$message .= 'The latest raid notes for this raid are located at:'."<br>\r\n";
-	$message .= 'http://pq.pesartain.com/raid/'.date('Y',$time).'/'.date('md',$time).'_'.$raidname.''."<br>\r\n<br>\r\n";
-	$message .= 'Please remember it is your responsibility to locate your own replacement and to inform the EO that you are doing so.'."<br>\r\n<br>\r\n";
+	$message .= .$rnotes."<br>\r\n";
+	$message .= 'These will be updated by the Lead Raider shortly.'."<br>\r\n<br>\r\n";	
+	$message .= 'Please remember it is your responsibility to locate your own replacement, to inform the EO that you are doing so and update the raid notes to reflect that.'."<br>\r\n<br>\r\n";
 	$message .= 'Good luck in there; enjoy yourselves and remember, if you\'re not having fun, you\'re not doing it right!'."<br>\r\n<br>\r\n";
 	$message .= ' - Peace and Quiet.'."<br>\r\n<br>\r\n";
 	$message .= 'Your fellow raiders will be:'."<br>\r\n";

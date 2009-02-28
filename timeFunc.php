@@ -7,10 +7,13 @@
 	date:	20/10/2008
 */
 
+putenv("TZ=Europe/London");
+
 	// Raid epoch is set to 13/11/2008,
 	// the release of Wrath.
 	function getRaidEpoch() {
-		return mktime(0, 0, 0, 11, 13, 2008);
+		//putenv("TZ=Europe/London");
+		return gmmktime(0, 0, 0, 11, 13, 2008);
 	}
 	
 	function diffTime($one,$two) {
@@ -53,14 +56,15 @@
 		--$dinfo;
 
 		// Align the raiding epoch with a monday
-		$repoch = mktime(0,0,0,date("m",getRaidEpoch()),date("d",getRaidEpoch())-3,date("Y",getRaidEpoch()));
+		$repoch = gmmktime(0,0,0,date("n",getRaidEpoch()),date("j",getRaidEpoch())-3,date("Y",getRaidEpoch()));
 		
 		// Get the monday of this week in $date by subtracting the value in 
 		// $dinfo from whatever today is
-		$mon = mktime(0,0,0,gmdate("m",$date),gmdate("d",$date)-$dinfo,gmdate("Y",$date));
+		$mon = gmmktime(0,0,0,date("n",$date),date("j",$date)-$dinfo,date("Y",$date));
 	
 	// Debug info
-/*		echo $mon."::".$repoch."::".date("m/d/Y",$date)."::";
+	/****************
+		echo $mon."::".$repoch."::".date("m/d/Y",$date)."::";
 		// Get the difference between the monday and the epoch
 		echo diffTime($mon,$repoch)."::";
 		// Count the number of weeks (7-day-blocks) between them
@@ -68,23 +72,25 @@
 		// Floor the response
 		echo floor(diffTime($mon,$repoch)/86400/7);
 		echo "<Br>";
-*/	
+	/****************/
+	
 		return floor(diffTime($mon,getRaidEpoch())/86400/7)+1;		
 	}
 	
 	function getToday() {
 		//return mktime(0, 0, 0, gmdate("d"), gmdate("m"), gmdate("Y"));
-		return mktime(0,0,0,gmdate("m"),gmdate("d"),gmdate("Y"));
+		//return mktime(0,0,0,gmdate("m"),gmdate("d"),gmdate("Y"));
+		return mktime(0,0,0,date("n"),date("j"),date("Y"));
 	}
 	
 	function gmnow() {
-		return mktime(gmdate("H"),gmdate("i"),gmdate("s"),gmdate("m"),gmdate("d"),gmdate("Y"));
+		return mktime(gmdate("H"),gmdate("i"),gmdate("s"),gmdate("n"),gmdate("j"),gmdate("Y"));
 	}
 	
 	function weekToDate($week) {
 	// Returns the Thursday of that week:
 	$thurs = ceil((($week-1)*86400*7)+getRaidEpoch());
-	return mktime(0,0,0,date("m",$thurs),date("d",$thurs)+4,date("Y",$thurs));
+	return gmmktime(0,0,0,date("n",$thurs),date("j",$thurs)+4,date("Y",$thurs));
 	}
 	
 ?>

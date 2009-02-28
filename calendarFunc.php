@@ -8,6 +8,8 @@
 
 */
 
+include_once("timeFunc.php");
+
 // Pulled from the mysql site
 function mysql_fetch_rowsarr($result, $numass=MYSQL_BOTH) {
   $got=array();
@@ -50,8 +52,8 @@ function getCSCNumber(&$db) {
 function getUnavailable(&$db,$start,$end,$player) {
 
 	$sql = "SELECT * FROM pqr_unavail WHERE 
-		unavail >= FROM_UNIXTIME(".weektoDate($start).") AND 
-		unavail < FROM_UNIXTIME(".weekToDate($end).") AND
+		unavail >= '".gmdate("Y-m-d H:i:s",weekToDate($start))."' AND 
+		unavail < '".gmdate("Y-m-d H:i:s",weekToDate($end))."' AND
 		player_id = '".$player."'";	
 
 	$rslt = mysql_query($sql);
@@ -60,6 +62,9 @@ function getUnavailable(&$db,$start,$end,$player) {
 
 	if (mysql_num_rows($rslt) > 0) {
 		while ($row = mysql_fetch_array($rslt)){
+//			echo $row['unavail']." :: ".strtotime($row['unavail'])."<br>";
+//			echo $row['unavail']." :: ".date("Y-m-d H:i:s",strtotime($row['unavail']))."<br>";
+//			echo $row['unavail']." :: ".gmdate("Y-m-d H:i:s",strtotime($row['unavail']))."<br>";
 			$unavail[strtotime($row['unavail'])] = $row['player_id'];
 		}
 	} else {
@@ -104,10 +109,26 @@ function getAchievementsByRaid($rid,&$db) {
 
 // Return the unavailable, but eligible-to-raid (valid CSC), players.
 function getDailyUnavail(&$db,$day) {
-	$sql = "SELECT DISTINCT(pqr_unavail.player_id) FROM pqr_unavail 
+
+//	echo $day." / ".date("m/d/Y H:i",$day)."<br>";
+	// This pushes the value forward 8 hours to make it match the databese values.
+	//$day = mktime(date("H",$day)+8,0,0,date("n",$day),date("j",$day),date("Y",$day));
+
+	$newday = gmdate("Y-m-d H:i:s", $day);
+
+
+/*	$sql = "SELECT DISTINCT(pqr_unavail.player_id) FROM pqr_unavail 
 		JOIN pqr_csc ON pqr_csc.player_id = pqr_unavail.player_id 
 		WHERE unavail = FROM_UNIXTIME(".$day.") 
 		AND (role_id > 0 AND CHAR_LENGTH(character_name) > 0)";
+*/
+
+	$sql = "SELECT DISTINCT(pqr_unavail.player_id) FROM pqr_unavail 
+		JOIN pqr_csc ON pqr_csc.player_id = pqr_unavail.player_id 
+		WHERE unavail = '".$newday."' 
+		AND (role_id > 0 AND CHAR_LENGTH(character_name) > 0)";
+
+
 	$rslt = mysql_query($sql);
 	if (!$rslt) die("daily unavail failure: ".mysql_error($db));
 
