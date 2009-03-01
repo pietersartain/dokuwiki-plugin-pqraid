@@ -1057,12 +1057,18 @@ function getIconList($sel) {
 
 	$d = dir(DOCROOT."/lib/plugins/pqraid/images");
 	while (false !== ($entry = $d->read())) {
+	
+		if (is_dir($entry)) {
+			//echo "Yerbugger.";
+		} else {
+
 		if ($entry!="." && $entry!=".."){
 				$selected = '';
 				if ($sel == $entry) $selected='selected="selected"';
 				$retval = $retval.'<option value='.$entry.' '.$selected.'>'.$entry.'</option>';
 			}
 		}
+	}
 	$d->close();
 
 	$retval = $retval.'</select>';
@@ -1139,7 +1145,7 @@ function sendRaidMessage($raidname,$time,$leader,$eo,$notes,$to,$yourcsc,$yourra
 				Your event organiser is '.$eo.', to whom scheduling related problems should be addressed.'."<br>\r\n";
 	$message .= 'Your lead raider is '.$leader.', to whom all other issues should be addressed.'."<br>\r\n<br>\r\n";
 	$message .= 'The latest raid notes for this raid are located at:'."<br>\r\n";
-	$message .= .$rnotes."<br>\r\n";
+	$message .= ''.$rnotes."<br>\r\n";
 	$message .= 'These will be updated by the Lead Raider shortly.'."<br>\r\n<br>\r\n";	
 	$message .= 'Please remember it is your responsibility to locate your own replacement, to inform the EO that you are doing so and update the raid notes to reflect that.'."<br>\r\n<br>\r\n";
 	$message .= 'Good luck in there; enjoy yourselves and remember, if you\'re not having fun, you\'re not doing it right!'."<br>\r\n<br>\r\n";

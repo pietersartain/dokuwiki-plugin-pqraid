@@ -55,8 +55,8 @@ function getCSCFullList(&$db) {
 /* Get a list of CSCs grouped by player. Include all relevant CSC info except achievements */
 function getCSCInfoByPlayerID(&$db) {
 	$rslt = mysql_query('SELECT pqr_csc.*, pqr_roles.*, 
-		ROUND((pqr_csc.csc_attended/pqr_csc.csc_possible*100),1) AS csc_percent, 
-		ROUND((pqr_csc.csc_attended/(SELECT COUNT(raid_id) FROM pqr_raids)*100),1) AS csc_totalpercent 
+		ROUND((pqr_csc.csc_attended/pqr_csc.csc_possible*100),0) AS csc_percent, 
+		ROUND((pqr_csc.csc_attended/(SELECT COUNT(raid_id) FROM pqr_raids)*100),0) AS csc_totalpercent 
 						FROM pqr_csc 
 						JOIN pqr_roles ON pqr_csc.role_id = pqr_roles.role_id 
 						ORDER BY pqr_csc.player_id ASC, 
@@ -79,8 +79,8 @@ function getCSCInfoByPlayerID(&$db) {
  */
 function getCSCListWhereAccess(&$db,$raidaccess=null) {
 	$rslt = mysql_query('SELECT pqr_csc.*, pqr_roles.*, 
-		ROUND((pqr_csc.csc_attended/pqr_csc.csc_possible*100),1) AS csc_percent, 
-		ROUND((pqr_csc.csc_attended/(SELECT COUNT(raid_id) FROM pqr_raids)*100),1) AS csc_totalpercent 
+		ROUND((pqr_csc.csc_attended/pqr_csc.csc_possible*100),0) AS csc_percent, 
+		ROUND((pqr_csc.csc_attended/(SELECT COUNT(raid_id) FROM pqr_raids)*100),0) AS csc_totalpercent 
 						FROM pqr_csc 
 						JOIN pqr_roles ON pqr_csc.role_id = pqr_roles.role_id 
 						ORDER BY pqr_csc.player_id ASC, 
