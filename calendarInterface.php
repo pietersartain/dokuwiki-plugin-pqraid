@@ -252,7 +252,12 @@ onmouseover="showtip(\'atip'.$at['achievement_id'].'\',-220,-60)"
 		$playercount = 0;
 		foreach($csclist as $key=>$player) {
 
-			$disabled = (isset($unavailable[$key])) ? 'class="disabled"' : '';
+			if (isset($unavailable[$key])) {
+				echo "Disabled";
+				$disabled = 'class="disabled"';
+			} else {
+				$disabled = '';
+			}
 
 			$rank = getRank($db,$key);
 

@@ -114,7 +114,8 @@ function getDailyUnavail(&$db,$day) {
 	// This pushes the value forward 8 hours to make it match the databese values.
 	//$day = mktime(date("H",$day)+8,0,0,date("n",$day),date("j",$day),date("Y",$day));
 
-	$newday = gmdate("Y-m-d H:i:s", $day);
+	//$newday = gmdate("Y-m-d H:i:s", $day);
+	$newday = gmdate("Y-m-d 00:00:00", $day);
 
 
 /*	$sql = "SELECT DISTINCT(pqr_unavail.player_id) FROM pqr_unavail 
