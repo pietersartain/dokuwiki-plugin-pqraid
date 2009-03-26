@@ -121,7 +121,7 @@ function saveUnavailable() {
 		// -3			-- a constant to align the epoch to a Monday
 		$loopday = mktime(0, 0, 0, date("n",getRaidEpoch()), date("j",getRaidEpoch())+$days+($week*7)-3, date("Y",getRaidEpoch()));
 		
-		/***********
+		/***********/
 		$dbg = "1: ".$loopday." | ".date("m/d/Y H:i",$loopday)."<br>";
 		echo $dbg;
 		/***********/
@@ -149,12 +149,19 @@ function saveUnavailable() {
 		if ($oldtoken != $newtoken){
 			// If the tokens are not the same, some change has been elicited
 			if ($newtoken && !$oldtoken) {
+/*
 				$sql = "INSERT INTO
 					pqr_unavail(player_id,unavail) 
-					VALUES('".$username."','".gmdate("Y-m-d H:i:s",$loopday)."')";
+					VALUES('".$username."','".date("Y-m-d H:i:s",$loopday)."')";
+*/				$sql = "INSERT INTO
+					pqr_unavail(player_id,unavail) 
+					VALUES('".$username."','".date("Y-m-d 00:00:00",$loopday)."')";
 			} else {
-				$sql = "DELETE FROM pqr_unavail WHERE
-					unavail='".gmdate("Y-m-d H:i:s",$loopday)."' AND 
+/*				$sql = "DELETE FROM pqr_unavail WHERE
+					unavail='".date("Y-m-d H:i:s",$loopday)."' AND 
+					player_id='".$username."'";
+*/				$sql = "DELETE FROM pqr_unavail WHERE
+					unavail='".date("Y-m-d 00:00:00",$loopday)."' AND 
 					player_id='".$username."'";
 			}
 			echo $sql."<br>";
@@ -253,7 +260,6 @@ onmouseover="showtip(\'atip'.$at['achievement_id'].'\',-220,-60)"
 		foreach($csclist as $key=>$player) {
 
 			if (isset($unavailable[$key])) {
-				echo "Disabled";
 				$disabled = 'class="disabled"';
 			} else {
 				$disabled = '';

@@ -51,10 +51,17 @@ function getCSCNumber(&$db) {
 // Return an array of unavailability information for a given player
 function getUnavailable(&$db,$start,$end,$player) {
 
+/*
 	$sql = "SELECT * FROM pqr_unavail WHERE 
-		unavail >= '".gmdate("Y-m-d H:i:s",weekToDate($start))."' AND 
-		unavail < '".gmdate("Y-m-d H:i:s",weekToDate($end))."' AND
+		unavail >= '".date("Y-m-d H:i:s",weekToDate($start))."' AND 
+		unavail < '".date("Y-m-d H:i:s",weekToDate($end))."' AND
 		player_id = '".$player."'";	
+*/
+	$sql = "SELECT * FROM pqr_unavail WHERE 
+		unavail >= '".date("Y-m-d 00:00:00",weekToDate($start))."' AND 
+		unavail < '".date("Y-m-d 00:00:00",weekToDate($end))."' AND
+		player_id = '".$player."'";	
+
 
 	$rslt = mysql_query($sql);
 
@@ -115,7 +122,7 @@ function getDailyUnavail(&$db,$day) {
 	//$day = mktime(date("H",$day)+8,0,0,date("n",$day),date("j",$day),date("Y",$day));
 
 	//$newday = gmdate("Y-m-d H:i:s", $day);
-	$newday = gmdate("Y-m-d 00:00:00", $day);
+	$newday = date("Y-m-d 00:00:00", $day);
 
 
 /*	$sql = "SELECT DISTINCT(pqr_unavail.player_id) FROM pqr_unavail 
