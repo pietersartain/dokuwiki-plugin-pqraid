@@ -13,14 +13,25 @@ if(!defined('DOKU_PLUGIN')) define('DOKU_PLUGIN',DOKU_INC.'lib/plugins/');
 */
 //define("THISPAGE","http://".$_SERVER['SERVER_NAME'].$_SERVER['REQUEST_URI']);
 
+/********* localhost *
 define("WIKIPATH","/webspace/pq/wiki");
+define("DOCROOT","/home/pesartain".WIKIPATH);
+
+/********* PQDEV *
+define("WIKIPATH","/pqdev");
+define("DOCROOT",$_SERVER['DOCUMENT_ROOT'].WIKIPATH);
+
+
+/********* PQ */
+define("WIKIPATH","/");
+define("DOCROOT",$_SERVER['DOCUMENT_ROOT'].WIKIPATH);
+
+/********* Common */
 
 //define("WIKIROOT","http://".$_SERVER['SERVER_NAME'].WIKIPATH);
 define("WIKIROOT","http://".$_SERVER['HTTP_HOST'].WIKIPATH);
 define("PQIMG",WIKIROOT."/lib/plugins/pqraid/images");
 define("PQDIR",WIKIROOT."/lib/plugins/pqraid");
 
-//define("DOCROOT",$_SERVER['DOCUMENT_ROOT'].WIKIPATH);
-define("DOCROOT","/home/pesartain".WIKIPATH); //local only
 
 ?>

@@ -9,9 +9,17 @@
 */
 
 function getDb() {
+
+/******* PQDEV
+	$uname="pesar2_pqdev";
+	$udb="pesar2_pqdev";
+
+/******* PQ & localhost*/
 	$uname="pesar2_pq";
-	$upasswd="ollyship02";
 	$udb="pesar2_pq";
+
+	$upasswd="ollyship02";
+
 
 	$db = mysql_connect("localhost",$uname,$upasswd);
 
