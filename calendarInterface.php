@@ -64,7 +64,7 @@ function makeWeekEditBox($week,$current_info,$day) {
 
 function saveWeekEditBox() {
 
-	print_r($_GET);
+//	print_r($_GET);
 	$week = $_GET['arg2'];
 	$new_info = $_GET['arg1'];
 
@@ -121,7 +121,7 @@ function saveUnavailable() {
 		// -3			-- a constant to align the epoch to a Monday
 		$loopday = mktime(0, 0, 0, date("n",getRaidEpoch()), date("j",getRaidEpoch())+$days+($week*7)-3, date("Y",getRaidEpoch()));
 		
-		/***********/
+		/***********
 		$dbg = "1: ".$loopday." | ".date("m/d/Y H:i",$loopday)."<br>";
 		echo $dbg;
 		/***********/
@@ -164,7 +164,7 @@ function saveUnavailable() {
 					unavail='".date("Y-m-d 00:00:00",$loopday)."' AND 
 					player_id='".$username."'";
 			}
-			echo $sql."<br>";
+			//echo $sql."<br>";
 			runquery($sql,$db);
 		}
 
@@ -973,6 +973,11 @@ function deleteRaid() {
 
 /*********** HELPER FUNCTIONS, NOT AJAX LINKED ****************/
 
+if (!defined("_PRINT_SQL"))		define("_PRINT_SQL",false);
+if (!defined("_PRINT_DEBUG"))	define("_PRINT_DEBUG",false);
+if (!defined("_RUN_SQL"))		define("_RUN_SQL",true);
+echo _PRINT_SQL;
+
 /* This is hardcoded to return a leader and an EO.
  * 
  */
@@ -984,46 +989,144 @@ function getRandomLeader(&$csclist,&$db) {
 	list($leader) = getCSCById($db,$leader_id);
 */
 
-//	print_r($csclist);
+	if (_PRINT_DEBUG) { 
+		$i=0; 
+		echo "<h2>CSC List </h2>"; 
+		echo '<table>
+		<tr>
+			<th></th>
+			<th>Name</th>
+			<th>Role</th>
+			<th>% of attended</th>
+			<th>% of raids as EO/LR</th>
+			<th>% of EO/LR of attended</th>
+			<th></th>
+		</tr>
+		<tr>
+			<th></th>
+			<th></th>
+			<th>Rank</th>
+			<th>Count</th>
+			<th>Last</th>
+			<th>Total</th>
+			<th>DIFF</th>
+		</tr>';
+	}
 
 	foreach($csclist as $csc) {
 		$rankinfo = getRank($db,$csc['player_id']);
 		// You can't use list() with non-numeric array indices.
 		$rankinfo = $rankinfo[$csc['player_id']];
 
-		print_r($rankinfo);
-		echo "<br>";
+		// We use these variables a lot
+		$count = $rankinfo['count'];
+		$last = $rankinfo['last'];
+		$total = $rankinfo['total'];
+
+		// This is the algorithm to determine the order in which people are chosen for roles
+		//$order = ($rankinfo['count'] - $rankinfo['last']);
+		$order = ($last/$count);
+		$last_inc = 1;
+		
+		/* 0	% of raids attended
+		 * 1	% of raids EO/LR
+		 * 2	% of EO/LR of attended
+		 * 3	??
+		 */
+		
+		if ($last == $count) 
+		
+		$inf_array = array(
+						($count/$total*100),
+						($last/$total*100),
+						($last/$count*100),
+						
+					);
+
+		if (_PRINT_DEBUG) {
+					
+//			echo ($i++).': '.$csc['character_name'].' ['.$csc['name'].']';
+			echo "<tr>
+					<td>".($i++)."</td>
+					<td>".$csc['character_name']."</td>
+					<td>".$csc['name']."</td>
+					<td>".$inf_array[0]."</td>
+					<td>".$inf_array[1]."</td>
+					<td>".$inf_array[2]."</td>
+					<td>".$inf_array[3]."</td>
+				   </tr>";
+
+
+			echo '<tr>
+					<td></td>
+					<td></td>
+					<td>'.$rankinfo['rank_id'].'</td>
+					<td>'.$rankinfo['count'].'</td>
+					<td>'.$rankinfo['last'].'</td>
+					<td>'.$rankinfo['total'].'</td>
+					<td>'.$order.'</td>
+				  </tr>';
+
+		}
+
+
 
 		if ((int)($rankinfo['rank_id']) == 2) {
 			// Event organiser list
-			$eo[] = array(($rankinfo['last'] - $rankinfo['count']),$csc['csc_id'],$csc['character_name'],$csc['player_id']);
+			$eo[] = array($order,$csc['csc_id'],$csc['character_name'],$csc['player_id']);
 		} else {
 			// Lead raider list
-			$lr[] = array(($rankinfo['last'] - $rankinfo['count']),$csc['csc_id'],$csc['character_name'],$csc['player_id']);
+			$lr[] = array($order,$csc['csc_id'],$csc['character_name'],$csc['player_id']);
 		}
 
 		$sql = "UPDATE pqr_ranks SET count=count+1 
 				WHERE player_id='".$csc['player_id']."'";
-		runquery($sql,$db);
 		
+		if (_RUN_SQL) runquery($sql,$db);
+		if (_PRINT_SQL) {
+			echo $sql."<br>";
+			echo '<hr>';
+		}
 	}
-	
-	print_r($eo);
-	
+
+	if (_PRINT_DEBUG) {
+		echo "</table>";
+		echo "<h2>EO List</h2>";
+		$i=0;
+		foreach($eo as $csc) {
+			echo ($i++).': '.$csc[2].' [Diff: '.$csc[0].']<br>';
+		}
+		echo "<br>";
+	}
+
+	if (_PRINT_DEBUG) {
+		echo "<h1>LR List</h1>";
+		$i=0;
+		foreach($lr as $csc) {
+			echo ($i++).': '.$csc[2].' [Diff: '.$csc[0].']<br>';
+		}
+		echo "<br>";
+	}	
+
 	if (isset($eo)) {
 		
 		multi2dSortAsc($eo,0);
 		$eo_id = array_slice($eo,0,1);
 		$eo_id = $eo_id[0];
 		
-		$sql = "UPDATE pqr_ranks SET last=last+1 
+		$sql = "UPDATE pqr_ranks SET last=last+".$last_inc." 
 				WHERE player_id='".$eo_id[3]."'";
-		runquery($sql,$db);
+		if (_RUN_SQL) runquery($sql,$db);
+		if (_PRINT_SQL) {
+			echo $sql."<br>";
+			echo '<hr>';
+		}
+
 		
 		$organiser = $eo_id[2];
 		
 	} else {
-		echo "EO: Fallback.";
+		if (_PRINT_DEBUG) echo "EO: Fallback.";
 		$loffset = rand(0,(count($csclist)-1));
 		list($eo_id) = array_slice($csclist,$loffset,1);
 		list($organiser) = getCSCById($db,$eo_id['csc_id']);
@@ -1035,18 +1138,41 @@ function getRandomLeader(&$csclist,&$db) {
 		$lr_id = array_slice($lr,0,1);
 		$lr_id = $lr_id[0];
 
-		$sql = "UPDATE pqr_ranks SET last=last+1 
+		$sql = "UPDATE pqr_ranks SET last=last+".$last_inc." 
 				WHERE player_id='".$lr_id[3]."'";
-		runquery($sql,$db);
+		if (_RUN_SQL) runquery($sql,$db);
+		if (_PRINT_SQL) {
+			echo $sql."<br>";
+			echo '<hr>';
+		}
 
+		
 		$leader = $lr_id[2];
 
 	} else {
-		echo "LR: Fallback.";
+		if (_PRINT_DEBUG) echo "LR: Fallback.";
 		$loffset = rand(0,(count($csclist)-1));
 		list($lr_id) = array_slice($csclist,$loffset,1);
 		list($leader) = getCSCById($db,$lr_id['csc_id']);
 		$leader = $leader['character_name'];		
+	}
+
+	if (_PRINT_DEBUG) {
+		echo "<h2>Sorted EO List</h2>";
+		$i=0;
+		foreach($eo as $csc) {
+			echo ($i++).': '.$csc[2].' [Diff: '.$csc[0].']<br>';
+		}
+		echo "<br>";
+	}
+
+	if (_PRINT_DEBUG) {
+		echo "<h2>Sorted LR List</h2>";
+		$i=0;
+		foreach($lr as $csc) {
+			echo ($i++).': '.$csc[2].' [Diff: '.$csc[0].']<br>';
+		}
+		echo "<br>";
 	}
 
 	// These should just be text values.

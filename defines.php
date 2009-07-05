@@ -23,7 +23,7 @@ define("DOCROOT",$_SERVER['DOCUMENT_ROOT'].WIKIPATH);
 
 
 /********* PQ */
-define("WIKIPATH","/");
+define("WIKIPATH","");
 define("DOCROOT",$_SERVER['DOCUMENT_ROOT'].WIKIPATH);
 
 /********* Common */

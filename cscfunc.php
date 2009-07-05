@@ -25,7 +25,10 @@ function getCSCList($username, &$db) {
 		while ($row = mysql_fetch_array($rslt,MYSQL_ASSOC)){
 //			$csclist[$count] = $row;
 //			$count++;
-			$csclist[] = $row;
+			// Ensure the character has a name
+			if ( ($row['character_name'] != '') && ($row['character_name'] != null) ) {
+				$csclist[] = $row;
+			}
 		}
 //		if ($count == 0) {
 //			$csclist = null;
@@ -69,7 +72,11 @@ function getCSCInfoByPlayerID(&$db) {
 //		print_r($csc);
 //		echo "<br />";
 	
-		$accesslist[$csc['player_id']][$csc['csc_id']] = $csc;
+		// Make sure the character has a name
+		if ( ($csc['character_name'] != '') && ($csc['character_name'] != null) ) {
+				$accesslist[$csc['player_id']][$csc['csc_id']] = $csc;
+		}
+		//$accesslist[$csc['player_id']][$csc['csc_id']] = $csc;
 	}
 	
 	return $accesslist;
@@ -101,6 +108,11 @@ function getCSCListWhereAccess(&$db,$raidaccess=null) {
 					$addme = 0;
 				}
 			}
+		}
+		
+		// Don't do anything to a character with no name
+		if ( ($csc['character_name'] == '') || ($csc['character_name'] == null) ) {
+			$addme = 0;
 		}
 
 		if ($addme) {
