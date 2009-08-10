@@ -23,8 +23,13 @@ define("DOCROOT",$_SERVER['DOCUMENT_ROOT'].WIKIPATH);
 
 
 /********* PQ */
-define("WIKIPATH","");
-define("DOCROOT",$_SERVER['DOCUMENT_ROOT'].WIKIPATH);
+if (explode(".",$_SERVER['SERVER_NAME'])[1] == 'pesartain') {
+	define("WIKIPATH","");
+	define("DOCROOT",$_SERVER['DOCUMENT_ROOT'].WIKIPATH);
+} else {
+	define("WIKIPATH","/webspace/pq/wiki");
+	define("DOCROOT","/home/pesartain".WIKIPATH);
+	
 
 /********* Common */
 

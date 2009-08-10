@@ -976,7 +976,6 @@ function deleteRaid() {
 if (!defined("_PRINT_SQL"))		define("_PRINT_SQL",false);
 if (!defined("_PRINT_DEBUG"))	define("_PRINT_DEBUG",false);
 if (!defined("_RUN_SQL"))		define("_RUN_SQL",true);
-echo _PRINT_SQL;
 
 /* This is hardcoded to return a leader and an EO.
  * 
