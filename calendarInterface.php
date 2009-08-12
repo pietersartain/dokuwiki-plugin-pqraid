@@ -20,6 +20,14 @@ include_once "timeFunc.php";
 include_once "connect.php";
 include_once "defines.php";
 
+/* Dokuwiki includes for the raid notes links.
+ * Hardcoded things like this are bad, but writing a whole new app is worse.
+ */
+global $conf;
+$conf['sepchar'] = "_";
+include_once DOCROOT."/inc/utf8.php";
+include_once DOCROOT."/inc/pageutils.php";
+
 // This means we can execute arbitrary PHP code through a querystring.
 // This is probably bad ...
 //eval($func.";");
@@ -190,7 +198,9 @@ function showRaid($raid_id) {
 		</div>';
 		echo $str;
 
-		echo '[[<a href="http://pq.pesartain.com/raid/'.date('Y',$raid_oclock).'/'.date('md',$raid_oclock).'_'.$row['name'].'">Raid notes</a>]]<br /><br />';
+		$raidlink = cleanID($row['name']);
+
+		echo '[[<a href="raid/'.date('Y',$raid_oclock).'/'.date('md',$raid_oclock).'_'.$raidlink.'">Raid notes</a>]]<br /><br />';
 
 
 		// Achievement information
@@ -1274,7 +1284,7 @@ $AUTH_USERFILE = DOCROOT."/conf/users.auth.php";
 
 function sendRaidMessage($raidname,$time,$leader,$eo,$notes,$to,$yourcsc,$yourraid) {
 	
-	$rnotes = 'http://pq.pesartain.com/raid/'.date('Y',$time).'/'.date('md',$time).'_'.$raidname;
+	$rnotes = 'http://pq.pesartain.com/raid/'.date('Y',$time).'/'.date('md',$time).'_'.cleanID($raidname);
 	
 	$subj = '[PQ Raid] '.$raidname.' ('.date('l d/m/Y H:i',$time).')';
 	$message = 'Peace and Quiet cordially invite '.$yourcsc[0].' ('.$yourcsc[1].') to '.$raidname.' on '.date('l d/m/Y H:i',$time).".<br>\r\n<br>\r\n".' 
