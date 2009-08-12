@@ -25,6 +25,7 @@ include_once "defines.php";
  */
 global $conf;
 $conf['sepchar'] = "_";
+$conf['useslash'] = 1;
 include_once DOCROOT."/inc/utf8.php";
 include_once DOCROOT."/inc/pageutils.php";
 
@@ -198,7 +199,7 @@ function showRaid($raid_id) {
 		</div>';
 		echo $str;
 
-		$raidlink = cleanID($row['name']);
+		$raidlink = str_replace(array('&','amp:'),'',cleanID($row['name']));
 
 		echo '[[<a href="raid/'.date('Y',$raid_oclock).'/'.date('md',$raid_oclock).'_'.$raidlink.'">Raid notes</a>]]<br /><br />';
 
@@ -983,14 +984,15 @@ function deleteRaid() {
 
 /*********** HELPER FUNCTIONS, NOT AJAX LINKED ****************/
 
-if (!defined("_PRINT_SQL"))		define("_PRINT_SQL",false);
-if (!defined("_PRINT_DEBUG"))	define("_PRINT_DEBUG",false);
-if (!defined("_RUN_SQL"))		define("_RUN_SQL",true);
-
 /* This is hardcoded to return a leader and an EO.
  * 
  */
 function getRandomLeader(&$csclist,&$db) {
+
+if (!defined("_PRINT_SQL"))		define("_PRINT_SQL",false);
+if (!defined("_PRINT_DEBUG"))	define("_PRINT_DEBUG",false);
+if (!defined("_RUN_SQL"))		define("_RUN_SQL",true);
+
 // This mostly returned Luke
 /*
 	$loffset = rand(0,(count($csclist)-1));
@@ -1284,7 +1286,9 @@ $AUTH_USERFILE = DOCROOT."/conf/users.auth.php";
 
 function sendRaidMessage($raidname,$time,$leader,$eo,$notes,$to,$yourcsc,$yourraid) {
 	
-	$rnotes = 'http://pq.pesartain.com/raid/'.date('Y',$time).'/'.date('md',$time).'_'.cleanID($raidname);
+	$raidlink = str_replace(array('&','amp:'),'',cleanID($raidname));
+	
+	$rnotes = 'http://pq.pesartain.com/raid/'.date('Y',$time).'/'.date('md',$time).'_'.$raidlink;
 	
 	$subj = '[PQ Raid] '.$raidname.' ('.date('l d/m/Y H:i',$time).')';
 	$message = 'Peace and Quiet cordially invite '.$yourcsc[0].' ('.$yourcsc[1].') to '.$raidname.' on '.date('l d/m/Y H:i',$time).".<br>\r\n<br>\r\n".' 
