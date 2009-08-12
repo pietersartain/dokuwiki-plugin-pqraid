@@ -44,9 +44,6 @@ switch("ui$func") {
 	case "uiwriteCSCList":
 		writeCSCList($_GET['arg1']);
 		break;
-/*	case "uimakeWeekEditBox":
-		makeWeekEditBox($_GET['arg1'],$_GET['arg2'],$_GET['arg2']);
-		break;
 */	case "uisaveWeekEditBox":
 		saveWeekEditBox();
 		break;
@@ -60,16 +57,6 @@ switch("ui$func") {
 		echo "$func not found in ".$_SERVER['PHP_SELF'];
 		break;
 }
-
-/* DEPRECATED */
-/*
-function makeWeekEditBox($week,$current_info,$day) {
-	echo '
-	<div class="textbox">
-	Week '.$week.': <input type="text" value="'.$current_info.'" id="editWeekBox'.$day.'" onblur="saveEditBox(\''.$week.'\',\''.$day.'\')" />
-	</div>';
-}
-*/
 
 function saveWeekEditBox() {
 
@@ -203,56 +190,6 @@ function showRaid($raid_id) {
 
 		echo '[[<a href="raid/'.date('Y',$raid_oclock).'/'.date('md',$raid_oclock).'_'.$raidlink.'">Raid notes</a>]]<br /><br />';
 
-
-		// Achievement information
-		$alist = getAchievementList($db);
-		$accesslist = getAchievementsByRaid($raid_id,$db);
-		$count = 1;
-		$achievements='';
-		foreach($alist as $at) {
-			if (isset($accesslist[$at['achievement_id']])) {
-//				$checked = 'checked';
-
-
-			$achievements .= '
-			<div id="atip'.$at['achievement_id'].'" class="tooltip">
-			'.$at['long_name'].'
-			</div>
-
-			<img src="'.PQIMG.'/'.$at['icon'].'" 
-				title="'.$at['long_name'].'" class="achievementcheck"
-				onmouseover="showtip(\'atip'.$at['achievement_id'].'\',-220,-60)" 
-				onmouseout="hidetip(\'atip'.$at['achievement_id'].'\')"
-				height=31 
-				width=29 
-				></img>';
-
-/*
-				<input 
-				type="checkbox" 
-				id="achievement'.$at['achievement_id'].'" 
-				name="achievement'.$at['achievement_id'].'" 
-				class="achievementcheck"
-onmouseover="showtip(\'atip'.$at['achievement_id'].'\',-220,-60)" 
-				onmouseout="hidetip(\'atip'.$at['achievement_id'].'\')"				
-				'.$checked.' 
-				></input>';
-
-
-			} else {
-				$checked = '';
-*/			}
-
-
-			if($count==8) { 
-				$achievements .= '<br></br>'; 
-				$count = 0;
-			}
-
-			$count++;
-		}
-
-
 		// Get all CSCs
 		$csclist = getCSCInfoByPlayerID($db);
 
@@ -289,27 +226,6 @@ onmouseover="showtip(\'atip'.$at['achievement_id'].'\',-220,-60)"
 
 				$eo = ($signups[$cscinfo['character_name']]['static_raid_organiser'] == $cscinfo['character_name']) ? 1 : ''; 
 				$rl = ($signups[$cscinfo['character_name']]['static_lead_raider'] == $cscinfo['character_name']) ? 1 : ''; 
-	//			$ranked = ($eo || $rl) ? true : false;
-
-				$cscaccess = getCSCAccessTokens($cscid,$db);
-				
-				$access = "<div id='accesstip$cscid' class='tooltip'>";
-				
-				/* This is looping through ALL The achievements per character, for ALL characters, 
-				 * just to print out the access list.
-				 * The function in achievements @ line 247 is inlined, this probably needs
-				 * extracting and using here.
-				 */
-				foreach($alist as $aid=>$at) {
-					if (isset($cscaccess[$aid])) {			
-						$access .= '<img src="'.PQIMG.'/'.$at['icon'].'" 
-						title="'.$at['long_name'].'" class="achievementcheck"
-						width=29
-						height=31
-						></img>';
-					}
-				}
-				$access .= "</div>";
 
 				$mraid .= "<td style='background: #".$cscinfo['colour'].";'>";
 				$mraid .= $access."
@@ -321,8 +237,6 @@ onmouseover="showtip(\'atip'.$at['achievement_id'].'\',-220,-60)"
 					$mraid .= ' />';
 					$mraid .= '<div class="csc_name"
 					
-					onmouseover="showtip(\'accesstip'.$cscid.'\',-200,-60)"
-					onmouseout="hidetip(\'accesstip'.$cscid.'\')"
 					
 					>'.$cscinfo['character_name']."</div> - 		
 					<span>".$cscinfo['csc_percent']."% / ".$cscinfo['csc_totalpercent']."%</span>";
@@ -366,9 +280,7 @@ onmouseover="showtip(\'atip'.$at['achievement_id'].'\',-220,-60)"
 		
 		<div id="leftfloat">'.$cscs.'</div>
 		<div id="rightfloat">
-		'.$row['info'].'<br>
-		'.$achievements.'
-		</div>';
+		'.$row['info'].'</div>';
 		
 		
 	
@@ -407,43 +319,6 @@ function showMakeRaid($datestring) {
 	
 	echo $mraid;
 
-	// Achievement information
-	$alist = getAchievementList($db);
-	$count = 1;
-	$achievements='';
-	foreach($alist as $at) {
-	
-		$achievements .= '
-		<div id="atip'.$at['achievement_id'].'" class="tooltip">
-		'.$at['long_name'].'
-		</div>
-		
-		<img src="'.PQIMG.'/'.$at['icon'].'" 
-			title="'.$at['long_name'].'" class="achievementcheck"
-			onmouseover="showtip(\'atip'.$at['achievement_id'].'\',-220,-60)" 
-			onmouseout="hidetip(\'atip'.$at['achievement_id'].'\')"
-			height=31 
-			width=29 
-			></img>
-		
-			<input 
-			type="checkbox" 
-			id="achievement'.$at['achievement_id'].'" 
-			name="achievement[]" 
-			value="'.$at['achievement_id'].'" 
-			onmouseover="showtip(\'atip'.$at['achievement_id'].'\',-220,-60)" 
-			onmouseout="hidetip(\'atip'.$at['achievement_id'].'\')" 
-			onchange="updateRaidAchievement(this.form,\''.$datestring.'\')" 
-			class="achievementcheck"></input>';
-
-		if($count==8) { 
-			$achievements .= '<br></br>'; 
-			$count = 0;
-		}
-		
-		$count++;
-	}
-
 	// Get all CSCs
 	$csclist = getCSCInfoByPlayerID($db);
 
@@ -478,26 +353,6 @@ function showMakeRaid($datestring) {
 		$rows=0;
 		foreach($player as $cscid=>$cscinfo) {
 
-
-			$cscaccess = getCSCAccessTokens($cscid,$db);
-			$access = "<div id='accesstip$cscid' class='tooltip'>";
-
-			/* This is looping through ALL The achievements per character, for ALL characters, just to print out
-			 * the access list.
-			 * The function in achievements @ line 247 is inlined, this probably needs
-			 * extracting and using here.
-			 */
-			foreach($alist as $aid=>$at) {
-				if (isset($cscaccess[$aid])) {			
-					$access .= '<img src="'.PQIMG.'/'.$at['icon'].'" 
-					title="'.$at['long_name'].'" class="achievementcheck"
-					width=29
-					height=31
-					></img>';
-				}
-			}
-			$access .= "</div>";
-
 			$mraid .= "<td style='background: #".$cscinfo['colour'].";'>".$access."
 			
 				<input type='radio' name='playercsc".$key."' value='".$cscid."' ".$disabledbutton." 
@@ -506,8 +361,6 @@ function showMakeRaid($datestring) {
 				<img src='".PQIMG."/classes/16".strtolower($cscinfo['csc_class']).".png' style='' ";
 			$mraid .='/>';
 			$mraid .= '<div class="csc_name"
-				onmouseover="showtip(\'accesstip'.$cscid.'\',-200,-60)"
-				onmouseout="hidetip(\'accesstip'.$cscid.'\')">
 			
 				'.$cscinfo['character_name']."</div> - 	
 				<span>".$cscinfo['csc_percent']."% / ".$cscinfo['csc_totalpercent']."%</span>
@@ -602,152 +455,10 @@ function showMakeRaid($datestring) {
 	<input type='submit' value='Create'>
 	</div>
 	
-	<div id='rightfloat'>
-		Requirements<br />".$achievements."
-	</div>
-	
 	</form>";
 	
 	echo $mraid;
 }
-
-/*
-function showMakeRaid($datestring) {
-	$db = getDb();
-
-	// Role information
-	$rlist = getRoleList($db);	
-
-	$rolenames='';
-	$roleboxes='';
-	foreach ($rlist as $token) {
-		$rolenames.=$token['name']."/";
-		$roleboxes.=" <input type='text' size='1' name='rolecount' id='rolecount".$token['role_id']."'
-		style='background: #".$token['colour']."' value='0'>";
-	}
-	$rolenames=rtrim($rolenames,"/");
-
-
-	// Achievement information
-	$alist = getAchievementList($db);
-	$count = 1;
-	$achievements='';
-	foreach($alist as $at) {
-	
-		$achievements .= '
-		<div id="atip'.$at['achievement_id'].'" class="tooltip">
-		'.$at['long_name'].'
-		</div>
-		
-		<img src="'.PQIMG.'/'.$at['icon'].'" 
-			title="'.$at['long_name'].'" class="achievementcheck"
-			onmouseover="showtip(\'atip'.$at['achievement_id'].'\',-220,-60)" 
-			onmouseout="hidetip(\'atip'.$at['achievement_id'].'\')"
-			height=31 
-			width=29 
-			></img>
-		
-			<input 
-			type="checkbox" 
-			id="achievement'.$at['achievement_id'].'" 
-			name="achievement[]" 
-			value="'.$at['achievement_id'].'" 
-			onmouseover="showtip(\'atip'.$at['achievement_id'].'\',-220,-60)" 
-			onmouseout="hidetip(\'atip'.$at['achievement_id'].'\')" 
-			onchange="updateRaidAchievement(this.form,\''.$datestring.'\')" 
-			class="achievementcheck"></input>';
-
-		if($count==8) { 
-			$achievements .= '<br></br>'; 
-			$count = 0;
-		}
-		
-		$count++;
-	}
-
-	$mraid="
-
-	<div id='closeX'><a href='#' onclick='boxit()'>X</a></div>
-	<div id='lefthead'>".date('F jS, Y',$datestring)."</div>
-
-	<form id='newraid' method='POST' name='newraid' 
-	action='".PQDIR."/calendarInterface.php?func=saveRaid'>
-	
-	<div id='addnewraid'>
-	
-	<table>
-		<tr>
-			<td>Title:	</td>
-			<td><input type='text' name='raidname'><td>
-		</tr>
-		<tr>
-			<td>Icon:	</td>
-			<td>".getIconList(-1)."</td>
-		</tr>
-		<tr>
-			<td>".$rolenames."</td>
-			<td>".$roleboxes."</td>
-		</tr>
-		<tr>
-			<td>Time 
-			(<a href='http://wwp.greenwichmeantime.com/time-zone/europe/uk/time/'>UK</a>)</td>
-			<td>".getTimes($datestring,-1)."</td>
-		</tr>
-		
-		<tr>
-			<td>Scheduling:</td>
-			<td>
-			
-			<div id='sendglobaltip' class='tooltip'>
-			<b>Open Invitation / No Raid Time</b><br>
-			If this box is checked, all eligible 
-			members will be sent an invitation.
-			Any boxes checked in the current CSC 
-			list will be ignored and no raid time
-			will be creditted.
-			</div>
-			
-			<input type='checkbox' name='sendglobal'
-			onmouseover='showtip(\"sendglobaltip\",-220,-60)'
-			onmouseout='hidetip(\"sendglobaltip\")'>
-			
-			<div id='noincrementtip' class='tooltip'>
-			<b>Closed Invitation / No Raid Time</b><br>
-			If this box is checked, only members selected
-			from the current CSC list will be invited,
-			however no raid time will be creditted.
-			</div>
-			
-			<input type='checkbox' name='noincrement'
-			onmouseover='showtip(\"noincrementtip\",-220,-60)'
-			onmouseout='hidetip(\"noincrementtip\")'>			
-			
-			</td>
-		</tr>
-		
-		<tr><td colspan='2'>Other info</td><tr>
-		<tr><td colspan='2'>
-			<textarea name='raid_note' id='raid_note' rows='4' cols='50'></textarea>
-		</td><tr>
-		<tr><td colspan='2'>Requirements</td><tr>
-		<tr><td colspan='2'>".$achievements."</td><tr>
-	</table>
-	<input type='submit' value='Create'>
-	</div>";
-	
-	
-
-	echo $mraid;
-	echo "
-		<div id='cscstatus'>Current CSC list</div><br />
-		<div id='csclist'>";
-		writeCSCList($datestring);
-	echo "
-	</div>
-	
-	</form>";
-}
-*/
 
 /* Generate a CSC list for a given:
  	$loopday
@@ -865,12 +576,8 @@ function saveRaid() {
 	$loopday = $_POST['time'];
 	$loopday = mktime(0,0,0,date("m",$loopday),date("d",$loopday),date("Y",$loopday));
 	
-//	scheduleCSC($row['rid'],$scheduledRoles,$loopday);
-
-
 	// Get a CSC list, limit by access for this raid
-//	$csclist = getCSCListWhereAccess($db,$raidaccess);
-	$csclist = getCSCListWhereAccess($db,null); // Turned off for now
+	$csclist = getCSCListWhereAccess($db,null); // Turned off trimming by access for now
 
 	// Update the total raids, for everyone
 	$sql = "UPDATE pqr_ranks SET total=total+1";
@@ -878,9 +585,6 @@ function saveRaid() {
 
 	// Trim that down by day
 	stripCSCListByAvailability($db,$loopday,$csclist);
-
-	// Sort the CSC list by role, for use later on.
-	//msort($csclist,"role_id");
 
 
 	// If "open invite" is **NOT** set
