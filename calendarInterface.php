@@ -380,9 +380,7 @@ function showMakeRaid($datestring) {
 					/>
 					<img src='".PQIMG."/classes/16".strtolower($cscinfo['csc_class']).".png' style='' ";
 				$mraid .='/>';
-				$mraid .= '<div class="csc_name"
-
-					'.$cscinfo['character_name']."</div> - 	
+				$mraid .= '<div class="csc_name">'.$cscinfo['character_name']."</div> - 	
 					<span>".$cscinfo['csc_percent']."% / ".$cscinfo['csc_totalpercent']."%</span>
 
 				</td>";
