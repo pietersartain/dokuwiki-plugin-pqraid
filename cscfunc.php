@@ -22,7 +22,8 @@ function getCSCList($username, &$db) {
 	} else {
 		$csclist = null;
 		while ($row = mysql_fetch_array($rslt,MYSQL_ASSOC)){
-		$csclist[] = $row;
+			$csclist[] = $row;
+		}
 	}
 
 	return $csclist;	
