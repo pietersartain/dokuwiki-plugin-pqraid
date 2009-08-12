@@ -192,7 +192,7 @@ function getCSCEditor(&$db) {
 
 	// Run initialisation on ranks
 	if ($rank == null) {
-	echo "rank init.";
+	//echo "rank init.";
 		$sql = 'INSERT INTO pqr_ranks(player_id,rank_id,count,total,last)
 				VALUES("'.$username.'","2","0","'.getNumRaids($db).'","0")';
 		mysql_query($sql);

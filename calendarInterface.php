@@ -220,49 +220,50 @@ function showRaid($raid_id) {
 				".$users[$key]['name']."</td>";
 
 			$rows=0;
+
 			foreach($player as $cscid=>$cscinfo) {
 
-				$checked = "";
-				$eo = "";
-				$rl = "";
-				// If a CSC with this name is in the signup list
-				if (isset($signups[$cscinfo['character_name']])) {
-					// Check if it's the same role in both
-					if (($signups[$cscinfo['character_name']]['csc_role']) == $cscinfo['name']) {
-						$checked = "checked";
-						
-						// Since only one character of the same name can be in the same raid
-						// it's guarenteed that if this player is an EO or LR, it'll be with
-						// this CSC.
-$eo = ($signups[$cscinfo['character_name']]['static_raid_organiser'] == $cscinfo['character_name']) ? 1 : '';
-$rl = ($signups[$cscinfo['character_name']]['static_lead_raider'] == $cscinfo['character_name']) ? 1 : '';
+				// Ensure the character has a name
+				if ( ($cscinfo['character_name'] != '') && ($cscinfo['character_name'] != null) ) {
+
+					$checked = "";
+					$eo = "";
+					$rl = "";
+					// If a CSC with this name is in the signup list
+					if (isset($signups[$cscinfo['character_name']])) {
+						// Check if it's the same role in both
+						if (($signups[$cscinfo['character_name']]['csc_role']) == $cscinfo['name']) {
+							$checked = "checked";
+
+							// Since only one character of the same name can be in the same raid
+							// it's guarenteed that if this player is an EO or LR, it'll be with
+							// this CSC.
+	$eo = ($signups[$cscinfo['character_name']]['static_raid_organiser'] == $cscinfo['character_name']) ? 1 : '';
+	$rl = ($signups[$cscinfo['character_name']]['static_lead_raider'] == $cscinfo['character_name']) ? 1 : '';
+						}
 					}
+
+					$mraid .= "<td style='background: #".$cscinfo['colour'].";'>";
+					$mraid .= $access."
+						<input type='radio' name='playercsc".$key."' value='".$cscid."' disabled 
+							onclick=\"updateRoleCount('".$playercount."','".$cscinfo['role_id']."');\"
+							".$checked."
+						/>
+						<img src='".PQIMG."/classes/16".strtolower($cscinfo['csc_class']).".png' style='' ";
+						$mraid .= ' />';
+						$mraid .= '<div class="csc_name"
+
+
+						>'.$cscinfo['character_name']."</div> - 		
+						<span>".$cscinfo['csc_percent']."% / ".$cscinfo['csc_totalpercent']."%</span>";
+
+						if ($eo) $mraid .= "<img src='".PQIMG."/ranks/2.gif' style='height: 16px; width: 16px;' />";
+						if ($rl) $mraid .= "<img src='".PQIMG."/ranks/1.gif' style='height: 16px; width: 16px;' />";
+
+					$mraid .= "</td>";
+					++$rows;
 				}
-				
-				
-//				$checked = (isset($signups[$cscinfo['character_name']])) ? "checked" : ""; 
-//				$eo = ($signups[$cscinfo['character_name']]['static_raid_organiser'] == $cscinfo['character_name']) ? 1 : ''; 
-//				$rl = ($signups[$cscinfo['character_name']]['static_lead_raider'] == $cscinfo['character_name']) ? 1 : ''; 
-
-				$mraid .= "<td style='background: #".$cscinfo['colour'].";'>";
-				$mraid .= $access."
-					<input type='radio' name='playercsc".$key."' value='".$cscid."' disabled 
-						onclick=\"updateRoleCount('".$playercount."','".$cscinfo['role_id']."');\"
-						".$checked."
-					/>
-					<img src='".PQIMG."/classes/16".strtolower($cscinfo['csc_class']).".png' style='' ";
-					$mraid .= ' />';
-					$mraid .= '<div class="csc_name"
-					
-					
-					>'.$cscinfo['character_name']."</div> - 		
-					<span>".$cscinfo['csc_percent']."% / ".$cscinfo['csc_totalpercent']."%</span>";
-
-					if ($eo) $mraid .= "<img src='".PQIMG."/ranks/2.gif' style='height: 16px; width: 16px;' />";
-					if ($rl) $mraid .= "<img src='".PQIMG."/ranks/1.gif' style='height: 16px; width: 16px;' />";
-
-				$mraid .= "</td>";
-				++$rows;
+			
 			}
 
 			for ($x = $rows; $x < 3; $x++){
@@ -370,20 +371,23 @@ function showMakeRaid($datestring) {
 		$rows=0;
 		foreach($player as $cscid=>$cscinfo) {
 
-			$mraid .= "<td style='background: #".$cscinfo['colour'].";'>".$access."
-			
-				<input type='radio' name='playercsc".$key."' value='".$cscid."' ".$disabledbutton." 
-					onclick=\"updateRoleCount('".$playercount."','".$cscinfo['role_id']."');\"
-				/>
-				<img src='".PQIMG."/classes/16".strtolower($cscinfo['csc_class']).".png' style='' ";
-			$mraid .='/>';
-			$mraid .= '<div class="csc_name"
-			
-				'.$cscinfo['character_name']."</div> - 	
-				<span>".$cscinfo['csc_percent']."% / ".$cscinfo['csc_totalpercent']."%</span>
-			
-			</td>";
-			++$rows;
+			// Ensure the character has a name
+			if ( ($cscinfo['character_name'] != '') && ($cscinfo['character_name'] != null) ) {
+				$mraid .= "<td style='background: #".$cscinfo['colour'].";'>".$access."
+
+					<input type='radio' name='playercsc".$key."' value='".$cscid."' ".$disabledbutton." 
+						onclick=\"updateRoleCount('".$playercount."','".$cscinfo['role_id']."');\"
+					/>
+					<img src='".PQIMG."/classes/16".strtolower($cscinfo['csc_class']).".png' style='' ";
+				$mraid .='/>';
+				$mraid .= '<div class="csc_name"
+
+					'.$cscinfo['character_name']."</div> - 	
+					<span>".$cscinfo['csc_percent']."% / ".$cscinfo['csc_totalpercent']."%</span>
+
+				</td>";
+				++$rows;
+			}
 		}
 
 		for ($x = $rows; $x < 3; $x++){

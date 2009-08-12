@@ -17,43 +17,16 @@ function getCSCList($username, &$db) {
 
 	if (!$rslt) die("csc sql error: ".mysql_error($db));
 
-//	$count = 0;
 	if (mysql_num_rows($rslt) > 3) {
 		die("More than 3 CSCs detected. Problem.");
 	} else {
 		$csclist = null;
 		while ($row = mysql_fetch_array($rslt,MYSQL_ASSOC)){
-//			$csclist[$count] = $row;
-//			$count++;
-			// Ensure the character has a name
-			if ( ($row['character_name'] != '') && ($row['character_name'] != null) ) {
-				$csclist[] = $row;
-			}
-		}
-//		if ($count == 0) {
-//			$csclist = null;
-//		}
-	}
-
-	return $csclist;	
-}
-
-/* Get all CSCs
- */
-/*
-function getCSCFullList(&$db) {
-	$rslt = mysql_query('SELECT pqr_csc.*,pqr_roles.name FROM pqr_csc 
-		LEFT JOIN pqr_roles ON pqr_roles.role_id = pqr_csc.role_id');
-
-	if (!$rslt) die("get all csc sql error: ".mysql_error($db));
-	$csclist = null;
-	while ($row = mysql_fetch_array($rslt,MYSQL_ASSOC)){
 		$csclist[] = $row;
 	}
 
 	return $csclist;	
 }
-*/
 
 /* Get a list of CSCs grouped by player. Include all relevant CSC info except achievements */
 function getCSCInfoByPlayerID(&$db) {
