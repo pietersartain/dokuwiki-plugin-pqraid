@@ -22,14 +22,18 @@ define("WIKIPATH","/pqdev");
 define("DOCROOT",$_SERVER['DOCUMENT_ROOT'].WIKIPATH);
 
 
+
+*/
+$addr = explode(".",$_SERVER['SERVER_NAME']);
+
 /********* PQ */
-if (explode(".",$_SERVER['SERVER_NAME'])[1] == 'pesartain') {
+if ($addr[1] == 'pesartain') {
 	define("WIKIPATH","");
 	define("DOCROOT",$_SERVER['DOCUMENT_ROOT'].WIKIPATH);
 } else {
-	define("WIKIPATH","/webspace/pq/wiki");
+	define("WIKIPATH","/webspace/dokufarm");
 	define("DOCROOT","/home/pesartain".WIKIPATH);
-	
+}
 
 /********* Common */
 
