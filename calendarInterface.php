@@ -222,10 +222,27 @@ function showRaid($raid_id) {
 			$rows=0;
 			foreach($player as $cscid=>$cscinfo) {
 
-				$checked = (isset($signups[$cscinfo['character_name']])) ? "checked" : ""; 
-
-				$eo = ($signups[$cscinfo['character_name']]['static_raid_organiser'] == $cscinfo['character_name']) ? 1 : ''; 
-				$rl = ($signups[$cscinfo['character_name']]['static_lead_raider'] == $cscinfo['character_name']) ? 1 : ''; 
+				$checked = "";
+				$eo = "";
+				$rl = "";
+				// If a CSC with this name is in the signup list
+				if (isset($signups[$cscinfo['character_name']])) {
+					// Check if it's the same role in both
+					if (($signups[$cscinfo['character_name']]['csc_role']) == $cscinfo['name']) {
+						$checked = "checked";
+						
+						// Since only one character of the same name can be in the same raid
+						// it's guarenteed that if this player is an EO or LR, it'll be with
+						// this CSC.
+$eo = ($signups[$cscinfo['character_name']]['static_raid_organiser'] == $cscinfo['character_name']) ? 1 : '';
+$rl = ($signups[$cscinfo['character_name']]['static_lead_raider'] == $cscinfo['character_name']) ? 1 : '';
+					}
+				}
+				
+				
+//				$checked = (isset($signups[$cscinfo['character_name']])) ? "checked" : ""; 
+//				$eo = ($signups[$cscinfo['character_name']]['static_raid_organiser'] == $cscinfo['character_name']) ? 1 : ''; 
+//				$rl = ($signups[$cscinfo['character_name']]['static_lead_raider'] == $cscinfo['character_name']) ? 1 : ''; 
 
 				$mraid .= "<td style='background: #".$cscinfo['colour'].";'>";
 				$mraid .= $access."
