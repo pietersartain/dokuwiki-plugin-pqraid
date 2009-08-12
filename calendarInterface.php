@@ -1191,13 +1191,33 @@ if (!defined("_RUN_SQL"))		define("_RUN_SQL",true);
 	return array($leader,$organiser);
 }
 
-/* 2d multi sorting, from:
- * http://www.prodevtips.com/2008/01/06/sorting-2d-arrays-in-php-anectodes-and-reflections/
- */
+/* 2d multi sorting */
+
 function multi2dSortAsc(&$arr, $key){ 
+
+/* from:
+ * http://www.prodevtips.com/2008/01/06/sorting-2d-arrays-in-php-anectodes-and-reflections/
+ * failed to work on the server for reasons unknown.
+ */
+/*
   $sort_col = array(); 
   foreach ($arr as $sub) $sort_col[] = $sub[$key]; 
   array_multisort($sort_col, $arr); 
+*/
+
+/* from:
+ * http://www.informit.com/articles/article.aspx?p=341245&seqNum=7
+ */
+	function compare($x, $y) {
+	 if ( $x[0] == $y[0] )
+	  return 0;
+	 else if ( $x[0] < $y[0] )
+	  return -1;
+	 else
+	  return 1;
+	}
+
+	usort($arr, 'compare');
 }
 
 // List raid icons, mark $sel as selected
