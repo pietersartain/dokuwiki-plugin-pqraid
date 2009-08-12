@@ -44,7 +44,7 @@ switch("ui$func") {
 	case "uiwriteCSCList":
 		writeCSCList($_GET['arg1']);
 		break;
-*/	case "uisaveWeekEditBox":
+	case "uisaveWeekEditBox":
 		saveWeekEditBox();
 		break;
 	case "uisaveUnavailable":
