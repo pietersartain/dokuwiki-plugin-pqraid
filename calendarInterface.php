@@ -989,8 +989,8 @@ function deleteRaid() {
  */
 function getRandomLeader(&$csclist,&$db) {
 
-if (!defined("_PRINT_SQL"))		define("_PRINT_SQL",false);
-if (!defined("_PRINT_DEBUG"))	define("_PRINT_DEBUG",false);
+if (!defined("_PRINT_SQL"))		define("_PRINT_SQL",true);
+if (!defined("_PRINT_DEBUG"))	define("_PRINT_DEBUG",true);
 if (!defined("_RUN_SQL"))		define("_RUN_SQL",true);
 
 // This mostly returned Luke
@@ -1045,7 +1045,8 @@ if (!defined("_RUN_SQL"))		define("_RUN_SQL",true);
 		 * 3	??
 		 */
 		
-		if ($last == $count) 
+		// What does this do?!
+		if ($last == $count)
 		
 		$inf_array = array(
 						($count/$total*100),

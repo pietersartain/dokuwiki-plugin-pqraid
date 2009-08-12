@@ -31,8 +31,8 @@ if ($addr[1] == 'pesartain') {
 	define("WIKIPATH","");
 	define("DOCROOT",$_SERVER['DOCUMENT_ROOT'].WIKIPATH);
 } else {
-	define("WIKIPATH","/webspace/dokufarm");
-	define("DOCROOT","/home/pesartain".WIKIPATH);
+	define("WIKIPATH","");
+	define("DOCROOT","/home/pesartain/webspace/dokufarm/pq");
 }
 
 /********* Common */
